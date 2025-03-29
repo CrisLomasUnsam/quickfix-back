@@ -11,5 +11,6 @@ git config --global core.ignorecase false
 
 dev/QB-*
 
-El nombre de la rama tiene que incluir el identificador único de la tarjeta para que la enlace automáticamente.
-No va a enlazar la tarjeta hasta que no pusheen la rama al repositorio.
+> [!IMPORTANT]
+> El nombre de la rama tiene que incluir el identificador único de la tarjeta para que la enlace automáticamente.
+> No va a enlazar la tarjeta hasta que no pusheen la rama al repositorio.
