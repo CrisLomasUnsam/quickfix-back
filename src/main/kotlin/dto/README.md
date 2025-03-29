@@ -1,1 +1,0 @@
-Archivo utilizado solamente para guardar estructuras de carpeta.
