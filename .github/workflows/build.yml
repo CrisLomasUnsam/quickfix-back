@@ -12,6 +12,11 @@ on:
     branches: main
   pull_request:
     branches: main
+
+permissions:
+  contents: write
+
+
 # "jobs" describe los diferentes trabajos a realizar.
 jobs:
   # En esta ocasiÃ³n tenemos uno solo, para buildear, testear y subir la info de coverage.
