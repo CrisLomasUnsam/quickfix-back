@@ -12,7 +12,5 @@ class RegisterController(
     val registerService: RegisterService){
 
     @PostMapping()
-    fun registerUser(@RequestBody registerData: RegisterRequestDTO)/*: RegisterResponseDTO */ =
-        registerService.registerUser(registerData)
-
+    fun registerUser(@RequestBody registerData: RegisterRequestDTO)/*: RegisterResponseDTO */ = registerService.registerUser(registerData)
 }

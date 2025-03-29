@@ -17,8 +17,5 @@ data class Mail(
 
 @Component
 class MailObserver(val mailSender: MailSender){
-    fun sendRegistrationMailTo(address: String) {
-        mailSender.sendEmail(Mail(to = address))
-    }
-
+    fun sendRegistrationMailTo(address: String) = mailSender.sendEmail(Mail(to = address))
 }
