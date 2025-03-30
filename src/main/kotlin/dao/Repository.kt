@@ -1,0 +1,43 @@
+package dao
+
+import models.Id
+
+open class Repository<T : Id> {
+  private val elements: MutableSet<T> = mutableSetOf()
+  private var currentId : Int = 0
+
+  fun create(element: T) {
+    throwErrorIfIdIsAssigned(element)
+    element.validate()
+    element.id = currentId
+    currentId++
+    addElement(element)
+  }
+
+  fun delete(element: T) {
+    elements.remove(getById(element.id))
+  }
+
+  fun update(element: T){
+    element.validate()
+    delete(element)
+    addElement(element)
+  }
+
+  private fun addElement(element: T) {
+    elements.add(element)
+  }
+  fun getById(id : Int) : T? {
+    throwErrorIfIdDoesNotExist(id)
+    return elements.find { it.id == id }
+  }
+  private fun throwErrorIfIdDoesNotExist(id : Int){
+    //if(elements.all{it.id != id})
+    //throw BusinessException("There is no element associated with the id:: $id")
+  }
+  private fun throwErrorIfIdIsAssigned(element: T){
+    //if(!element.esNuevo())
+    //throw BusinessException("Already exists an object with id ${element.id}.")
+  }
+
+}
