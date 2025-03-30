@@ -1,5 +1,6 @@
 package dao
 
+import exceptions.BusinessException
 import models.Id
 
 open class Repository<T : Id> {
@@ -32,12 +33,12 @@ open class Repository<T : Id> {
     return elements.find { it.id == id }
   }
   private fun throwErrorIfIdDoesNotExist(id : Int){
-    //if(elements.all{it.id != id})
-    //throw BusinessException("There is no element associated with the id:: $id")
+    if(elements.all{it.id != id})
+    throw BusinessException("There is no element associated with the id:: $id")
   }
   private fun throwErrorIfIdIsAssigned(element: T){
-    //if(!element.esNuevo())
-    //throw BusinessException("Already exists an object with id ${element.id}.")
+    if(!element.isNew())
+    throw BusinessException("Already exists an object with id ${element.id}.")
   }
 
 }
