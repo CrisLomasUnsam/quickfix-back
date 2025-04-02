@@ -57,7 +57,7 @@ class MailSenderSpec: DescribeSpec({
             val invalidAddress = ""
             val registerData = RegisterRequestDTO(password = "123", email = invalidAddress)
             try {
-                registerService.registerUser(registerData)
+                registerService.registerCustomer(registerData)
                 throw AssertionError("Exception should have been thrown for invalid data.")
             } catch (e: Exception) {
                 e.message shouldBe "Invalid data"

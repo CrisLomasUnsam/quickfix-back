@@ -11,6 +11,10 @@ import services.RegisterService
 class RegisterController(
     val registerService: RegisterService){
 
-    @PostMapping()
-    fun registerUser(@RequestBody registerData: RegisterRequestDTO)/*: RegisterResponseDTO */ = registerService.registerUser(registerData)
+    @PostMapping("/user")
+    fun registerCustomer(@RequestBody registerData: RegisterRequestDTO)/*: RegisterResponseDTO */ = registerService.registerCustomer(registerData)
+
+    @PostMapping("/professional")
+    fun registerProfessional(@RequestBody registerData: RegisterRequestDTO)/*: RegisterResponseDTO */ = registerService.registerProfessional(registerData)
+
 }
