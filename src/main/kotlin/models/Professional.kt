@@ -34,7 +34,7 @@ class Professional(
 
     private fun validDNI(): Boolean {
         val dniToString = dni.toString()
-        return dniToString.length == 8 && dniToString.all { it.isDigit() }
+        return ( dniToString.length == 8 || dniToString.length == 7 ) && dniToString.all { it.isDigit() }
     }
 
     private fun isAdult(dateBirth: LocalDate): Boolean = Period.between(dateBirth, LocalDate.now()).years >= 18
