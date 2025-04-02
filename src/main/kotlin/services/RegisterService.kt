@@ -1,22 +1,28 @@
 package services
 
 import dto.register.*
-import exceptions.BusinessException
+import models.Customer
+import models.Professional
 import org.springframework.stereotype.Service
 import utils.mailSender.MailObserver
 
 @Service
 class RegisterService (private val mailObserver: MailObserver) {
 
-    fun registerCustomer(registerData: RegisterRequestDTO): RegisterRequestDTO = registrationProcess(registerData)
+    fun registerCustomer(registerData: CustomerRegisterRequestDTO): Customer = customerRegistration(registerData)
 
-    fun registerProfessional(registerData: RegisterRequestDTO): RegisterRequestDTO = registrationProcess(registerData)
+    fun registerProfessional(registerData: ProfessionalRegisterRequestDTO): Professional = professionalRegistration(registerData)
 
-    fun validRegisterData(registerData: RegisterRequestDTO): Boolean = registerData.email.isNotEmpty() && registerData.password.isNotEmpty()
-    
-    fun registrationProcess(registerData: RegisterRequestDTO): RegisterRequestDTO {
-        if (!this.validRegisterData(registerData)) throw BusinessException("Invalid data")
-        mailObserver.sendRegistrationMailTo(registerData.email.trim())
-        return registerData
+
+    fun customerRegistration(registerData: CustomerRegisterRequestDTO): Customer {
+        val customer = registerData.fromDTO()
+        mailObserver.sendRegistrationMailTo(customer.mail)
+        return customer
+    }
+
+    fun professionalRegistration(registerData: ProfessionalRegisterRequestDTO): Professional {
+        val professional = registerData.fromDTO()
+        mailObserver.sendRegistrationMailTo(professional.mail)
+        return professional
     }
 }
