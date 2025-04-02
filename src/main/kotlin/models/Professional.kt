@@ -22,7 +22,7 @@ class Professional(
     private fun addConfirmedJob(): Boolean = TODO("Implement me")
     private fun removeConfirmedJob(): Boolean = TODO("Implement me")
 
-    override fun validate(): Unit{
+    override fun validate() {
         if (mail.trim().isBlank()) throw BusinessException("Email cannot be empty")
         if (name.trim().isBlank()) throw BusinessException("Name cannot be empty")
         if (lastName.trim().isBlank()) throw BusinessException("Last name cannot be empty")
