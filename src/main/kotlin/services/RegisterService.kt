@@ -9,20 +9,16 @@ import utils.mailSender.MailObserver
 @Service
 class RegisterService (private val mailObserver: MailObserver) {
 
-    fun registerCustomer(registerData: CustomerRegisterRequestDTO): Customer = customerRegistration(registerData)
-
-    fun registerProfessional(registerData: ProfessionalRegisterRequestDTO): Professional = professionalRegistration(registerData)
-
-
-    fun customerRegistration(registerData: CustomerRegisterRequestDTO): Customer {
-        val customer = registerData.fromDTO()
+    fun registerCustomer(registerData: RegisterRequestDTO): Customer {
+        val customer = registerData.toCustomer()
         mailObserver.sendRegistrationMailTo(customer.mail)
         return customer
     }
 
-    fun professionalRegistration(registerData: ProfessionalRegisterRequestDTO): Professional {
-        val professional = registerData.fromDTO()
+    fun registerProfessional(registerData: RegisterRequestDTO): Professional {
+        val professional = registerData.toProfessional()
         mailObserver.sendRegistrationMailTo(professional.mail)
         return professional
     }
+
 }
