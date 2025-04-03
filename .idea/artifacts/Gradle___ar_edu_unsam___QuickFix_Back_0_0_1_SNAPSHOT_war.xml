@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" external-system-id="GRADLE" name="Gradle : ar.edu.unsam : QuickFix-Back-0.0.1-SNAPSHOT.war">
+    <output-path>$PROJECT_DIR$/build/libs</output-path>
+    <properties id="gradle-properties">
+      <options external-project-path="$PROJECT_DIR$">
+        <buildTaskPath>:war</buildTaskPath>
+        <cleanTaskPath>:cleanWar</cleanTaskPath>
+      </options>
+    </properties>
+    <root id="archive" name="QuickFix-Back-0.0.1-SNAPSHOT.war">
+      <element id="artifact" artifact-name="Gradle : ar.edu.unsam : QuickFix-Back-0.0.1-SNAPSHOT.war (exploded)" />
+    </root>
+  </artifact>
+</component>
