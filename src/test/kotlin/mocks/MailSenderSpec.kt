@@ -1,13 +1,16 @@
 package mocks
 
-import dto.register.RegisterRequestDTO
+import quickfix.dto.register.RegisterRequestDTO
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.mockk.mockk
 import io.mockk.verify
-import services.RegisterService
+import quickfix.utils.mailSender.Mail
+import quickfix.utils.mailSender.MailObserver
+import quickfix.utils.mailSender.MailSender
+import quickfix.services.RegisterService
 import utils.mailSender.*
 
 
