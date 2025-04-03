@@ -18,7 +18,6 @@ data class RegisterRequestDTO(
 
 fun RegisterRequestDTO.toCustomer() : Customer =
     Customer(
-        id = 0,
         mail = this.mail.trim(),
         name = this.name.trim(),
         lastName = this.lastName.trim(),
@@ -35,7 +34,6 @@ fun RegisterRequestDTO.toCustomer() : Customer =
 
 fun RegisterRequestDTO.toProfessional() : Professional =
     Professional(
-        id = 0,
         mail = this.mail.trim(),
         name = this.name.trim(),
         lastName = this.lastName.trim(),

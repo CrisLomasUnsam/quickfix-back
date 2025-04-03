@@ -4,7 +4,6 @@ import java.time.LocalDate
 
 class Customer (
 
-    override var id: Int,
     override var mail: String,
     override var name: String,
     override var lastName: String,
