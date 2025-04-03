@@ -1,9 +1,9 @@
 package quickfix.dao
 
 import org.springframework.stereotype.Component
-import quickfix.models.Professional
+import quickfix.models.Customer
 
 @Component
-class CustomerRepository: Repository<Professional>() {
+class CustomerRepository: Repository<Customer>() {
 
 }
