@@ -1,4 +1,4 @@
-package dto.register
+package dto.customer
 
 import models.Customer
 import java.time.LocalDate
