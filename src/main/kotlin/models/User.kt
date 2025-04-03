@@ -14,6 +14,8 @@ abstract class User : Id {
     abstract var gender : Gender
     abstract var address : Address
 
+    override var id: Int = -1
+
     companion object {
         const val EDAD_REQUERIDA = 18
     }

@@ -3,6 +3,7 @@ package dao
 import exceptions.BusinessException
 import models.Id
 
+
 open class Repository<T : Id> {
   private val elements: MutableSet<T> = mutableSetOf()
   private var currentId : Int = 0

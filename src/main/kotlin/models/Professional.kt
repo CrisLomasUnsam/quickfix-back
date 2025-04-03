@@ -6,7 +6,6 @@ import java.time.Period
 
 class Professional(
 
-    override var id: Int,
     override var mail: String,
     override var name: String,
     override var lastName: String,
