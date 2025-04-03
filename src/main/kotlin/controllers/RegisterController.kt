@@ -1,6 +1,6 @@
 package controllers
 
-import dto.register.RegisterRequestDTO
+import dto.register.*
 import org.springframework.web.bind.annotation.*
 import services.RegisterService
 
@@ -11,6 +11,12 @@ import services.RegisterService
 class RegisterController(
     val registerService: RegisterService){
 
-    @PostMapping()
-    fun registerUser(@RequestBody registerData: RegisterRequestDTO)/*: RegisterResponseDTO */ = registerService.registerUser(registerData)
+    @PostMapping("/customer")
+    fun registerCustomer(@RequestBody registerData: RegisterRequestDTO) =
+        registerService.registerCustomer(registerData)
+
+    @PostMapping("/professional")
+    fun registerProfessional(@RequestBody registerData: RegisterRequestDTO) =
+        registerService.registerProfessional(registerData)
+
 }
