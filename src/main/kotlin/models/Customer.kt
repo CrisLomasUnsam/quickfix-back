@@ -3,6 +3,7 @@ package models
 import java.time.LocalDate
 
 class Customer (
+
     override var id: Int,
     override var mail: String,
     override var name: String,
@@ -11,10 +12,9 @@ class Customer (
     override var dni: Int,
     override var avatar: String,
     override var dateBirth: LocalDate,
-) : User() {
+    override var gender: Gender,
+    override var address: Address
 
-    override fun validate() {
-        super.validate()
-    }
+) : User() {
 
 }

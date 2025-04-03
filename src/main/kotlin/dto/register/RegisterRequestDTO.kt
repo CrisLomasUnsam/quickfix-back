@@ -26,6 +26,8 @@ fun RegisterRequestDTO.toCustomer() : Customer =
         dni = this.dni,
         avatar = this.avatar.trim(),
         dateBirth = this.dateBirth,
+        gender = this.gender,
+        address = this.address
     ).apply {
         validate()
     }
@@ -44,7 +46,9 @@ fun RegisterRequestDTO.toProfessional() : Professional =
         balance = 0.0,
         debt = 0.0,
         certificates = mutableMapOf(),
-        professions = mutableSetOf()
+        professions = mutableSetOf(),
+        gender = this.gender,
+        address = this.address
     ).apply {
         validate()
     }

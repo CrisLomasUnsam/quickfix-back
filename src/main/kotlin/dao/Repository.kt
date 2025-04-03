@@ -34,11 +34,11 @@ open class Repository<T : Id> {
   }
   private fun throwErrorIfIdDoesNotExist(id : Int){
     if(elements.all{it.id != id})
-    throw BusinessException("There is no element associated with the id:: $id")
+      throw BusinessException("There is no element associated with the id:: $id")
   }
   private fun throwErrorIfIdIsAssigned(element: T){
     if(!element.isNew())
-    throw BusinessException("Already exists an object with id ${element.id}.")
+      throw BusinessException("Already exists an object with id ${element.id}.")
   }
 
 }
