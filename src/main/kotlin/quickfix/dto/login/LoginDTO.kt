@@ -1,6 +1,6 @@
 package quickfix.dto.login
 
 class LoginDTO (
-    var email: String,
+    var mail: String,
     var password: String
 )

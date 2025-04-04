@@ -65,4 +65,7 @@ abstract class User : Id {
     private fun isAdult(): Boolean =
         dateBirth.plusYears(EDAD_REQUERIDA.toLong()).isBefore(LocalDate.now())
 
+    fun verifyPassword(password : String) : Boolean =
+        this.password == password
+
 }
