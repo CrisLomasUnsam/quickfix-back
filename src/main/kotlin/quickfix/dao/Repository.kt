@@ -4,8 +4,8 @@ import quickfix.utils.exceptions.BusinessException
 import quickfix.models.Id
 
 
-open class Repository<T : Id> {
-  private val elements: MutableSet<T> = mutableSetOf()
+abstract class Repository<T : Id> {
+  protected val elements: MutableSet<T> = mutableSetOf()
   private var currentId : Int = 0
 
   fun create(element: T) {
