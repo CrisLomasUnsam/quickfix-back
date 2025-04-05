@@ -4,3 +4,9 @@ server:
     whitelabel:
       enabled: false
     include-message: always
+
+springdoc:
+  swagger-ui:
+    path: /swagger
+  api-docs:
+    path: /quickfix-api
