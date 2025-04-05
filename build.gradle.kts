@@ -39,6 +39,9 @@ dependencies {
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
+
+    //Api documentation
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 }
 
 kotlin {
