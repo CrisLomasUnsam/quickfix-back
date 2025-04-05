@@ -2,10 +2,14 @@ package quickfix.bootstrap
 
 import quickfix.dao.ProfessionalRepository
 import org.springframework.beans.factory.InitializingBean
+import quickfix.dao.CustomerRepository
 import quickfix.models.*
 import java.time.LocalDate
 
-class DataInitializer(private val professionalRepository: ProfessionalRepository) : InitializingBean {
+class DataInitializer(
+  private val professionalRepository: ProfessionalRepository,
+  private val customerRepository: CustomerRepository
+) : InitializingBean {
 
   val valen = Professional(
     mail = "valen@example.com",
@@ -71,7 +75,7 @@ class DataInitializer(private val professionalRepository: ProfessionalRepository
     address = Address("Calle 123", "Rosario", "2000")
   )
 
-  val rodi = Customer(
+  val rodri = Customer(
     mail = "lucia@example.com",
     name = "Lucia",
     lastName = "Fernandez",
@@ -106,13 +110,16 @@ class DataInitializer(private val professionalRepository: ProfessionalRepository
 
 
   fun createCustomer() {
-
+    customerRepository.apply {
+      create(juan)
+      create(rodri)
+      create(fer)
+    }
   }
 
   override fun afterPropertiesSet() {
     this.createProfessional()
     this.createCustomer()
   }
-
 
 }
