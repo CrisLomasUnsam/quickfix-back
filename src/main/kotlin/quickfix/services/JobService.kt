@@ -2,7 +2,6 @@ package quickfix.services
 
 import org.springframework.stereotype.Service
 import quickfix.dao.JobRepository
-import quickfix.dto.job.JobUpdateDTO
 import quickfix.models.Job
 
 @Service
