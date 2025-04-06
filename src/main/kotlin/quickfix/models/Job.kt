@@ -1,4 +1,3 @@
 package quickfix.models
 
-class Job {
-}
+abstract class Job : Id
