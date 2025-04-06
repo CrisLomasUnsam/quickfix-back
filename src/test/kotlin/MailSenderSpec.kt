@@ -3,7 +3,6 @@ import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import io.mockk.mockk
 import io.mockk.verify
 import mocks.createMailSenderMock
 import quickfix.models.Address
