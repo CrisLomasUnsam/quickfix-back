@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
 import quickfix.dto.rating.RatingDTO
-import quickfix.models.Rating
 import quickfix.services.CustomerService
 import quickfix.services.JobService
 import quickfix.services.RatingService
@@ -38,7 +37,5 @@ class CustomerController(
     @PostMapping("/rate")
     @Operation(summary = "Calificar un professional al concluir el job")
     fun rateProfessional(@RequestBody rating: RatingDTO) = ratingService.rateProfessional(rating)
-
-
 
 }
