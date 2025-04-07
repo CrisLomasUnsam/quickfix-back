@@ -12,9 +12,9 @@ class JobService(
 
     fun deleteJob(job: Job) = jobRepository.delete(job)
 
-    fun getJobById(id: Int): Job? = jobRepository.getById(id)
+    fun getJobById(id: Long): Job? = jobRepository.getById(id)
 
-    fun setJobAsDone(id: Int) = jobRepository.setToDone(id)
+    fun setJobAsDone(id: Long) = jobRepository.setToDone(id)
 
-    fun setJobAsCancelled(id: Int) = jobRepository.setToCancelled(id)
+    fun setJobAsCancelled(id: Long) = jobRepository.setToCancelled(id)
 }

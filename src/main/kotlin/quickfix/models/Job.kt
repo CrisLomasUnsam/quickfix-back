@@ -4,7 +4,7 @@ import java.time.LocalDate
 
 class Job : Id {
 
-    override var id: Int = -1
+    override var id: Long = -1
     lateinit var professional: Professional
     lateinit var customer: Customer
     lateinit var date: LocalDate

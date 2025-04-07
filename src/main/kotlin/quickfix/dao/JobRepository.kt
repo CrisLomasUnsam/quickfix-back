@@ -6,11 +6,11 @@ import quickfix.models.Job
 @Component
 class JobRepository: Repository<Job>() {
 
-    fun setToDone(id: Int){
+    fun setToDone(id: Long){
         TODO("Not yet implemented")
     }
 
-    fun setToCancelled(id: Int){
+    fun setToCancelled(id: Long){
         TODO("Not yet implemented")
     }
 }
