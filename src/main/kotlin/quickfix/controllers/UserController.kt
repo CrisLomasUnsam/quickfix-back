@@ -18,9 +18,6 @@ import quickfix.dto.user.UserDTO
 
 class UserController (val userService: UserService) {
 
-    @PostMapping("/user")
-    fun createUser(@RequestBody user : User) = userService.createUser(user)
-
-    @GetMapping("/{userId}")
-    fun getUserById(@PathVariable id : Int) = userService.getUserBYId(id)
+    @GetMapping("/data/{id}")
+    fun userInfo(@PathVariable id: Long) : UserDTO = UserDTO.toDTO(userService.findById(id))
 }
