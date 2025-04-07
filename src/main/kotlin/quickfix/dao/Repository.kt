@@ -2,6 +2,7 @@ package quickfix.dao
 
 import quickfix.utils.exceptions.BusinessException
 import quickfix.models.Id
+import quickfix.utils.SearchParameters
 
 
 abstract class Repository<T : Id> {
@@ -25,6 +26,8 @@ abstract class Repository<T : Id> {
     delete(element)
     addElement(element)
   }
+
+  open fun searchByParameters(id: Long, parameters: SearchParameters<T>): List<T> = elements.filter { parameters.matches(it) }
 
   fun getAllById(id: Long): List<T> {
     throwErrorIfIdDoesNotExist(id)
