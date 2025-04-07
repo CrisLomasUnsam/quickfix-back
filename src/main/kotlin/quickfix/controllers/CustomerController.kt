@@ -21,20 +21,20 @@ class CustomerController(
     private val customerService: CustomerService
 ){
 
-    @GetMapping
+    @GetMapping("/jobs/{id}")
     @Operation(summary = "Obtener todos los jobs de un customer")
     fun getJobsByCustomerId(
         @Parameter(description = "Id del customer")
-        @RequestBody id: Long) = jobService.getJobsByCustomer(id)
+        @PathVariable id: Long) = jobService.getJobsByCustomer(id)
 
-    @GetMapping("/{id}")
+    @GetMapping("/filterJobs/{id}")
     @Operation(summary = "Buscar jobs por filtro")
     fun getJobsByParameters(
         @PathVariable id: Long,
         @Parameter(description = "Parametros de busqueda (professional/done/inProgress)")
         @RequestBody parameters: JobSearchParameters) = customerService.getJobsByParameters(id, parameters)
 
-    @PostMapping("/rate")
+    @PostMapping("/rateProfessional")
     @Operation(summary = "Calificar un professional al concluir el job")
     fun rateProfessional(@RequestBody rating: RatingDTO) = ratingService.rateProfessional(rating)
 

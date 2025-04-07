@@ -8,11 +8,13 @@ import quickfix.utils.SearchParameters
 
 abstract class Repository<T : Id> {
   protected val elements: MutableSet<T> = mutableSetOf()
+  private var currentId: Long = 0
 
   fun create(element: T) {
     throwErrorIfIdIsAssigned(element)
     element.validate()
-    element.id = GlobalIdGenerator.nextId()
+    currentId++
+    element.id = currentId
 
     addElement(element)
   }
@@ -45,13 +47,9 @@ abstract class Repository<T : Id> {
 
   open fun searchByParameters(id: Long, parameters: SearchParameters<T>): List<T> = elements.filter { parameters.matches(it) }
 
-  fun getAllById(id: Long): List<T> {
-    throwErrorIfIdDoesNotExist(id)
-    return elements.filter { it.id == id }.ifEmpty { throw BusinessException("Repository doesn't include element with id $id") }
-  }
-
   fun clearAll() {
     elements.clear()
     currentId = 0
   }
+
 }
