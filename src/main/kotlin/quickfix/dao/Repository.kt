@@ -1,5 +1,6 @@
 package quickfix.dao
 
+import quickfix.models.GlobalIdGenerator
 import quickfix.utils.exceptions.BusinessException
 import quickfix.models.Id
 import quickfix.utils.SearchParameters
@@ -7,13 +8,12 @@ import quickfix.utils.SearchParameters
 
 abstract class Repository<T : Id> {
   protected val elements: MutableSet<T> = mutableSetOf()
-  private var currentId : Long = 0
 
   fun create(element: T) {
     throwErrorIfIdIsAssigned(element)
     element.validate()
-    element.id = currentId
-    currentId++
+    element.id = GlobalIdGenerator.nextId()
+
     addElement(element)
   }
 
@@ -32,7 +32,6 @@ abstract class Repository<T : Id> {
   }
 
   fun getById(id : Long) : T? {
-    throwErrorIfIdDoesNotExist(id)
     return elements.find { it.id == id }
   }
   private fun throwErrorIfIdDoesNotExist(id : Long){
