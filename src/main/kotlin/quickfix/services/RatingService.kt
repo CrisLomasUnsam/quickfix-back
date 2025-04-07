@@ -1,11 +1,11 @@
 package quickfix.services
 
 import org.springframework.stereotype.Service
-import quickfix.models.Rating
+import quickfix.dto.rating.RatingDTO
 
 @Service
 class RatingService {
-    fun rateProfessional(rating: Rating): Any {
+    fun rateProfessional(ratingDTO: RatingDTO): Any {
         TODO("Not yet implemented")
     }
 }
