@@ -26,6 +26,11 @@ abstract class Repository<T : Id> {
     addElement(element)
   }
 
+  fun getAllById(id: Long): List<T> {
+    throwErrorIfIdDoesNotExist(id)
+    return elements.filter { it.id == id }.ifEmpty { throw BusinessException("Repository doesn't include element with id $id") }
+  }
+
   private fun addElement(element: T) {
     elements.add(element)
   }
