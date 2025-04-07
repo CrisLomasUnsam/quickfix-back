@@ -27,16 +27,10 @@ abstract class Repository<T : Id> {
     addElement(element)
   }
 
-  open fun searchByParameters(id: Long, parameters: SearchParameters<T>): List<T> = elements.filter { parameters.matches(it) }
-
-  fun getAllById(id: Long): List<T> {
-    throwErrorIfIdDoesNotExist(id)
-    return elements.filter { it.id == id }.ifEmpty { throw BusinessException("Repository doesn't include element with id $id") }
-  }
-
   private fun addElement(element: T) {
     elements.add(element)
   }
+
   fun getById(id : Long) : T? {
     throwErrorIfIdDoesNotExist(id)
     return elements.find { it.id == id }
@@ -50,4 +44,15 @@ abstract class Repository<T : Id> {
       throw BusinessException("Already exists an object with id ${element.id}.")
   }
 
+  open fun searchByParameters(id: Long, parameters: SearchParameters<T>): List<T> = elements.filter { parameters.matches(it) }
+
+  fun getAllById(id: Long): List<T> {
+    throwErrorIfIdDoesNotExist(id)
+    return elements.filter { it.id == id }.ifEmpty { throw BusinessException("Repository doesn't include element with id $id") }
+  }
+
+  fun clearAll() {
+    elements.clear()
+    currentId = 0
+  }
 }
