@@ -1,5 +1,6 @@
 package quickfix.models
 
+import quickfix.utils.exceptions.BusinessException
 import java.time.LocalDate
 
 class Job : Id {
@@ -14,6 +15,8 @@ class Job : Id {
     lateinit var distance : Number
 
     override fun validate() {
-        TODO("Not yet implemented")
+        if (price <= 0) throw BusinessException("Price must be greater than zero")
     }
+
+    val inProgress: Boolean = !done
 }

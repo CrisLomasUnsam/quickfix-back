@@ -11,6 +11,15 @@ class UserService (
     val professionalRepository: ProfessionalRepository,
     val customerRepository: CustomerRepository
 ) {
+
+    fun createUser(user: User): Any {
+            TODO("Not yet implemented")
+    }
+
+    fun getUserById(id: Int): Any {
+            TODO("Not yet implemented")
+    }
+    
     fun findById(id: Long): User  {
         val customer = customerRepository.getById(id)
         if (customer != null) return customer
