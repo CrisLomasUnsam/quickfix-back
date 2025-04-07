@@ -1,9 +1,9 @@
 package quickfix.models
 
 interface Id {
-  var id: Int
+  var id: Long
 
   fun validate()
 
-  fun isNew () = id == -1
+  fun isNew () = id.toInt() == -1
 }
