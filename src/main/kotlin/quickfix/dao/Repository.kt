@@ -1,6 +1,5 @@
 package quickfix.dao
 
-import quickfix.models.GlobalIdGenerator
 import quickfix.utils.exceptions.BusinessException
 import quickfix.models.Id
 import quickfix.utils.SearchParameters
@@ -34,15 +33,18 @@ abstract class Repository<T : Id> {
   }
 
   fun getById(id : Long) : T? {
+    throwErrorIfIdDoesNotExist(id)
     return elements.find { it.id == id }
   }
+
   private fun throwErrorIfIdDoesNotExist(id : Long){
     if(elements.all{it.id != id})
-      throw BusinessException("There is no element associated with the id:: $id")
+      throw BusinessException("No existe un elemento asociado al id: $id")
   }
+
   private fun throwErrorIfIdIsAssigned(element: T){
     if(!element.isNew())
-      throw BusinessException("Already exists an object with id ${element.id}.")
+      throw BusinessException("Ya existe un elemento con el id: ${element.id}.")
   }
 
   open fun searchByParameters(id: Long, parameters: SearchParameters<T>): List<T> = elements.filter { parameters.matches(it) }

@@ -1,3 +1,5 @@
+package quickfix.dto.user
+
 import quickfix.models.Address
 import quickfix.models.Gender
 import java.time.LocalDate

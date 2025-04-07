@@ -14,7 +14,7 @@ class JobService(
 
     fun getJobById(id: Long): Job? = jobRepository.getById(id)
 
-    fun getJobsByCustomer(id: Long) = jobRepository.getAllById(id)
+    fun getJobsByCustomer(id: Long) = jobRepository.getAllByCustomerId(id)
 
     fun setJobAsDone(id: Long) = jobRepository.setToDone(id)
 

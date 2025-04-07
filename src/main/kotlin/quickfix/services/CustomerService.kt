@@ -8,5 +8,7 @@ import quickfix.utils.JobSearchParameters
 class CustomerService(
     private val jobRepository: JobRepository
 ){
-    fun getJobsByParameters(id: Long, parameters: JobSearchParameters) = jobRepository.searchByParameters(id, parameters)
+
+    fun getJobsByParameters(id: Long, parameters: JobSearchParameters) =
+        jobRepository.searchByParameters(id, parameters)
 }

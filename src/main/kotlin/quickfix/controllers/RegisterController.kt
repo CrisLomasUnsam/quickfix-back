@@ -15,14 +15,10 @@ class RegisterController(
     val registerService: RegisterService
 ){
 
-    @PostMapping("/customer")
-    @Operation(summary = "Registrar customer", description = "Registra un usuario con rol de customer")
-    fun registerCustomer(@RequestBody registerData: RegisterRequestDTO) =
-        registerService.registerCustomer(registerData)
+    @PostMapping
+    @Operation(summary = "Registrar usuario", description = "Registra un usuario y le asigna dos perfiles: uno para cada uno de los dos roles (Customer y Professional)")
+    fun registerUser(@RequestBody registerData: RegisterRequestDTO) =
+        registerService.registerUser(registerData)
 
-    @PostMapping("/professional")
-    @Operation(summary = "Registrar professional", description = "Registra un usuario con rol de professional")
-    fun registerProfessional(@RequestBody registerData: RegisterRequestDTO) =
-        registerService.registerProfessional(registerData)
 
 }

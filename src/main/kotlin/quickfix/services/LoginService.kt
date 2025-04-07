@@ -13,13 +13,13 @@ class LoginService (
 ) {
     fun loginCustomer(loginDTO: LoginDTO) {
         val customer = customerRepository.findByMail(loginDTO.mail)
-        if (customer == null || !customer.verifyPassword(loginDTO.password))
+        if (customer == null || !customer.info.verifyPassword(loginDTO.password))
             throw InvalidCredentialsException()
     }
 
     fun loginProfessional(loginDTO: LoginDTO) {
         val professional = professionalRepository.findByMail(loginDTO.mail)
-        if (professional == null || !professional.verifyPassword(loginDTO.password))
+        if (professional == null || !professional.info.verifyPassword(loginDTO.password))
             throw InvalidCredentialsException()
 
     }

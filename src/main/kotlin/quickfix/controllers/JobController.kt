@@ -21,10 +21,10 @@ class JobController(
     @GetMapping("/{id}")
     fun getJobById(@PathVariable id: Long) = jobService.getJobById(id)
 
-    @PatchMapping("/{id}/completed")
+    @PatchMapping("/{id}/complete")
     fun setJobAsDone(@PathVariable id: Long) = jobService.setJobAsDone(id)
 
-    @PatchMapping("/{id}/cancelled")
+    @PatchMapping("/{id}/cancel")
     fun setJobAsCancelled(@PathVariable id: Long) = jobService.setJobAsCancelled(id)
 }
 

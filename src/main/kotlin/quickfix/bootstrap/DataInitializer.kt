@@ -2,103 +2,161 @@ package quickfix.bootstrap
 
 import quickfix.dao.ProfessionalRepository
 import org.springframework.beans.factory.InitializingBean
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
 import quickfix.dao.CustomerRepository
+import quickfix.dao.UserInfoRepository
 import quickfix.models.*
 import java.time.LocalDate
 
-class DataInitializer(
-  private val professionalRepository: ProfessionalRepository,
-  private val customerRepository: CustomerRepository
-) : InitializingBean {
+@Service
+class DataInitializer : InitializingBean {
 
-  val valen = Professional(
-    mail = "valen@example.com",
-    name = "Valentina",
-    lastName = "Gomez",
-    password = "securepassword",
-    dni = 12345678,
-    avatar = "https://static.wikia.nocookie.net/universo-reynandez/images/d/d7/Henry_Cavill.jpg/revision/latest?cb=20221023034502&path-prefix=es",
-    dateBirth = LocalDate.of(1995, 5, 23),
-    gender = Gender.FEMALE,
-    balance = 0.0,
-    professions = setOf(Profession.ELECTRICISTA, Profession.GASISTA),
+  @Autowired
+  private lateinit var userInfoRepository: UserInfoRepository
+
+  @Autowired
+  private lateinit var professionalRepository: ProfessionalRepository
+
+  @Autowired
+  private lateinit var customerRepository: CustomerRepository
+
+
+  //***********************
+  //USERINFO
+  //***********************
+
+  val valenInfo = UserInfo().apply {
+    mail = "valen@example.com"
+    name = "Valentina"
+    lastName = "Gomez"
+    password = "securepassword"
+    dni = 12345678
+    avatar = "https://static.wikia.nocookie.net/universo-reynandez/images/d/d7/Henry_Cavill.jpg/revision/latest?cb=20221023034502&path-prefix=es"
+    dateBirth = LocalDate.of(1995, 5, 23)
+    gender = Gender.FEMALE
+    address = Address("Calle Falsa 123", "Buenos Aires", "1000")
+    verified = true
+  }
+
+  val crisInfo = UserInfo().apply {
+    mail = "cris@example.com"
+    name = "Cristina"
+    lastName = "Palacios"
+    password = "456123"
+    dni = 12345678
+    avatar = "https://static.wikia.nocookie.net/universo-reynandez/images/d/d7/Henry_Cavill.jpg/revision/latest?cb=20221023034502&path-prefix=es"
+    dateBirth = LocalDate.of(1995, 5, 23)
+    gender = Gender.FEMALE
+    address = Address("Calle 123", "Buenos Aires", "1000")
+    verified = false
+  }
+
+  val tomiInfo = UserInfo().apply {
+    mail = "tomi@example.com"
+    name = "Tomaso"
+    lastName = "Perez"
+    password = "pass123"
+    dni = 12345678
+    avatar = "https://static.wikia.nocookie.net/universo-reynandez/images/d/d7/Henry_Cavill.jpg/revision/latest?cb=20221023034502&path-prefix=es"
+    dateBirth = LocalDate.of(1995, 5, 23)
+    gender = Gender.FEMALE
+    address = Address("Calle Segura 444", "Buenos Aires", "1000")
+    verified = true
+  }
+
+  val juanInfo = UserInfo().apply {
+    mail = "juan@example.com"
+    name = "Juan"
+    lastName = "Contardo"
+    password = "securepassword"
+    dni = 12345678
+    avatar = "https://static.wikia.nocookie.net/universo-reynandez/images/d/d7/Henry_Cavill.jpg/revision/latest?cb=20221023034502&path-prefix=es"
+    dateBirth = LocalDate.of(1995, 5, 23)
+    gender = Gender.MALE
+    address = Address("Calle Falsa 123", "Formosa", "444")
+    verified = false
+  }
+
+  val rodriInfo = UserInfo().apply {
+    mail = "rodri@example.com"
+    name = "Rodrigo"
+    lastName = "Bueno"
+    password = "123111"
+    dni = 12345678
+    avatar = "https://static.wikia.nocookie.net/universo-reynandez/images/d/d7/Henry_Cavill.jpg/revision/latest?cb=20221023034502&path-prefix=es"
+    dateBirth = LocalDate.of(1995, 5, 23)
+    gender = Gender.MALE
+    address = Address("Calle 123", "Buenos Aires", "1000")
+    verified = false
+  }
+
+  val ferInfo = UserInfo().apply {
+    mail = "fer@example.com"
+    name = "Fer"
+    lastName = "Dodino"
+    password = "pass123"
+    dni = 12345678
+    avatar = "https://static.wikia.nocookie.net/universo-reynandez/images/d/d7/Henry_Cavill.jpg/revision/latest?cb=20221023034502&path-prefix=es"
+    dateBirth = LocalDate.of(1995, 5, 23)
+    gender = Gender.FEMALE
+    address = Address("Calle Segura 444", "Buenos Aires", "1000")
+    verified = true
+  }
+
+  //***********************
+  //PROFESSIONALS
+  //***********************
+
+  val valen = Professional().apply{
+    info = valenInfo
+    balance = 0.0
+    professions = mutableSetOf(Profession.ELECTRICISTA, Profession.GASISTA)
     certificates = mutableMapOf(
       Profession.ELECTRICISTA to listOf("Certificado de electricista"),
-      Profession.GASISTA to listOf("gasista Matriculado")),
-    debt = 200.0,
-    address = Address("Calle Falsa 123", "Buenos Aires", "1000")
-  )
+      Profession.GASISTA to listOf("gasista Matriculado")
+    )
+    debt = 200.0
+  }
 
-  val crisL = Professional(
-    mail = "carlos@example.com",
-    name = "Carlos",
-    lastName = "Ramirez",
-    password = "password123",
-    dni = 23456789,
-    avatar = "https://static.wikia.nocookie.net/rezero/images/d/d8/Subaru_-_Anime.png/revision/latest?cb=20161116222546&path-prefix=es",
-    dateBirth = LocalDate.of(1988, 8, 15),
-    gender = Gender.MALE,
-    professions = setOf(Profession.JARDINERO),
-    certificates = mutableMapOf(Profession.JARDINERO to listOf("Certificado en jardinero profesional")),
-    balance = 500.0,
-    debt = 50.0,
-    address = Address("Avenida Siempre Viva 456", "Córdoba", "5000")
-  )
+  val crisL = Professional().apply{
+    info = crisInfo
+    professions = mutableSetOf(Profession.JARDINERO)
+    certificates = mutableMapOf(Profession.JARDINERO to listOf("Certificado en jardinero profesional"))
+    balance = 500.0
+    debt = 50.0
+  }
 
-  val tomi = Professional(
-    mail = "lucia@example.com",
-    name = "Lucia",
-    lastName = "Fernandez",
-    password = "pass456",
-    dni = 34567890,
-    avatar = "https://media.lmneuquen.com/p/ac4a5a4782776acb97f5537f8875dcab/adjuntos/195/imagenes/004/084/0004084082/tony-starkkkjpg.jpg",
-    dateBirth = LocalDate.of(1992, 3, 10),
-    gender = Gender.FEMALE,
-    professions = setOf(Profession.JARDINERO, Profession.GASISTA),
+  val tomi = Professional().apply{
+    info = tomiInfo
+    professions = mutableSetOf(Profession.JARDINERO, Profession.GASISTA)
     certificates = mutableMapOf(
       Profession.JARDINERO to listOf("certificado en jardineria profesional"),
-      Profession.GASISTA to listOf("gasista matriculado")),
-    balance = 750.0,
-    debt = 100.0,
-    address = Address("Calle 123", "Rosario", "2000")
-  )
+      Profession.GASISTA to listOf("gasista matriculado"))
+    balance = 750.0
+    debt = 100.0
+  }
 
-  val juan = Customer(
-    mail = "lucia@example.com",
-    name = "Lucia",
-    lastName = "Fernandez",
-    password = "pass456",
-    dni = 34567890,
-    avatar = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRC_CFS2UQUMKIgZOib9wa6ZnMxagLGSWNB6A&s",
-    dateBirth = LocalDate.of(1992, 3, 10),
-    gender = Gender.FEMALE,
-    address = Address("Calle 123", "Rosario", "2000")
-  )
+  //***********************
+  //CUSTOMERS
+  //***********************
 
-  val rodri = Customer(
-    mail = "lucia@example.com",
-    name = "Lucia",
-    lastName = "Fernandez",
-    password = "pass456",
-    dni = 34567890,
-    avatar = "https://media.lmneuquen.com/p/ac4a5a4782776acb97f5537f8875dcab/adjuntos/195/imagenes/004/084/0004084082/tony-starkkkjpg.jpg",
-    dateBirth = LocalDate.of(1992, 3, 10),
-    gender = Gender.FEMALE,
-    address = Address("Calle 123asd", "Rosario", "2000")
-  )
+  val juan = Customer().apply{ info = juanInfo }
+  val rodri = Customer().apply{ info = rodriInfo }
+  val fer = Customer().apply{ info = ferInfo }
 
 
-  val fer = Customer(
-    mail = "lucia@example.com",
-    name = "Lucia",
-    lastName = "Fernandez",
-    password = "pass456",
-    dni = 34567890,
-    avatar = "https://media.lmneuquen.com/p/ac4a5a4782776acb97f5537f8875dcab/adjuntos/195/imagenes/004/084/0004084082/tony-starkkkjpg.jpg",
-    dateBirth = LocalDate.of(1992, 3, 10),
-    gender = Gender.FEMALE,
-    address = Address("Calle 123", "Rosario", "2000")
-  )
+  fun createUserInfo() {
+    userInfoRepository.apply {
+      create(valenInfo)
+      create(crisInfo)
+      create(tomiInfo)
+      create(juanInfo)
+      create(rodriInfo)
+      create(ferInfo)
+    }
+  }
+
 
   fun createProfessional() {
     professionalRepository.apply {
@@ -106,6 +164,7 @@ class DataInitializer(
       create(crisL)
       create(tomi)
     }
+    println("Profesionales agregados")
   }
 
 
@@ -115,11 +174,15 @@ class DataInitializer(
       create(rodri)
       create(fer)
     }
+    println("Customers agregados")
   }
 
   override fun afterPropertiesSet() {
     this.createProfessional()
     this.createCustomer()
+    this.createUserInfo()
   }
 
 }
+
+

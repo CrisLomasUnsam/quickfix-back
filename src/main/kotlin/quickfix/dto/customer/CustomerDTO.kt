@@ -15,13 +15,16 @@ data class CustomerDTO(
 
   companion object {
     fun toDTO( customer: Customer): CustomerDTO {
+
+      val info = customer.info
+
       return CustomerDTO(
-        mail = customer.mail,
-        name = customer.name,
-        lastName = customer.lastName,
-        dni = customer.dni,
-        avatar = customer.avatar,
-        dateBirth = customer.dateBirth
+        mail = info.mail,
+        name = info.name,
+        lastName = info.lastName,
+        dni = info.dni,
+        avatar = info.avatar,
+        dateBirth = info.dateBirth
       )
     }
   }

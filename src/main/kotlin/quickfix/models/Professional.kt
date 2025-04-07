@@ -1,24 +1,13 @@
 package quickfix.models
 
-import java.time.LocalDate
+class Professional : User {
 
-class Professional(
-
-    override var mail: String,
-    override var name: String,
-    override var lastName: String,
-    override var password: String,
-    override var dni: Int,
-    override var avatar: String,
-    override var dateBirth: LocalDate,
-    var professions: Set<Profession>,
-    var certificates: MutableMap<Profession, List<String>>,
-    var balance: Double,
-    var debt: Double,
-    override var gender: Gender,
-    override var address: Address
-
-    ) : User(){
+    override var id: Long = -1
+    override lateinit var info: UserInfo
+    var professions: Set<Profession> = mutableSetOf()
+    var certificates: MutableMap<Profession, List<String>> = mutableMapOf()
+    var balance: Double = 0.0
+    var debt: Double = 0.0
 
     private fun addConfirmedJob(): Boolean = TODO("Implement me")
     private fun removeConfirmedJob(): Boolean = TODO("Implement me")

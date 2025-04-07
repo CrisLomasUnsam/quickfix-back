@@ -1,7 +1,7 @@
 package quickfix.controllers
 
 import org.springframework.web.bind.annotation.*
-import quickfix.models.User
+import quickfix.dto.user.UserDTO
 import quickfix.services.UserService
 
 @RestController
@@ -11,6 +11,6 @@ import quickfix.services.UserService
 class UserController (val userService: UserService) {
 
     @GetMapping("/data/{id}")
-    fun userInfo(@PathVariable id: Long) : UserDTO = UserDTO.toDTO(userService.findById(id))
+    fun userInfo(@PathVariable id: Long) : UserDTO = UserDTO.toDTO(userService.getUserInfoById(id)!!)
     
 }

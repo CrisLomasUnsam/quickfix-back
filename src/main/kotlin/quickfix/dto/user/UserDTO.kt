@@ -3,6 +3,7 @@ package quickfix.dto.user
 import quickfix.models.Address
 import quickfix.models.Gender
 import quickfix.models.User
+import quickfix.models.UserInfo
 import java.time.LocalDate
 
 data class UserDTO(
@@ -17,16 +18,16 @@ data class UserDTO(
 ) {
 
     companion object {
-        fun toDTO(user: User): UserDTO {
+        fun toDTO(info: UserInfo): UserDTO {
             return UserDTO(
-                mail = user.mail,
-                name = user.name,
-                lastName = user.lastName,
-                dni = user.dni,
-                avatar = user.avatar,
-                dateBirth = user.dateBirth,
-                gender = user.gender,
-                address = user.address
+                mail = info.mail,
+                name = info.name,
+                lastName = info.lastName,
+                dni = info.dni,
+                avatar = info.avatar,
+                dateBirth = info.dateBirth,
+                gender = info.gender,
+                address = info.address
             )
         }
     }
