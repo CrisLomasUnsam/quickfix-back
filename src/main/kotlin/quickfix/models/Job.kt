@@ -16,4 +16,6 @@ class Job : Id {
     override fun validate() {
         TODO("Not yet implemented")
     }
+
+    val inProgress: Boolean = !done
 }
