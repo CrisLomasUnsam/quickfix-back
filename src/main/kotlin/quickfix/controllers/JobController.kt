@@ -18,9 +18,6 @@ class JobController(
     @DeleteMapping
     fun deleteJob(@RequestBody job: Job) = jobService.deleteJob(job)
 
-    @GetMapping("/customer/{id}")
-    fun getJobsByCustomerId(@PathVariable id: Long) = jobService.getJobsByCustomer(id)
-
     @GetMapping("/{id}")
     fun getJobById(@PathVariable id: Long) = jobService.getJobById(id)
 
