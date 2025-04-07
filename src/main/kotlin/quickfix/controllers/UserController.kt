@@ -21,6 +21,6 @@ class UserController (val userService: UserService) {
     @PostMapping("/user")
     fun createUser(@RequestBody user : User) = userService.createUser(user)
 
-    @GetMapping("/{userId}")
-    fun getUserById(@PathVariable id : Int) = userService.getUserBYId(id)
+    @GetMapping("/{id}")
+    fun getUserById(@PathVariable id : Int) = userService.getUserById(id)
 }
