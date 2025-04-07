@@ -17,5 +17,6 @@ class JobService(
     fun getJobsByCustomer(id: Long) = jobRepository.getAllById(id)
 
     fun setJobAsDone(id: Long) = jobRepository.setToDone(id)
+
     fun setJobAsCancelled(id: Long) = jobRepository.setToCancelled(id)
 }
