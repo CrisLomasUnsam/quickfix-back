@@ -16,6 +16,6 @@ class UserService (
 
     fun changeUserInfo(id: Long, modifiedInfo: UserModifiedInfoDTO) {
         val userInfo = getUserInfoById(id) ?: throw BusinessException("Información no encontrada")
-
+        userInfo.updateUserInfo(modifiedInfo)
     }
 }
