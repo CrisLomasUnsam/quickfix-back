@@ -66,6 +66,35 @@ class UserInfo : Id {
         this.password == password
 
     fun updateUserInfo(modifiedInfoDTO: UserModifiedInfoDTO) {
-
+        modifiedInfoDTO.mail?.let {
+            val oldMail = this.mail
+            this.mail = it
+            if (!validMail()) {
+                this.mail = oldMail
+                throw BusinessException("Email inválido")
+            }
+        }
+        modifiedInfoDTO.name?.let {
+            if (!validName(it)) throw BusinessException("Nombre sólo puede contener letras")
+            this.name = it
+        }
+        modifiedInfoDTO.lastName?.let {
+            if (!validName(it)) throw BusinessException("Apellido sólo puede contener letras")
+            this.lastName = it
+        }
+        modifiedInfoDTO.dateBirth?.let {
+            val oldDate = this.dateBirth
+            this.dateBirth = it
+            if (!isAdult()) {
+                this.dateBirth = oldDate
+                throw BusinessException("Debe ser mayor de edad")
+            }
+        }
+        modifiedInfoDTO.gender?.let {
+            this.gender = it
+        }
+        modifiedInfoDTO.address?.let {
+            this.address = it
+        }
     }
 }
