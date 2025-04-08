@@ -4,7 +4,7 @@ import quickfix.models.Address
 import quickfix.models.Gender
 import java.time.LocalDate
 
-data class UserChangeDataDTO(
+data class UserModifiedInfoDTO(
     var mail: String,
     var name: String,
     var lastName: String,
