@@ -1,5 +1,6 @@
 package quickfix.models
 
+import quickfix.dto.user.UserModifiedInfoDTO
 import quickfix.models.User.Companion.EDAD_REQUERIDA
 import quickfix.utils.exceptions.BusinessException
 import java.time.LocalDate
@@ -63,4 +64,8 @@ class UserInfo : Id {
 
     fun verifyPassword(password : String) : Boolean =
         this.password == password
+
+    fun updateUserInfo(modifiedInfoDTO: UserModifiedInfoDTO) {
+
+    }
 }
