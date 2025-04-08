@@ -4,8 +4,6 @@ import io.mockk.mockk
 import quickfix.dao.CustomerRepository
 import quickfix.dao.ProfessionalRepository
 import quickfix.dao.UserInfoRepository
-import quickfix.models.Professional
-import quickfix.services.CustomerService
 import quickfix.services.RegisterService
 import quickfix.utils.mailSender.IMailSender
 import quickfix.utils.mailSender.MailObserver
