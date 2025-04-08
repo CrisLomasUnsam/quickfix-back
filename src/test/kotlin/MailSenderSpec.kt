@@ -62,7 +62,6 @@ class MailSenderSpec: DescribeSpec({
                 avatar = "...",
                 dateBirth = LocalDate.of(2001,1, 1),
                 gender = Gender.MALE,
-                age = 18,
                 address = Address(
                     street = "Avenida siempre viva 123",
                     city = "Springfield",
@@ -70,7 +69,7 @@ class MailSenderSpec: DescribeSpec({
                 )
             )
             try {
-                mockedRegisterService.registerCustomer(registerData)
+                mockedRegisterService.registerUser(registerData)
                 throw AssertionError("Exception should have been thrown for invalid data.")
             } catch (e: Exception) {
                 e.message shouldBe "El email no es válido."
