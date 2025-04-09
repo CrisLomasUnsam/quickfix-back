@@ -1,19 +1,30 @@
 package quickfix.utils
 
 import quickfix.models.Job
-import quickfix.models.Professional
 
 data class JobSearchParameters (
-    val professional: Professional? = null,
-    val done: Boolean? = null,
-    val inProgress: Boolean? = null,
+
+    private val parameter: String
 
 ) : SearchParameters<Job> {
 
     override fun matches(element: Job): Boolean {
-        return  (professional == null || element.professional == professional) &&
-                (done == null || element.done == done) &&
-                (inProgress == null || element.inProgress == inProgress)
+        return when (parameter.trim().lowercase()) {
+            "finalizado" -> element.done
+            "finalizados" -> element.done
+            "pendiente" -> element.inProgress
+            "pendientes" -> element.inProgress
+            else -> {
+                val parameter = parameter.trim().lowercase()
+                return element.professional.professions.any {
+                    val name = it.name.lowercase()
+                    name.contains(parameter) ||
+                    name.startsWith(parameter) ||
+                    parameter.startsWith(name) ||
+                    hasMatchingStart(name, parameter)
+                }
+            }
+        }
     }
 }
 
