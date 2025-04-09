@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /*import io.kotest.core.spec.IsolationMode
+=======
+/* import io.kotest.core.spec.IsolationMode
+>>>>>>> f450e0a3eeac795166b5d42bca2d021c7c6da197
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
@@ -16,7 +20,7 @@ class CustomerServiceSpec: DescribeSpec({
 
     val mockedJobRepository = mockk<JobRepository>()
     val mockedCustomerService = CustomerService(mockedJobRepository)
-    val jobRepository = JobRepository(customerRepository = CustomerRepository())
+    val jobRepository = JobRepository()
     val customerService = CustomerService(jobRepository = jobRepository)
 
     describe("getJobsByParameters") {
@@ -120,4 +124,8 @@ class CustomerServiceSpec: DescribeSpec({
     afterTest {
         jobRepository.clearAll()
     }
+<<<<<<< HEAD
 })*/
+=======
+}) */
+>>>>>>> f450e0a3eeac795166b5d42bca2d021c7c6da197

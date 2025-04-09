@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /*import io.kotest.assertions.throwables.shouldThrow
+=======
+/* import io.kotest.assertions.throwables.shouldThrow
+>>>>>>> f450e0a3eeac795166b5d42bca2d021c7c6da197
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
@@ -46,4 +50,8 @@ class JobRequestSpec: DescribeSpec({
             exception.message shouldBe "Detail is empty"
         }
     }
+<<<<<<< HEAD
 })*/
+=======
+}) */
+>>>>>>> f450e0a3eeac795166b5d42bca2d021c7c6da197
