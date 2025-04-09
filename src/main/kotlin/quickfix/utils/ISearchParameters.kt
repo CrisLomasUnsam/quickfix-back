@@ -1,5 +1,5 @@
 package quickfix.utils
 
-interface SearchParameters<T> {
+interface ISearchParameters<T> {
     fun matches(element: T): Boolean
 }

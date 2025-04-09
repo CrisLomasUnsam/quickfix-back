@@ -2,7 +2,7 @@ package quickfix.dao
 
 import org.springframework.stereotype.Component
 import quickfix.models.Job
-import quickfix.utils.SearchParameters
+import quickfix.utils.ISearchParameters
 import quickfix.utils.exceptions.BusinessException
 
 @Component
@@ -18,7 +18,7 @@ class JobRepository : Repository<Job>(
         TODO("Not yet implemented")
     }
 
-    override fun searchByParameters(id: Long, parameters: SearchParameters<Job>): List<Job> {
+    override fun searchByParameters(id: Long, parameters: ISearchParameters<Job>): List<Job> {
         val jobsFilteredByCustomer = this.elements.filter { it.customer.id == id }
         return jobsFilteredByCustomer.filter { parameters.matches(it) }
     }
