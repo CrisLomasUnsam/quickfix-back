@@ -5,11 +5,11 @@ import quickfix.models.Gender
 import quickfix.models.User
 import java.time.LocalDate
 
-data class CustomerMock(
-    val customer: User
+data class CustomerUserMock(
+    val customerUser: User
 )
 
-fun createCustomerMock(): CustomerMock {
+fun createCustomerUserMock(): CustomerUserMock {
     val mockCustomer = User().apply {
         mail = "test.user@example.com"
         name = "Test"
@@ -25,5 +25,5 @@ fun createCustomerMock(): CustomerMock {
             zipCode = "1234"
         )
     }
-    return CustomerMock(mockCustomer)
+    return CustomerUserMock(mockCustomer)
 }

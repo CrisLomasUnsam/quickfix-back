@@ -6,10 +6,11 @@ import java.time.LocalDate
 class Job : Id {
 
     override var id: Long = -1
-    lateinit var professional: Professional
-    lateinit var customer: Customer
+    lateinit var professionalUser: User
+    lateinit var customerUser: User
     lateinit var date: LocalDate
     var done: Boolean = false
+    val inProgress: Boolean = !done
     var canceled: Boolean = false
     var price: Double = 0.0
     lateinit var distance : Number
@@ -18,5 +19,4 @@ class Job : Id {
         if (price <= 0) throw BusinessException("El precio debe ser mayor a cero")
     }
 
-    val inProgress: Boolean = !done
 }

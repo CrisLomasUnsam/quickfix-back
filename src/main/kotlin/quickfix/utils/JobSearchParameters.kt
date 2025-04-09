@@ -16,7 +16,7 @@ data class JobSearchParameters (
             "pendientes" -> element.inProgress
             else -> {
                 val parameter = parameter.trim().lowercase()
-                return element.professional.professions.any {
+                return element.professionalUser.professional.professions.any {
                     val name = it.name.lowercase()
                     name.contains(parameter) ||
                     name.startsWith(parameter) ||

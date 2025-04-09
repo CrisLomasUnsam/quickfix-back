@@ -1,12 +1,8 @@
-<<<<<<< HEAD
-/*import io.kotest.assertions.throwables.shouldThrow
-=======
-/* import io.kotest.assertions.throwables.shouldThrow
->>>>>>> f450e0a3eeac795166b5d42bca2d021c7c6da197
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import mocks.createCustomerMock
+import mocks.createCustomerUserMock
 import quickfix.dto.job.JobRequestDTO
 import quickfix.dto.job.toJobRequest
 import quickfix.models.Profession
@@ -17,28 +13,28 @@ class JobRequestSpec: DescribeSpec({
     isolationMode = IsolationMode.InstancePerTest
 
     describe("JobRequestDTO"){
-        val customer = createCustomerMock().customer
+        val customerUser = createCustomerUserMock().customerUser
         val profession = Profession.GASISTA
         val detail = "Detalle"
 
         it("should convert to JobRequest") {
 
             val dto = JobRequestDTO(
-                customer = customer,
+                customer = customerUser,
                 profession = profession,
                 detail = detail
             )
 
             val job = dto.toJobRequest()
 
-            job.customer shouldBe customer
+            job.customer shouldBe customerUser
             job.profession shouldBe profession
             job.detail shouldBe detail
         }
 
         it("should throw exception when detail is blank") {
             val dto = JobRequestDTO(
-                customer = customer,
+                customer = customerUser,
                 profession = profession,
                 detail = ""
             )
@@ -47,11 +43,7 @@ class JobRequestSpec: DescribeSpec({
                 dto.toJobRequest()
             }
 
-            exception.message shouldBe "Detail is empty"
+            exception.message shouldBe "Detalle está vacío"
         }
     }
-<<<<<<< HEAD
-})*/
-=======
-}) */
->>>>>>> f450e0a3eeac795166b5d42bca2d021c7c6da197
+})

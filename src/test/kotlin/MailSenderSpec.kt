@@ -1,4 +1,4 @@
-/*import quickfix.dto.register.RegisterRequestDTO
+import quickfix.dto.register.RegisterRequestDTO
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
@@ -77,4 +77,4 @@ class MailSenderSpec: DescribeSpec({
             verify(exactly = 0) { mockedMailSender.sendEmail(any()) }
         }
     }
-})*/
+})

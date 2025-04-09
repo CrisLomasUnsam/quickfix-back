@@ -1,13 +1,13 @@
 package quickfix.dto.job
 
 import io.swagger.v3.oas.annotations.media.Schema
-import quickfix.models.Customer
 import quickfix.models.JobRequest
 import quickfix.models.Profession
+import quickfix.models.User
 
 @Schema(description = "Solicitud de un Job por un customer, consumido por observers")
 data class JobRequestDTO(
-    var customer: Customer,
+    var customer: User,
     var profession: Profession,
     var detail: String
 )
