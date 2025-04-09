@@ -1,8 +1,5 @@
 package quickfix.models
 
-import quickfix.utils.exceptions.BusinessException
-import java.time.LocalDate
-
 interface User : Id {
 
     companion object {
