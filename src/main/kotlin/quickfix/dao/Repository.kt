@@ -2,7 +2,7 @@ package quickfix.dao
 
 import quickfix.utils.exceptions.BusinessException
 import quickfix.models.Id
-import quickfix.utils.SearchParameters
+import quickfix.utils.ISearchParameters
 
 
 abstract class Repository<T : Id> {
@@ -47,7 +47,7 @@ abstract class Repository<T : Id> {
       throw BusinessException("Ya existe un elemento con el id: ${element.id}.")
   }
 
-  open fun searchByParameters(id: Long, parameters: SearchParameters<T>): List<T> = elements.filter { parameters.matches(it) }
+  open fun searchByParameters(id: Long, parameters: ISearchParameters<T>): List<T> = elements.filter { parameters.matches(it) }
 
   fun clearAll() {
     elements.clear()

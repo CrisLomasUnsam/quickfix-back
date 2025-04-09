@@ -2,7 +2,7 @@ import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import quickfix.models.Profession
-import quickfix.utils.SearchParameters
+import quickfix.utils.ISearchParameters
 import quickfix.utils.hasMatchingStart
 
 class SearchJobsByParameterSpec: DescribeSpec ({
@@ -44,12 +44,12 @@ class SearchJobsByParameterSpec: DescribeSpec ({
 
     val listOfJobs = listOf(mockedJob1, mockedJob2, mockedJob3)
 
-    fun searchByParameters(id: Long, parameters: SearchParameters<MockedJob>): List<MockedJob> {
+    fun searchByParameters(id: Long, parameters: ISearchParameters<MockedJob>): List<MockedJob> {
         val jobsFilteredByCustomer = listOfJobs.filter { it.mockedCustomer.id == id }
         return jobsFilteredByCustomer.filter { parameters.matches(it) }
     }
 
-    class MockedJobSearchParameters(val parameter: String) : SearchParameters<MockedJob> {
+    class MockedJobSearchParameters(val parameter: String) : ISearchParameters<MockedJob> {
         override fun matches(element: MockedJob): Boolean {
             return when (parameter.trim().lowercase()) {
                 "finalizado" -> element.done

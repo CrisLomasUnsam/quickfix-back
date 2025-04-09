@@ -6,7 +6,7 @@ data class JobSearchParameters (
 
     private val parameter: String
 
-) : SearchParameters<Job> {
+) : ISearchParameters<Job> {
 
     override fun matches(element: Job): Boolean {
         return when (parameter.trim().lowercase()) {
