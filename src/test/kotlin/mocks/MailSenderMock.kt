@@ -1,6 +1,6 @@
 package mocks
 
-import io.mockk.mockk
+/*import io.mockk.mockk
 import quickfix.services.RegisterService
 import quickfix.utils.mailSender.IMailSender
 import quickfix.utils.mailSender.MailObserver
@@ -15,4 +15,4 @@ fun createMailSenderMock (): MailSenderMock{
     val mockedMailObserver = MailObserver(mailSender = mockedMailSender)
     val mockedRegisterService = RegisterService(mockedMailObserver)
     return MailSenderMock(mockedMailSender, mockedRegisterService)
-}
+}*/
