@@ -15,7 +15,7 @@ class Job : Id {
     lateinit var distance : Number
 
     override fun validate() {
-        if (price <= 0) throw BusinessException("Price must be greater than zero")
+        if (price <= 0) throw BusinessException("El precio debe ser mayor a cero")
     }
 
     val inProgress: Boolean = !done
