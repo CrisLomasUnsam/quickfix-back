@@ -8,7 +8,6 @@ import quickfix.dto.rating.RatingDTO
 import quickfix.services.CustomerService
 import quickfix.services.JobService
 import quickfix.services.RatingService
-import quickfix.utils.JobSearchParameters
 
 @RestController
 @RequestMapping("/customer")
@@ -27,12 +26,12 @@ class CustomerController(
         @Parameter(description = "Id del customer")
         @PathVariable id: Long) = jobService.getJobsByCustomer(id)
 
-    @GetMapping("/filterJobs/{id}")
+    @GetMapping("/filterJobs/{id}/{parameter}")
     @Operation(summary = "Buscar jobs por filtro")
     fun getJobsByParameters(
         @PathVariable id: Long,
-        @Parameter(description = "Parametros de busqueda (professional/done/inProgress)")
-        @RequestBody parameters: JobSearchParameters) = customerService.getJobsByParameters(id, parameters)
+        @Parameter(description = "Parametro de busqueda: string")
+        @PathVariable parameter: String) = customerService.getJobsByParameter(id, parameter)
 
     @PostMapping("/rateProfessional")
     @Operation(summary = "Calificar un professional al concluir el job")
