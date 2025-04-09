@@ -11,6 +11,7 @@ import quickfix.services.UserService
 class UserController (val userService: UserService) {
 
     @GetMapping("/data/{id}")
-    fun userInfo(@PathVariable id: Long) : UserDTO = UserDTO.toDTO(userService.getUserInfoById(id)!!)
+    fun userInfo(@PathVariable id: Long) : UserDTO =
+        UserDTO.toDTO(userService.getUserInfoById(id)!!)
     
 }

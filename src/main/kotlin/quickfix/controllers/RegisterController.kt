@@ -17,7 +17,8 @@ class RegisterController(
 
     @PostMapping
     @Operation(summary = "Registrar usuario", description = "Registra un usuario y le asigna dos perfiles: uno para cada uno de los dos roles (Customer y Professional)")
-    fun registerUser(@RequestBody registerData: RegisterRequestDTO) =  registerService.registerUser(registerData)
+    fun registerUser(@RequestBody registerData: RegisterRequestDTO) =
+        registerService.registerUser(registerData)
 
 
 }

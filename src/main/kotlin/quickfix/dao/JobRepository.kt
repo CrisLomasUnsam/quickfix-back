@@ -6,9 +6,7 @@ import quickfix.utils.ISearchParameters
 import quickfix.utils.exceptions.BusinessException
 
 @Component
-class JobRepository : Repository<Job>(
-
-){
+class JobRepository : Repository<Job>() {
 
     fun setToDone(id: Long){
         TODO("Not yet implemented")

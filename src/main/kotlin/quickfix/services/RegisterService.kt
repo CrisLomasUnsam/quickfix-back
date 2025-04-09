@@ -6,9 +6,6 @@ import quickfix.dao.UserRepository
 import quickfix.dto.register.RegisterRequestDTO
 
 import quickfix.dto.register.toUser
-import quickfix.models.Customer
-import quickfix.models.Professional
-import quickfix.models.User
 import quickfix.utils.mailSender.MailObserver
 
 @Service

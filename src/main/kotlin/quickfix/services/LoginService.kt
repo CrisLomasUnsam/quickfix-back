@@ -1,8 +1,6 @@
 package quickfix.services
 
 import org.springframework.stereotype.Component
-import quickfix.dao.CustomerRepository
-import quickfix.dao.ProfessionalRepository
 import quickfix.dao.UserRepository
 import quickfix.dto.login.LoginDTO
 import quickfix.utils.exceptions.InvalidCredentialsException

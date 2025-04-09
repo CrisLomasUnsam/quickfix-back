@@ -8,6 +8,5 @@ import quickfix.models.User
 class UserService (
     val userRepository: UserRepository
 ) {
-
     fun getUserInfoById(id: Long): User? = userRepository.getById(id)
 }
