@@ -5,7 +5,7 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import quickfix.dao.CustomerRepository
-import quickfix.dao.UserInfoRepository
+import quickfix.dao.UserRepository
 import quickfix.models.*
 import java.time.LocalDate
 
@@ -13,7 +13,7 @@ import java.time.LocalDate
 class DataInitializer : InitializingBean {
 
   @Autowired
-  private lateinit var userInfoRepository: UserInfoRepository
+  private lateinit var userInfoRepository: UserRepository
 
   @Autowired
   private lateinit var professionalRepository: ProfessionalRepository
@@ -23,10 +23,10 @@ class DataInitializer : InitializingBean {
 
 
   //***********************
-  //USERINFO
+  //USER
   //***********************
 
-  val valenInfo = UserInfo().apply {
+  val valenInfo = User().apply {
     mail = "valen@example.com"
     name = "Valentina"
     lastName = "Gomez"
@@ -37,9 +37,10 @@ class DataInitializer : InitializingBean {
     gender = Gender.FEMALE
     address = Address("Calle Falsa 123", "Buenos Aires", "1000")
     verified = true
+    professional = valen
   }
 
-  val crisInfo = UserInfo().apply {
+  val crisInfo = User().apply {
     mail = "cris@example.com"
     name = "Cristina"
     lastName = "Palacios"
@@ -50,9 +51,10 @@ class DataInitializer : InitializingBean {
     gender = Gender.FEMALE
     address = Address("Calle 123", "Buenos Aires", "1000")
     verified = false
+    professional = crisL
   }
 
-  val tomiInfo = UserInfo().apply {
+  val tomiInfo = User().apply {
     mail = "tomi@example.com"
     name = "Tomaso"
     lastName = "Perez"
@@ -63,9 +65,11 @@ class DataInitializer : InitializingBean {
     gender = Gender.FEMALE
     address = Address("Calle Segura 444", "Buenos Aires", "1000")
     verified = true
+    professional = tomi
+
   }
 
-  val juanInfo = UserInfo().apply {
+  val juanInfo = User().apply {
     mail = "juan@example.com"
     name = "Juan"
     lastName = "Contardo"
@@ -76,9 +80,10 @@ class DataInitializer : InitializingBean {
     gender = Gender.MALE
     address = Address("Calle Falsa 123", "Formosa", "444")
     verified = false
+    customer = juan
   }
 
-  val rodriInfo = UserInfo().apply {
+  val rodriInfo = User().apply {
     mail = "rodri@example.com"
     name = "Rodrigo"
     lastName = "Bueno"
@@ -89,9 +94,10 @@ class DataInitializer : InitializingBean {
     gender = Gender.MALE
     address = Address("Calle 123", "Buenos Aires", "1000")
     verified = false
+    customer = rodri
   }
 
-  val ferInfo = UserInfo().apply {
+  val ferInfo = User().apply {
     mail = "fer@example.com"
     name = "Fer"
     lastName = "Dodino"
@@ -102,6 +108,7 @@ class DataInitializer : InitializingBean {
     gender = Gender.FEMALE
     address = Address("Calle Segura 444", "Buenos Aires", "1000")
     verified = true
+    customer = fer
   }
 
   //***********************
@@ -109,7 +116,6 @@ class DataInitializer : InitializingBean {
   //***********************
 
   val valen = Professional().apply{
-    info = valenInfo
     balance = 0.0
     professions = mutableSetOf(Profession.ELECTRICISTA, Profession.GASISTA)
     certificates = mutableMapOf(
@@ -120,7 +126,6 @@ class DataInitializer : InitializingBean {
   }
 
   val crisL = Professional().apply{
-    info = crisInfo
     professions = mutableSetOf(Profession.JARDINERO)
     certificates = mutableMapOf(Profession.JARDINERO to listOf("Certificado en jardinero profesional"))
     balance = 500.0
@@ -128,7 +133,6 @@ class DataInitializer : InitializingBean {
   }
 
   val tomi = Professional().apply{
-    info = tomiInfo
     professions = mutableSetOf(Profession.JARDINERO, Profession.GASISTA)
     certificates = mutableMapOf(
       Profession.JARDINERO to listOf("certificado en jardineria profesional"),
@@ -141,9 +145,9 @@ class DataInitializer : InitializingBean {
   //CUSTOMERS
   //***********************
 
-  val juan = Customer().apply{ info = juanInfo }
-  val rodri = Customer().apply{ info = rodriInfo }
-  val fer = Customer().apply{ info = ferInfo }
+  val juan = Customer()
+  val rodri = Customer()
+  val fer = Customer()
 
 
   fun createUserInfo() {

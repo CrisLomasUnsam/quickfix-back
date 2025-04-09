@@ -1,8 +1,10 @@
 package quickfix.models
 
-class Customer : User {
+class Customer : Id {
 
     override var id: Long = -1
-    override lateinit var info: UserInfo
+    override fun validate() {
+
+    }
 
 }

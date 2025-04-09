@@ -1,7 +1,9 @@
 package quickfix.dto.register
 
+import quickfix.dto.user.UserDTO
 import quickfix.models.*
 import java.time.LocalDate
+
 
 class RegisterRequestDTO (
     var mail: String,
@@ -12,13 +14,29 @@ class RegisterRequestDTO (
     var avatar: String,
     var dateBirth: LocalDate,
     var gender: Gender,
-    var address: Address
-)
+    var address: Address,
+){
+    companion object {
+        fun toDTO(user: User): RegisterRequestDTO {
+            return RegisterRequestDTO(
+                mail = user.mail,
+                name = user.name,
+                lastName = user.lastName,
+                password = user.password,
+                dni = user.dni,
+                avatar = user.avatar,
+                dateBirth = user.dateBirth,
+                gender = user.gender,
+                address = user.address
+            )
+        }
+    }
+}
 
-fun RegisterRequestDTO.toUserInfo() : UserInfo {
+fun RegisterRequestDTO.toUser() : User {
 
     val request : RegisterRequestDTO = this
-    return UserInfo().apply {
+    return User().apply {
         mail = request.mail.trim()
         name = request.name.trim()
         lastName = request.lastName.trim()
@@ -31,23 +49,4 @@ fun RegisterRequestDTO.toUserInfo() : UserInfo {
     }.apply {
         validate()
     }
-}
-
-
-fun RegisterRequestDTO.toCustomer() : Customer {
-
-    val customer = Customer()
-    val userInfo = this.toUserInfo()
-    customer.info = userInfo
-    return customer
-}
-
-
-
-fun RegisterRequestDTO.toProfessional() : Professional {
-
-    val professional = Professional()
-    val userInfo = this.toUserInfo()
-    professional.info = userInfo
-    return professional
 }
