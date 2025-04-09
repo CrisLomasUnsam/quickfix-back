@@ -10,8 +10,8 @@ data class JobRequest(
     fun validate() {
 
         customer.validate()
-        if (!validProfession(profession)) throw BusinessException("Profession is not valid")
-        if (!validDetail(detail)) throw BusinessException("Detail is empty")
+        if (!validProfession(profession)) throw BusinessException("La profesión no es válida")
+        if (!validDetail(detail)) throw BusinessException("Detalle está vacío")
     }
 
     private fun validProfession(profession: Profession): Boolean = profession.toString().isNotBlank()
