@@ -105,6 +105,7 @@ class DataInitializer : InitializingBean {
       create(rodri)
       create(fer)
     }
+    println("usuarios agregados")
   }
 
 

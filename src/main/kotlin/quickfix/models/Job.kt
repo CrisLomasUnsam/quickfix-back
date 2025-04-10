@@ -3,11 +3,11 @@ package quickfix.models
 import quickfix.utils.exceptions.BusinessException
 import java.time.LocalDate
 
-class Job : Id {
+class Job : Identifier {
 
     override var id: Long = -1
-    lateinit var professionalUser: User
-    lateinit var customerUser: User
+    lateinit var professional: User
+    lateinit var customer: User
     lateinit var date: LocalDate
     var done: Boolean = false
     val inProgress: Boolean = !done

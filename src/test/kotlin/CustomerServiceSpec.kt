@@ -6,7 +6,6 @@ import io.mockk.mockk
 import mocks.createCustomerUserMock
 import quickfix.dao.JobRepository
 import quickfix.models.Job
-import quickfix.services.CustomerService
 import quickfix.utils.JobSearchParameters
 import java.time.LocalDate
 
@@ -25,15 +24,15 @@ class CustomerServiceSpec: DescribeSpec({
             val mockedCustomer = createCustomerUserMock().customerUser
 
             val job = Job().apply {
-                customerUser = mockedCustomer
+                customer = mockedCustomer
                 this.done = true
             }
 
             val params = JobSearchParameters(doneParameter)
 
-            every { mockedJobRepository.searchByParameters(job.customerUser.id, params) } returns listOf(job)
+            every { mockedJobRepository.searchByParameters(job.customer.id, params) } returns listOf(job)
 
-            val result = mockedCustomerService.getJobsByParameter(job.customerUser.id, doneParameter)
+            val result = mockedCustomerService.getJobsByParameter(job.customer.id, doneParameter)
 
             result.size shouldBe  1
             result.first() shouldBe job
@@ -42,15 +41,15 @@ class CustomerServiceSpec: DescribeSpec({
         it("should return empty list when no jobs match the parameters") {
             val mockedCustomer = createCustomerUserMock().customerUser
             val job = Job().apply {
-                customerUser = mockedCustomer
+                customer = mockedCustomer
                 this.done = false
             }
 
             val params = JobSearchParameters(doneParameter)
 
-            every { mockedJobRepository.searchByParameters(job.customerUser.id, params) } returns emptyList()
+            every { mockedJobRepository.searchByParameters(job.customer.id, params) } returns emptyList()
 
-            val result = mockedCustomerService.getJobsByParameter(job.customerUser.id, doneParameter)
+            val result = mockedCustomerService.getJobsByParameter(job.customer.id, doneParameter)
 
             result.size shouldBe 0
         }
@@ -73,7 +72,7 @@ class CustomerServiceSpec: DescribeSpec({
         val customer2 = createCustomerUserMock().customerUser.apply { id = 2 }
 
         val job1 = Job().apply {
-            customerUser = customer1
+            customer = customer1
             done = true
             canceled = false
             date = LocalDate.now()
@@ -81,7 +80,7 @@ class CustomerServiceSpec: DescribeSpec({
         }
 
         val job2 = Job().apply {
-            customerUser = customer1
+            customer = customer1
             done = true
             canceled = true
             date = LocalDate.now()
@@ -89,7 +88,7 @@ class CustomerServiceSpec: DescribeSpec({
         }
 
         val job3 = Job().apply {
-            customerUser = customer2
+            customer = customer2
             done = true
             canceled = false
             date = LocalDate.now()
