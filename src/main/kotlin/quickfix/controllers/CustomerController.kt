@@ -4,9 +4,11 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
+import quickfix.dto.job.JobSearchRequestDTO
 import quickfix.dto.rating.RatingDTO
 import quickfix.services.CustomerService
 import quickfix.services.JobService
+import quickfix.services.ProfessionalService
 import quickfix.services.RatingService
 
 @RestController
@@ -17,7 +19,8 @@ import quickfix.services.RatingService
 class CustomerController(
     private val jobService: JobService,
     private val ratingService: RatingService,
-    private val customerService: CustomerService
+    private val customerService: CustomerService,
+    private val professionalService : ProfessionalService
 ){
 
     @GetMapping("/jobs/{id}")
@@ -36,5 +39,9 @@ class CustomerController(
     @PostMapping("/rateProfessional")
     @Operation(summary = "Calificar un professional al concluir el job")
     fun rateProfessional(@RequestBody rating: RatingDTO) = ratingService.rateProfessional(rating)
+
+    @PostMapping("/jobs/search")
+    @Operation(summary = "Buscar profesionales disponibles para el job seleccionado por el customer")
+    fun pushJobRequest(@RequestBody jobSearchRequestDTO : JobSearchRequestDTO ) = professionalService.jobRequest(jobSearchRequestDTO)
 
 }
