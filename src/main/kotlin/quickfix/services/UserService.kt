@@ -1,13 +1,10 @@
 package quickfix.services
 
 import org.springframework.stereotype.Service
-import quickfix.dao.JobRepository
 import quickfix.dao.UserRepository
 import quickfix.dto.job.JobRequestDTO
 import quickfix.dto.user.UserModifiedInfoDTO
-import quickfix.models.Job
 import quickfix.models.User
-import quickfix.utils.JobSearchParameters
 import quickfix.utils.exceptions.BusinessException
 
 @Service

@@ -1,6 +1,6 @@
 package quickfix.models
 
-class Professional : Identifier {
+class ProfessionalInfo : Identifier {
 
     override var id: Long = -1
 

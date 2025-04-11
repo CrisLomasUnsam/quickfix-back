@@ -2,7 +2,7 @@ package quickfix.dao
 
 import quickfix.utils.exceptions.BusinessException
 import quickfix.models.Identifier
-import quickfix.utils.ISearchParameters
+import quickfix.utils.searchParameters.ISearchParameters
 
 
 abstract class Repository<T : Identifier> {

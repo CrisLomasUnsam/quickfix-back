@@ -16,7 +16,7 @@ class User : Identifier {
     lateinit var gender : Gender
     lateinit var address : Address
     var verified : Boolean = false
-    var professional: Professional = Professional()
+    var professionalInfo: ProfessionalInfo = ProfessionalInfo()
 
     companion object {
         const val EDAD_REQUERIDA = 18

@@ -1,6 +1,7 @@
-package quickfix.utils
+package quickfix.utils.searchParameters
 
 import quickfix.models.Job
+import quickfix.utils.hasMatchingStart
 
 data class JobSearchParameters (
 
@@ -16,7 +17,7 @@ data class JobSearchParameters (
             "pendientes" -> element.inProgress
             else -> {
                 val parameter = parameter.trim().lowercase()
-                return element.professional.professional.professions.any {
+                return element.professional.professionalInfo.professions.any {
                     val name = it.name.lowercase()
                     name.contains(parameter) ||
                     name.startsWith(parameter) ||

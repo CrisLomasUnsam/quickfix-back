@@ -2,7 +2,7 @@ package quickfix.dao
 
 import org.springframework.stereotype.Component
 import quickfix.models.Job
-import quickfix.utils.ISearchParameters
+import quickfix.utils.searchParameters.ISearchParameters
 import quickfix.utils.exceptions.BusinessException
 
 @Component
@@ -22,5 +22,7 @@ class JobRepository : Repository<Job>() {
     }
 
     fun getAllByUserId(customerId: Long): List<Job> =
-        elements.filter { it.customer.id == customerId }.ifEmpty { throw BusinessException("No existen servicios pertenecientes al cliente.") }
+        elements
+            .filter { it.customer.id == customerId }
+            .ifEmpty { throw BusinessException("No existen servicios pertenecientes al cliente.") }
 }

@@ -9,14 +9,14 @@ import quickfix.services.RegisterService
 @RestController
 @RequestMapping("/registration")
 @CrossOrigin("*")
-@Tag(name = "Registro", description = "Operaciones para registrar nuevos customer/professional")
+@Tag(name = "Registro", description = "Operaciones para registrar nuevos usuarios")
 
 class RegisterController(
     val registerService: RegisterService
 ){
 
     @PostMapping
-    @Operation(summary = "Registrar usuario", description = "Registra un usuario y le asigna dos perfiles: uno para cada uno de los dos roles (Customer y Professional)")
+    @Operation(summary = "Registrar usuario", description = "Registra un usuario")
     fun registerUser(@RequestBody registerData: RegisterRequestDTO) =
         registerService.registerUser(registerData)
 }

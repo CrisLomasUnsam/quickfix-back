@@ -114,7 +114,7 @@ class DataInitializer : InitializingBean {
     //PROFESSIONALS
     //***********************
 
-    valen.professional.apply{
+    valen.professionalInfo.apply{
       balance = 0.0
       professions = mutableSetOf(Profession.ELECTRICISTA, Profession.GASISTA)
       certificates = mutableMapOf(
@@ -124,14 +124,14 @@ class DataInitializer : InitializingBean {
       debt = 200.0
     }
 
-    cris.professional.apply{
+    cris.professionalInfo.apply{
       professions = mutableSetOf(Profession.JARDINERO)
       certificates = mutableMapOf(Profession.JARDINERO to listOf("Certificado en jardinero profesional"))
       balance = 500.0
       debt = 50.0
     }
 
-    tomi.professional.apply{
+    tomi.professionalInfo.apply{
       professions = mutableSetOf(Profession.JARDINERO, Profession.GASISTA)
       certificates = mutableMapOf(
         Profession.JARDINERO to listOf("certificado en jardineria profesional"),

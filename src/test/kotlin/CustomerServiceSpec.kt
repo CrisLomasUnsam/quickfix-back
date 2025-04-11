@@ -6,7 +6,7 @@ import io.mockk.mockk
 import mocks.createCustomerUserMock
 import quickfix.dao.JobRepository
 import quickfix.models.Job
-import quickfix.utils.JobSearchParameters
+import quickfix.utils.searchParameters.JobSearchParameters
 import java.time.LocalDate
 
 class CustomerServiceSpec: DescribeSpec({

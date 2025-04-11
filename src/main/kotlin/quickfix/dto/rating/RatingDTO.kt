@@ -1,6 +1,5 @@
 package quickfix.dto.rating
 
-import quickfix.dto.user.UserDTO
 import quickfix.models.Rating
 
 data class RatingDTO(

@@ -1,6 +1,5 @@
 package quickfix.dto.register
 
-import quickfix.dto.user.UserDTO
 import quickfix.models.*
 import java.time.LocalDate
 

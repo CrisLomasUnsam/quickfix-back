@@ -3,7 +3,7 @@ package quickfix.services
 import org.springframework.stereotype.Service
 import quickfix.dao.JobRepository
 import quickfix.models.Job
-import quickfix.utils.JobSearchParameters
+import quickfix.utils.searchParameters.JobSearchParameters
 
 @Service
 class JobService(
