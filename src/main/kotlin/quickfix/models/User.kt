@@ -3,7 +3,7 @@ import quickfix.dto.user.UserModifiedInfoDTO
 import quickfix.utils.exceptions.BusinessException
 import java.time.LocalDate
 
-class User : Id {
+class User : Identifier {
 
     override var id: Long = -1
     lateinit var mail: String
@@ -17,7 +17,6 @@ class User : Id {
     lateinit var address : Address
     var verified : Boolean = false
     var professional: Professional = Professional()
-    var customer : Customer = Customer()
 
     companion object {
         const val EDAD_REQUERIDA = 18

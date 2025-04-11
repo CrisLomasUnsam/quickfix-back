@@ -1,11 +1,11 @@
 package quickfix.dao
 
 import quickfix.utils.exceptions.BusinessException
-import quickfix.models.Id
+import quickfix.models.Identifier
 import quickfix.utils.ISearchParameters
 
 
-abstract class Repository<T : Id> {
+abstract class Repository<T : Identifier> {
   protected val elements: MutableSet<T> = mutableSetOf()
   private var currentId: Long = 0
 

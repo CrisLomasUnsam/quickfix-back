@@ -17,10 +17,10 @@ class JobRepository : Repository<Job>() {
     }
 
     override fun searchByParameters(id: Long, parameters: ISearchParameters<Job>): List<Job> {
-        val jobsFilteredByCustomer = this.elements.filter { it.customerUser.id == id }
+        val jobsFilteredByCustomer = this.elements.filter { it.customer.id == id }
         return jobsFilteredByCustomer.filter { parameters.matches(it) }
     }
 
-    fun getAllByCustomerId(customerId: Long): List<Job> =
-        elements.filter { it.customerUser.id == customerId }.ifEmpty { throw BusinessException("No existen servicios pertenecientes al cliente.") }
+    fun getAllByUserId(customerId: Long): List<Job> =
+        elements.filter { it.customer.id == customerId }.ifEmpty { throw BusinessException("No existen servicios pertenecientes al cliente.") }
 }

@@ -1,6 +1,7 @@
 package quickfix.dto.job
 
 import io.swagger.v3.oas.annotations.media.Schema
+import quickfix.models.Address
 import quickfix.models.JobRequest
 import quickfix.models.Profession
 import quickfix.models.User
@@ -9,14 +10,16 @@ import quickfix.models.User
 data class JobRequestDTO(
     var customer: User,
     var profession: Profession,
-    var detail: String
+    var detail: String,
+    var address: Address
 )
 
 fun JobRequestDTO.toJobRequest(): JobRequest =
     JobRequest(
         customer = this.customer,
         profession = this.profession,
-        detail = this.detail
+        detail = this.detail,
+        address = this.address
     ).apply {
         this.validate()
     }

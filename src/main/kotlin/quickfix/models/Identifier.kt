@@ -1,6 +1,6 @@
 package quickfix.models
 
-interface Id {
+interface Identifier {
 
   var id: Long
   fun validate()
