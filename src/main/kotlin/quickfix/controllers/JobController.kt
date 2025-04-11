@@ -1,5 +1,7 @@
 package quickfix.controllers
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
 import quickfix.models.Job
@@ -12,6 +14,10 @@ import quickfix.services.JobService
 class JobController(
     val jobService: JobService
 ){
+    @GetMapping("/byUser/{id}")
+    @Operation(summary = "Obtener todos los jobs de un customer")
+    fun getJobsByUserId (@Parameter(description = "Id del user") @PathVariable id: Long) = jobService.getJobsByUser(id)
+
     @PostMapping
     fun createJob(@RequestBody job: Job) = jobService.createJob(job)
 
@@ -26,5 +32,13 @@ class JobController(
 
     @PatchMapping("/{id}/cancel")
     fun setJobAsCancelled(@PathVariable id: Long) = jobService.setJobAsCancelled(id)
+
+    @GetMapping("/filter/{userId}/{parameter}")
+    @Operation(summary = "Buscar jobs por filtro")
+    fun getJobsByParameters(
+        @Parameter(description = "Id del usuario")
+        @PathVariable userId: Long,
+        @Parameter(description = "Parametro de busqueda: string")
+        @PathVariable parameter: String) = jobService.getJobsByParameter(userId, parameter)
 }
 

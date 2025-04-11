@@ -5,7 +5,8 @@ import quickfix.utils.exceptions.BusinessException
 data class JobRequest(
     val customer: User,
     val profession: Profession,
-    val detail: String
+    val detail: String,
+    val address: Address
 ) {
     fun validate() {
 

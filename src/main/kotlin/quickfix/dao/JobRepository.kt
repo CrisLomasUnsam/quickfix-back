@@ -21,6 +21,6 @@ class JobRepository : Repository<Job>() {
         return jobsFilteredByCustomer.filter { parameters.matches(it) }
     }
 
-    fun getAllByCustomerId(customerId: Long): List<Job> =
+    fun getAllByUserId(customerId: Long): List<Job> =
         elements.filter { it.customer.id == customerId }.ifEmpty { throw BusinessException("No existen servicios pertenecientes al cliente.") }
 }
