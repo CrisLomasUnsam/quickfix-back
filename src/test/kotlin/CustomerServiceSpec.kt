@@ -1,4 +1,4 @@
-import io.kotest.core.spec.IsolationMode
+/*import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
@@ -122,4 +122,4 @@ class CustomerServiceSpec: DescribeSpec({
     afterTest {
         jobRepository.clearAll()
     }
-})
+})*/

@@ -42,6 +42,10 @@ dependencies {
 
     //Api documentation
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
+
+    // PostgresSQL
+    runtimeOnly("org.postgresql:postgresql")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 }
 
 kotlin {
