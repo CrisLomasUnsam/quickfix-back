@@ -6,16 +6,17 @@ import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer
 import org.springframework.data.redis.serializer.StringRedisSerializer
+import quickfix.dto.message.RedisMessageDTO
 
 @Configuration
 class RedisConfig {
 
     @Bean
-    fun redisTemplate(connectionFactory: RedisConnectionFactory): RedisTemplate<String, Any> {
-        val template = RedisTemplate<String, Any>()
-        template.connectionFactory = connectionFactory
-        template.keySerializer = StringRedisSerializer()
-        template.valueSerializer = GenericJackson2JsonRedisSerializer()
-        return template
+    fun redisStorage(connectionFactory: RedisConnectionFactory): RedisTemplate<String, RedisMessageDTO> {
+        val storage = RedisTemplate<String, RedisMessageDTO>()
+        storage.connectionFactory = connectionFactory
+        storage.keySerializer = StringRedisSerializer()
+        storage.valueSerializer = GenericJackson2JsonRedisSerializer()
+        return storage
     }
 }

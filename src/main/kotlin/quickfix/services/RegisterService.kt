@@ -14,13 +14,9 @@ class RegisterService (
     private val userRepository: UserRepository,
 ) {
 
-    //TODO: Este método va a tener que refactorizarse cuando implementemos Hibernate
     fun registerUser(registerData: RegisterRequestDTO) {
-
-        //Cuando tengamos Hibernate: val userInfo = usuarioInfoRepository.save(registerData.toUserInfo())
         val user = registerData.toUser()
         userRepository.save(user)
-
         mailObserver.sendRegistrationMailTo(user.mail)
     }
 

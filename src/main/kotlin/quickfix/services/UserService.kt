@@ -12,11 +12,11 @@ class UserService (
     private val userRepository: UserRepository
 ) {
 
-    fun getUserInfoById(id: Long): User? =
-        userRepository.findById(id).orElseThrow()
+    fun getUserInfoById(id: Long): User =
+        userRepository.findById(id).orElseThrow{throw BusinessException()}
 
     fun changeUserInfo(id: Long, modifiedInfo: UserModifiedInfoDTO) {
-        val user = getUserInfoById(id) ?: throw BusinessException("Información no encontrada")
+        val user = getUserInfoById(id) ?: throw BusinessException()
         user.updateUserInfo(modifiedInfo)
     }
 
