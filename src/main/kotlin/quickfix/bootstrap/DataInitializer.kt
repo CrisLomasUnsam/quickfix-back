@@ -98,12 +98,12 @@ class DataInitializer : InitializingBean {
 
   fun createUsers() {
     userRepository.apply {
-      create(valen)
-      create(cris)
-      create(tomi)
-      create(juan)
-      create(rodri)
-      create(fer)
+      save(valen)
+      save(cris)
+      save(tomi)
+      save(juan)
+      save(rodri)
+      save(fer)
     }
     println("usuarios agregados")
   }
