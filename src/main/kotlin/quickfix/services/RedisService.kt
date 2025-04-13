@@ -7,7 +7,7 @@ import quickfix.dto.message.RedisMessageDTO
 import quickfix.dto.message.toRedisMessage
 
 @Service
-class ChatService(
+class RedisService(
     private val redisStorage: RedisTemplate<String, RedisMessageDTO>
 ) {
 
@@ -19,17 +19,17 @@ class ChatService(
     private fun getChatKey(customerId: Long, professionalId: Long, jobId: Long) : String =
         "Chat_${customerId}_${professionalId}_${jobId}"
 
-    fun sendMessage(message: ChatMessageDTO) {
+    fun sendChatMessage(message: ChatMessageDTO) {
         val key = getChatKey(message.customerId, message.professionalId, message.jobId)
         redisStorage.opsForList().rightPush(key, message.toRedisMessage())
     }
 
-    fun getMessages(customerId: Long, professionalId: Long, jobId: Long) : List<RedisMessageDTO> {
+    fun getChatMessages(customerId: Long, professionalId: Long, jobId: Long) : List<RedisMessageDTO> {
         val key = getChatKey(customerId, professionalId, jobId)
         return redisStorage.opsForList().range(key, 0, -1) ?: emptyList()
     }
 
-    fun deleteMessages(customerId: Long, professionalId: Long, jobId: Long) {
+    fun deleteChatMessages(customerId: Long, professionalId: Long, jobId: Long) {
         val key = getChatKey(customerId, professionalId, jobId)
         redisStorage.delete(key)
     }

@@ -1,8 +1,8 @@
 package quickfix.dto.message
 
 data class ChatMessageDTO(
-    val userFromId: Long,
-    val userToId: Long,
+    val customerId: Long,
+    val professionalId: Long,
     val jobId: Long,
     val msg: String
 )

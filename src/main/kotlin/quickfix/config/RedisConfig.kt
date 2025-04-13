@@ -12,11 +12,11 @@ import quickfix.dto.message.RedisMessageDTO
 class RedisConfig {
 
     @Bean
-    fun redisTemplate(connectionFactory: RedisConnectionFactory): RedisTemplate<String, RedisMessageDTO> {
-        val template = RedisTemplate<String, RedisMessageDTO>()
-        template.connectionFactory = connectionFactory
-        template.keySerializer = StringRedisSerializer()
-        template.valueSerializer = GenericJackson2JsonRedisSerializer()
-        return template
+    fun redisStorage(connectionFactory: RedisConnectionFactory): RedisTemplate<String, RedisMessageDTO> {
+        val storage = RedisTemplate<String, RedisMessageDTO>()
+        storage.connectionFactory = connectionFactory
+        storage.keySerializer = StringRedisSerializer()
+        storage.valueSerializer = GenericJackson2JsonRedisSerializer()
+        return storage
     }
 }
