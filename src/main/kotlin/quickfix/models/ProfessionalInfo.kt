@@ -1,11 +1,19 @@
 package quickfix.models
 
+import jakarta.persistence.*
+
+@Entity
 class ProfessionalInfo : Identifier {
 
+    @Id @GeneratedValue
     override var id: Long = -1
 
+    @ManyToMany(cascade = [(CascadeType.ALL)])
     var professions: Set<Profession> = mutableSetOf()
-    var certificates: MutableMap<Profession, List<String>> = mutableMapOf()
+
+    @OneToMany(cascade = [(CascadeType.ALL)])
+    var certificates: MutableSet<Certificate> = mutableSetOf()
+
     var balance: Double = 0.0
     var debt: Double = 0.0
 

@@ -1,10 +1,15 @@
 package quickfix.models
+
+import jakarta.persistence.*
 import quickfix.dto.user.UserModifiedInfoDTO
 import quickfix.utils.exceptions.BusinessException
 import java.time.LocalDate
 
+@Entity
+@Table(name = "users")
 class User : Identifier {
 
+    @Id @GeneratedValue
     override var id: Long = -1
     lateinit var mail: String
     lateinit var name : String
@@ -13,9 +18,15 @@ class User : Identifier {
     var dni : Int = 0
     lateinit var avatar: String
     lateinit var dateBirth : LocalDate
+
+    @Enumerated(EnumType.STRING)
     lateinit var gender : Gender
+
+    @OneToOne(cascade = [CascadeType.ALL])
     lateinit var address : Address
     var verified : Boolean = false
+
+    @OneToOne(cascade = [CascadeType.ALL])
     var professionalInfo: ProfessionalInfo = ProfessionalInfo()
 
     companion object {

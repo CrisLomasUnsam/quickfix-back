@@ -12,7 +12,7 @@ class UserService (
     private val userRepository: UserRepository
 ) {
 
-    fun getUserInfoById(id: Long): User? =
+    fun getUserInfoById(id: Long): User =
         userRepository.findById(id).orElseThrow{throw BusinessException()}
 
     fun changeUserInfo(id: Long, modifiedInfo: UserModifiedInfoDTO) {

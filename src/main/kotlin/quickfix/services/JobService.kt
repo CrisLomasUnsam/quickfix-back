@@ -13,32 +13,25 @@ class JobService(
     val jobRepository: JobRepository,
     val redisService: RedisService
 ){
+  
     fun createJob(job: Job) =
         jobRepository.save(job)
 
     fun deleteJob(job: Job) =
         jobRepository.delete(job)
 
-    fun getJobById(id: Long): Job =
-        jobRepository.findById(id).orElseThrow{ throw BusinessException() }
+    fun getJobById(id: Long): Job? = jobRepository.findById(id).orElseThrow()
 
-    fun getJobsByUser(id: Long) =
-        jobRepository.getAllByUserId(id)
+//    fun getJobsByUser(id: Long) = jobRepository.getAllByUserId(id)
 
-    fun getJobsByParameter(id: Long, parameter: String): List<Job> {
-        val searchParameters = JobSearchParameters(parameter)
-        return jobRepository.searchByParameters(id, searchParameters)
-    }
+//    fun setJobAsDone(id: Long) = jobRepository.setToDone(id)
+//
+//    fun setJobAsCancelled(id: Long) = jobRepository.setToCancelled(id)
 
-    fun setJobAsDone(id: Long) {
-        deleteChatMessages(id)
-        jobRepository.setToDone(id)
-    }
-
-    fun setJobAsCancelled(id: Long) {
-        deleteChatMessages(id)
-        jobRepository.setToCancelled(id)
-    }
+//    fun getJobsByParameter(id: Long, parameter: String): List<Job> {
+//        val searchParameters = JobSearchParameters(parameter)
+//        return jobRepository.searchByParameters(id, searchParameters)
+//    }
 
     /*************************
         CHAT METHODS
