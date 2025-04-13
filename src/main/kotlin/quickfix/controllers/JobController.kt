@@ -15,9 +15,9 @@ import quickfix.services.JobService
 class JobController(
     val jobService: JobService
 ){
-    @GetMapping("/byUser/{id}")
-    @Operation(summary = "Obtener todos los jobs de un customer")
-    fun getJobsByUserId (@Parameter(description = "Id del user") @PathVariable id: Long) = jobService.getJobsByUser(id)
+//    @GetMapping("/byUser/{id}")
+//    @Operation(summary = "Obtener todos los jobs de un customer")
+//    fun getJobsByUserId (@Parameter(description = "Id del user") @PathVariable id: Long) = jobService.getJobsByUser(id)
 
     @PostMapping
     fun createJob(@RequestBody job: Job) = jobService.createJob(job)
@@ -28,18 +28,18 @@ class JobController(
     @GetMapping("/{id}")
     fun getJobById(@PathVariable id: Long) = jobService.getJobById(id)
 
-    @PatchMapping("/{id}/complete")
-    fun setJobAsDone(@PathVariable id: Long) = jobService.setJobAsDone(id)
+//    @PatchMapping("/{id}/complete")
+//    fun setJobAsDone(@PathVariable id: Long) = jobService.setJobAsDone(id)
+//
+//    @PatchMapping("/{id}/cancel")
+//    fun setJobAsCancelled(@PathVariable id: Long) = jobService.setJobAsCancelled(id)
 
-    @PatchMapping("/{id}/cancel")
-    fun setJobAsCancelled(@PathVariable id: Long) = jobService.setJobAsCancelled(id)
-
-    @GetMapping("/filter/{userId}/{parameter}")
-    @Operation(summary = "Buscar jobs por filtro")
-    fun getJobsByParameters(
-        @Parameter(description = "Id del usuario")
-        @PathVariable userId: Long,
-        @Parameter(description = "Parametro de busqueda: string")
-        @PathVariable parameter: String) = jobService.getJobsByParameter(userId, parameter)
+//    @GetMapping("/filter/{userId}/{parameter}")
+//    @Operation(summary = "Buscar jobs por filtro")
+//    fun getJobsByParameters(
+//        @Parameter(description = "Id del usuario")
+//        @PathVariable userId: Long,
+//        @Parameter(description = "Parametro de busqueda: string")
+//        @PathVariable parameter: String) = jobService.getJobsByParameter(userId, parameter)
 }
 
