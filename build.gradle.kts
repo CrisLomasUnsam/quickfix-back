@@ -46,6 +46,9 @@ dependencies {
     // PostgresSQL
     runtimeOnly("org.postgresql:postgresql")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+
+    //Redis
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
 }
 
 kotlin {

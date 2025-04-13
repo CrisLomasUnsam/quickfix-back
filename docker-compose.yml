@@ -14,7 +14,7 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
-    container_name: pgadmin4_container_quickFix
+    container_name: pgadmin4_quickFix
     restart: always
     ports:
       - "5055:80"
@@ -24,6 +24,24 @@ services:
     volumes:
       - pgadmin-data:/var/lib/pgadmin
 
+  redis:
+    image: redis:7.2-alpine
+    container_name: quickFix_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: [ "redis-server", "--appendonly", "yes" ]
+
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: redis-insight
+    ports:
+      - "5540:5540"
+    depends_on:
+      - redis
+
 volumes:
   db:
   pgadmin-data:
+  redis_data:
