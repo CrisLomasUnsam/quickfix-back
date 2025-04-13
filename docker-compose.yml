@@ -14,7 +14,7 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
-    container_name: pgadmin4_container_quickFix
+    container_name: pgadmin4_quickFix
     restart: always
     ports:
       - "5055:80"
@@ -37,7 +37,7 @@ services:
     image: redis/redisinsight:latest
     container_name: redis-insight
     ports:
-      - "8001:8001"
+      - "5540:5540"
     depends_on:
       - redis
 
