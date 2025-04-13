@@ -13,7 +13,7 @@ springdoc:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/quickFix
+    url: jdbc:postgresql://localhost:5432/quickfix
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
