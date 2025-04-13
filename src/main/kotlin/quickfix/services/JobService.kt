@@ -9,11 +9,11 @@ import quickfix.utils.searchParameters.JobSearchParameters
 class JobService(
     val jobRepository: JobRepository
 ){
-    fun createJob(job: Job) = jobRepository.create(job)
+    fun createJob(job: Job) = jobRepository.save(job)
 
     fun deleteJob(job: Job) = jobRepository.delete(job)
 
-    fun getJobById(id: Long): Job? = jobRepository.getById(id)
+    fun getJobById(id: Long): Job? = jobRepository.findById(id).orElseThrow()
 
     fun getJobsByUser(id: Long) = jobRepository.getAllByUserId(id)
 
