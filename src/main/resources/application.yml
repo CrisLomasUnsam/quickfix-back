@@ -27,6 +27,7 @@ spring:
       hibernate:
         format_sql: true
 
+# Para activar el Trace
 logging:
   level:
-    root: TRACE | DEBUG | INFO | WARN | ERROR | OFF
+    root: INFO
