@@ -8,5 +8,5 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/chat")
 @CrossOrigin(origins = ["*"])
 
-class MessageController {
+class ChatController {
 }

@@ -1,13 +1,13 @@
 package quickfix.dto.message
 
-data class MessageDTO(
+data class ChatMessageDTO(
     val userFromId: Long,
     val userToId: Long,
     val jobId: Long,
     val msg: String
 )
 
-fun MessageDTO.toRedisMessage() = RedisMessageDTO(
+fun ChatMessageDTO.toRedisMessage() = RedisMessageDTO(
     msg = this.msg,
     timestamp = System.currentTimeMillis()
 )
