@@ -15,14 +15,14 @@ class JobService(
 
     fun getJobById(id: Long): Job? = jobRepository.findById(id).orElseThrow()
 
-    fun getJobsByUser(id: Long) = jobRepository.getAllByUserId(id)
+    //fun getJobsByUser(id: Long) = jobRepository.getAllByUserId(id)
 
-    fun setJobAsDone(id: Long) = jobRepository.setToDone(id)
+//    fun setJobAsDone(id: Long) = jobRepository.setToDone(id)
+//
+//    fun setJobAsCancelled(id: Long) = jobRepository.setToCancelled(id)
 
-    fun setJobAsCancelled(id: Long) = jobRepository.setToCancelled(id)
-
-    fun getJobsByParameter(id: Long, parameter: String): List<Job> {
-        val searchParameters = JobSearchParameters(parameter)
-        return jobRepository.searchByParameters(id, searchParameters)
-    }
+//    fun getJobsByParameter(id: Long, parameter: String): List<Job> {
+//        val searchParameters = JobSearchParameters(parameter)
+//        return jobRepository.searchByParameters(id, searchParameters)
+//    }
 }

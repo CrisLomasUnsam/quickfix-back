@@ -9,7 +9,7 @@ import jakarta.persistence.GeneratedValue
 class Profession {
 
     @Id @GeneratedValue
-    var id: Long = TODO("initialize me")
+    var id: Long = -1
 
     @Column(unique = true, nullable = false, length = 50)
     lateinit var name: String
