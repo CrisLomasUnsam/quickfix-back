@@ -12,9 +12,9 @@ class RatingService(
     val jobRepository: JobRepository,
 ) {
     fun rateUser(ratingDTO: RatingDTO) {
-        val userFrom = userRepository.getById(ratingDTO.userFromId)
-        val userTo = userRepository.getById(ratingDTO.userToId)
-        val job = jobRepository.getById(ratingDTO.jobId)
+        val userFrom = userRepository.findById(ratingDTO.userFromId)
+        val userTo = userRepository.findById(ratingDTO.userToId)
+        val job = jobRepository.findById(ratingDTO.jobId)
 
         val rating = Rating().apply {
             //Acá se asignan las variables

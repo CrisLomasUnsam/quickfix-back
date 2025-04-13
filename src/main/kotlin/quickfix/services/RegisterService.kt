@@ -19,7 +19,7 @@ class RegisterService (
 
         //Cuando tengamos Hibernate: val userInfo = usuarioInfoRepository.save(registerData.toUserInfo())
         val user = registerData.toUser()
-        userRepository.create(user)
+        userRepository.save(user)
 
         mailObserver.sendRegistrationMailTo(user.mail)
     }
