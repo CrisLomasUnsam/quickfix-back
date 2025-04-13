@@ -20,7 +20,7 @@ class JobService(
     fun deleteJob(job: Job) =
         jobRepository.delete(job)
 
-    fun getJobById(id: Long): Job? = jobRepository.findById(id).orElseThrow()
+    fun getJobById(id: Long): Job = jobRepository.findById(id).orElseThrow { throw BusinessException() }
 
 //    fun getJobsByUser(id: Long) = jobRepository.getAllByUserId(id)
 
