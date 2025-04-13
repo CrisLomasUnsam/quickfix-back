@@ -8,7 +8,7 @@ import quickfix.models.Job
 import quickfix.services.JobService
 
 @RestController
-@RequestMapping("/jobs")
+@RequestMapping("/job")
 @CrossOrigin("*")
 @Tag(name = "Jobs", description = "Operaciones relacionadas a los Jobs")
 
