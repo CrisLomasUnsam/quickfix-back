@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
 import quickfix.dto.rating.RatingDTO
+import quickfix.dto.rating.toDTO
 import quickfix.services.RatingService
 
 @RestController
@@ -14,7 +15,7 @@ class RatingController(val ratingService: RatingService) {
 
     @GetMapping
     @Operation(summary = "Obtener calificaciones de un usuario")
-    fun getRatings(): List<RatingDTO> = ratingService.findRatingsReceivedByUser().map { rating ->  }
+    fun getRatings(): List<RatingDTO> = ratingService.findRatingsReceivedByUser().map { it.toDTO()  }
 
     @PostMapping("/rateUser")
     @Operation(summary = "Calificar un usuario al concluir el job")
