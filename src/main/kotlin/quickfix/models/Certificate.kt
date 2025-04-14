@@ -5,7 +5,7 @@ import jakarta.persistence.*
 @Entity
 class Certificate : Identifier {
 
-    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Id @GeneratedValue
     override var id: Long = -1
 
     @ManyToOne
