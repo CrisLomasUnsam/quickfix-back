@@ -19,11 +19,11 @@ fun createCustomerUserMock(): CustomerUserMock {
         avatar = "https://example.com/avatar.jpg"
         dateBirth = LocalDate.of(1995, 5, 20)
         gender = Gender.MALE
-        address = Address(
-            street = "123 Main Street",
-            city = "Testville",
+        address = Address().apply {
+            street = "123 Main Street"
+            city = "Testville"
             zipCode = "1234"
-        )
+        }
     }
     return CustomerUserMock(mockCustomer)
 }
