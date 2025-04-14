@@ -13,12 +13,17 @@ import quickfix.services.RatingService
 @Tag(name = "Operaciones relacionadas a la calificación entre usuarios")
 class RatingController(val ratingService: RatingService) {
 
-    @GetMapping
-    @Operation(summary = "Obtener calificaciones de un usuario")
-    fun getRatings(): List<RatingDTO> = ratingService.findRatingsReceivedByUser().map { it.toDTO()  }
-
     @PostMapping("/rateUser")
     @Operation(summary = "Calificar un usuario al concluir el job")
     fun rateUser(@RequestBody rating: RatingDTO) =
         ratingService.rateUser(rating)
+
+    @GetMapping("/received/{id}")
+    @Operation(summary = "Obtener calificaciones recibidas por un usuario")
+    fun findRatingsReceivedByUser(@PathVariable id: Long): List<RatingDTO> = ratingService.findRatingsReceivedByUser(id).map { it.toDTO() }
+
+    @GetMapping("madeBy/{id}")
+    @Operation(summary = "Obtener calificaiones hechas por un usuario")
+    fun findRatingsMadeByUser(@PathVariable id: Long): List<RatingDTO> = ratingService.findRatingsMadeByUser(id).map { it.toDTO() }
+
 }
