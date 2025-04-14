@@ -5,10 +5,10 @@ import jakarta.persistence.*
 @Entity
 class Certificate : Identifier {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE)
     override var id: Long = -1
 
-    @OneToOne(cascade = [(CascadeType.ALL)])
+    @ManyToOne
     lateinit var profession: Profession
 
     @ElementCollection
