@@ -1,14 +1,25 @@
 package quickfix.services
 
 import org.springframework.stereotype.Service
+import quickfix.dto.job.JobOfferDTO
 import quickfix.dto.job.JobRequestDTO
 
 @Service
 class ProfessionalService(
-    //Va a tener inyectado el servicio de redis, como mínimo
+    val redisService: RedisService,
+    val userService: UserService
 )  {
-    fun lookForJobRequests() : Set<JobRequestDTO>? {
-        /* Este metodo busca nuevas solicitudes */
-        return null
+
+    private fun getProfessionIds(professionalId : Long) : Set<Long> {
+        val professional = userService.getProfessionalInfo(professionalId)
+        return professional.professions.map { it.id }.toSet()
     }
+
+    fun getJobRequests(professionalId : Long) : Set<JobRequestDTO> {
+        val professionIds = getProfessionIds(professionalId)
+        return redisService.getJobRequests(professionIds)
+    }
+
+    fun offerJob(jobOffer : JobOfferDTO) =
+        redisService.offerJob(jobOffer)
 }
