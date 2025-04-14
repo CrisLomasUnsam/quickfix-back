@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.JobRepository
 import quickfix.dao.RatingRepository
 import quickfix.dao.UserRepository
+import quickfix.dto.rating.EditRatingDTO
 import quickfix.dto.rating.RatingDTO
 import quickfix.models.Rating
 import quickfix.utils.exceptions.BusinessException
@@ -45,4 +46,14 @@ class RatingService(
         return ratingRepository.findByUserFromId(userId).orElseThrow { BusinessException("Usuario no existe") }
     }
 
+    @Transactional
+    fun updateRating(id: Long, data: EditRatingDTO) {
+        val rating = ratingRepository.findById(id).orElseThrow { BusinessException("Rating no existe") }
+        rating.apply {
+            data.score?.let { this.score = it }
+            data.yearAndMonth?.let { this.yearAndMonth = it }
+            data.comment?.let { rating.comment = it }
+        }.also { it.validate() }
+        ratingRepository.save(rating)
+    }
 }
