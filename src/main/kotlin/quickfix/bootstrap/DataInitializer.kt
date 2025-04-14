@@ -146,15 +146,18 @@ class DataInitializer : InitializingBean {
     val gasista = professionRepository.findByNameContainingIgnoreCase("gasista")
     val jardinero = professionRepository.findByNameContainingIgnoreCase("jardinero")
 
-    professional1.professionalInfo.apply{
+    val certificateElectricista1 = Certificate().apply { this.profession = electricista }
+    val certificateGasista2 = Certificate().apply { this.profession = gasista }
+    val certificateGasista = Certificate().apply { this.profession = gasista }
+    val certificateJardinero = Certificate().apply { this.profession = jardinero }
+    val certificateJardinero2 = Certificate().apply { this.profession = jardinero }
+
+      professional1.professionalInfo.apply{
       balance = 0.0
       professions = mutableSetOf(electricista,gasista)
       certificates = mutableSetOf(
-          Certificate().apply {
-              this.profession = electricista },
-          Certificate().apply {
-              this.profession = gasista
-          }
+        certificateElectricista1,
+        certificateGasista,
       )
       debt = 200.0
     }
@@ -162,9 +165,7 @@ class DataInitializer : InitializingBean {
     professional2.professionalInfo.apply{
       professions = mutableSetOf(jardinero)
       certificates = mutableSetOf(
-          Certificate().apply {
-              this.profession = jardinero
-          }
+          certificateJardinero
       )
       balance = 500.0
       debt = 50.0
@@ -173,11 +174,8 @@ class DataInitializer : InitializingBean {
     professional3.professionalInfo.apply{
       professions = mutableSetOf(jardinero,gasista)
       certificates = mutableSetOf(
-          Certificate().apply {
-              this.profession = jardinero },
-          Certificate().apply {
-              this.profession = gasista
-          }
+        certificateJardinero2,
+        certificateGasista2,
       )
       balance = 750.0
       debt = 100.0
