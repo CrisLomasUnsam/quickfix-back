@@ -17,10 +17,14 @@ class RatingService(
         val userFrom = userRepository.findById(ratingDTO.userFromId)
         val userTo = userRepository.findById(ratingDTO.userToId)
         val job = jobRepository.findById(ratingDTO.jobId)
-
         val rating = Rating().apply {
-            //Acá se asignan las variables
-        }
+            this.userFrom
+            this.userTo
+            this.job
+            this.score
+            this.yearAndMonth
+            this.comment
+        }.validate()
     }
 
     fun findRatingsReceivedByUser(userId: Long): List<Rating> {
