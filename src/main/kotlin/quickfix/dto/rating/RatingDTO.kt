@@ -14,3 +14,13 @@ data class RatingDTO(
 
 fun RatingDTO.toRating(): Rating =
     Rating()
+
+fun Rating.toDTO(): RatingDTO =
+    RatingDTO(
+        userFromId = this.userFrom.id,
+        userToId = this.userTo.id,
+        jobId = this.job.id,
+        score = this.score,
+        yearAndMonth = this.yearAndMonth,
+        comment = this.comment
+    )
