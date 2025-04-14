@@ -150,11 +150,11 @@ class DataInitializer : InitializingBean {
       balance = 0.0
       professions = mutableSetOf(electricista,gasista)
       certificates = mutableSetOf(
-//          Certificate().apply {
-//              this.profession = electricista },
-//          Certificate().apply {
-//              this.profession = gasista
-//          }
+          Certificate().apply {
+              this.profession = electricista },
+          Certificate().apply {
+              this.profession = gasista
+          }
       )
       debt = 200.0
     }
@@ -163,7 +163,7 @@ class DataInitializer : InitializingBean {
       professions = mutableSetOf(jardinero)
       certificates = mutableSetOf(
           Certificate().apply {
-//              this.profession = jardinero
+              this.profession = jardinero
           }
       )
       balance = 500.0
@@ -173,12 +173,11 @@ class DataInitializer : InitializingBean {
     professional3.professionalInfo.apply{
       professions = mutableSetOf(jardinero,gasista)
       certificates = mutableSetOf(
-//          Certificate().apply {
-//              this.profession = jardinero
-//          },
-//          Certificate().apply {
-//              this.profession = gasista
-//          }
+          Certificate().apply {
+              this.profession = jardinero },
+          Certificate().apply {
+              this.profession = gasista
+          }
       )
       balance = 750.0
       debt = 100.0
