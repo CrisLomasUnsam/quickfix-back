@@ -4,4 +4,8 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Component
 import quickfix.models.Rating
 @Component
-interface RatingRepository : CrudRepository<Rating, Long>
+interface RatingRepository : CrudRepository<Rating, Long> {
+
+    fun findByUserToId(userId: Long): List<Rating>
+    fun findByUserFromId(userId: Long): List<Rating>
+}
