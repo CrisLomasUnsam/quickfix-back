@@ -1,4 +1,4 @@
-package quickfix.dto.professional
+package quickfix.dto.job
 
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.SchemaProperty
@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.SchemaProperty
 @SchemaProperty(name = "distance", schema = Schema(description = "Distancia en kilómetros a la que se encuentra el profesional del usuario que inició la búsqueda."))
 @SchemaProperty(name = "estimatedInitTime", schema = Schema(description = "Tiempo de llegada estimado en minutos del profesional. Calculado en base a la distancia"))
 @SchemaProperty(name = "availability", schema = Schema(description = "Disponibilidad del professional en minutos para iniciar el trabajo."))
-data class AvailableProfessionalDTO (
+data class JobOffer (
     val id: Long,
     val name: String,
     val lastName: String,
