@@ -4,25 +4,32 @@ import org.springframework.stereotype.Service
 import quickfix.dao.UserRepository
 import quickfix.dto.job.JobRequestDTO
 import quickfix.dto.user.UserModifiedInfoDTO
+import quickfix.models.ProfessionalInfo
 import quickfix.models.User
 import quickfix.utils.exceptions.BusinessException
 
 @Service
-class UserService (
-    private val userRepository: UserRepository
+class UserService(
+    private val userRepository: UserRepository,
+    private val redisService: RedisService
 ) {
 
-    fun getUserInfoById(id: Long): User =
+    fun getUserById(id: Long): User =
         userRepository.findById(id).orElseThrow{throw BusinessException()}
 
     fun changeUserInfo(id: Long, modifiedInfo: UserModifiedInfoDTO) {
-        val user = getUserInfoById(id) ?: throw BusinessException()
+        val user = getUserById(id) ?: throw BusinessException()
         user.updateUserInfo(modifiedInfo)
     }
 
-    fun postJobRequest(jobRequest: JobRequestDTO) {
-        // Este service mete ese jobRequest en una base no relacional, como redis o DB
-    }
+    fun getProfessionalInfo(id : Long) : ProfessionalInfo =
+        userRepository.findById(id).orElseThrow{throw BusinessException()}.professionalInfo
+
+    fun requestJob(jobRequest : JobRequestDTO) =
+        redisService.requestJob(jobRequest)
+
+    fun getJobOffers(customerId : Long) =
+        redisService.getJobOffers(customerId)
 
 
 }

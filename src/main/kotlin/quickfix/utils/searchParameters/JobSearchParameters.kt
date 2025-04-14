@@ -1,6 +1,7 @@
 package quickfix.utils.searchParameters
 
 import quickfix.models.Job
+import quickfix.utils.enums.JobStatus
 import quickfix.utils.hasMatchingStart
 
 data class JobSearchParameters (
@@ -11,10 +12,10 @@ data class JobSearchParameters (
 
     override fun matches(element: Job): Boolean {
         return when (parameter.trim().lowercase()) {
-            "finalizado" -> element.done
-            "finalizados" -> element.done
-            "pendiente" -> element.inProgress
-            "pendientes" -> element.inProgress
+            "finalizado" -> element.status == JobStatus.DONE
+            "finalizados" -> element.status == JobStatus.DONE
+            "pendiente" -> element.status == JobStatus.PENDING
+            "pendientes" -> element.status == JobStatus.PENDING
             else -> {
                 val parameter = parameter.trim().lowercase()
                 return element.professional.professionalInfo.professions.any {

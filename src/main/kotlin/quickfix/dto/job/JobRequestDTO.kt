@@ -2,24 +2,20 @@ package quickfix.dto.job
 
 import io.swagger.v3.oas.annotations.media.Schema
 import quickfix.models.Address
-import quickfix.models.JobRequest
-import quickfix.models.Profession
-import quickfix.models.User
+import quickfix.utils.exceptions.BusinessException
 
 @Schema(description = "Solicitud de un Job por un customer, consumido por observers")
 data class JobRequestDTO(
-    var customer: User,
-    var profession: Profession,
+    var customerId: Long,
+    var profession: String,
     var detail: String,
     var address: Address
 )
 
-fun JobRequestDTO.toJobRequest(): JobRequest =
-    JobRequest(
-        customer = this.customer,
-        profession = this.profession,
-        detail = this.detail,
-        address = this.address
-    ).apply {
-        this.validate()
-    }
+fun JobRequestDTO.validate() {
+    validProfession(profession)
+    validDetail(detail)
+}
+
+private fun validProfession(profession: String) { if(profession.isBlank()) throw BusinessException() }
+private fun validDetail(detail: String) { if(detail.isBlank()) throw BusinessException() }
