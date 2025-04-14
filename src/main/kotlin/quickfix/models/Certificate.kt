@@ -8,7 +8,7 @@ class Certificate : Identifier {
     @Id @GeneratedValue
     override var id: Long = -1
 
-    @OneToOne(cascade = [(CascadeType.ALL)])
+    @ManyToOne
     lateinit var profession: Profession
 
     @ElementCollection
