@@ -3,8 +3,10 @@ package quickfix.bootstrap
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import quickfix.dao.ProfessionRepository
 import quickfix.dao.UserRepository
 import quickfix.models.*
+import quickfix.utils.ProfessionsUtils
 import java.time.LocalDate
 
 @Service
@@ -14,11 +16,11 @@ class DataInitializer : InitializingBean {
   private lateinit var userRepository: UserRepository
 
   @Autowired
-  private lateinit var professionRepository:
+  private lateinit var professionRepository: ProfessionRepository
 
-    /***********************
+  /* * * * * * * * * * * *
   *      USERS           *
-  ***********************/
+  * * * * * * * * * * * */
 
   val professional1 = User().apply {
     mail = "valen@example.com"
@@ -123,7 +125,7 @@ class DataInitializer : InitializingBean {
   }
 
 
-  fun createUsers() {
+  private fun createUsers() {
     userRepository.apply {
       save(professional1)
       save(professional2)
@@ -135,43 +137,83 @@ class DataInitializer : InitializingBean {
     println("------- USERS CREATED & LOADED ------- ")
   }
 
+    /* * * * * * * * * * * *
+    *      PROFESSIONALS   *
+    * * * * * * * * * * * */
 
-  fun addProfessions() {
-    //***********************
-    //PROFESSIONALS
-    //***********************
+  private fun addProfessionalInfo() {
+    val electricista = professionRepository.findByNameContainingIgnoreCase("electricista")
+    val gasista = professionRepository.findByNameContainingIgnoreCase("gasista")
+    val jardinero = professionRepository.findByNameContainingIgnoreCase("jardinero")
 
     professional1.professionalInfo.apply{
       balance = 0.0
-      professions = mutableSetOf(Profession.ELECTRICISTA, Profession.GASISTA)
-      certificates = mutableMapOf(
-        Profession.ELECTRICISTA to listOf("Certificado de electricista"),
-        Profession.GASISTA to listOf("gasista Matriculado")
+      professions = mutableSetOf(electricista,gasista)
+      certificates = mutableSetOf(
+//          Certificate().apply {
+//              this.profession = electricista },
+//          Certificate().apply {
+//              this.profession = gasista
+//          }
       )
       debt = 200.0
     }
 
     professional2.professionalInfo.apply{
-      professions = mutableSetOf(Profession.JARDINERO)
-      certificates = mutableMapOf(Profession.JARDINERO to listOf("Certificado en jardinero profesional"))
+      professions = mutableSetOf(jardinero)
+      certificates = mutableSetOf(
+          Certificate().apply {
+//              this.profession = jardinero
+          }
+      )
       balance = 500.0
       debt = 50.0
     }
 
     professional3.professionalInfo.apply{
-      professions = mutableSetOf(Profession.JARDINERO, Profession.GASISTA)
-      certificates = mutableMapOf(
-        Profession.JARDINERO to listOf("certificado en jardineria profesional"),
-        Profession.GASISTA to listOf("gasista matriculado"))
+      professions = mutableSetOf(jardinero,gasista)
+      certificates = mutableSetOf(
+//          Certificate().apply {
+//              this.profession = jardinero
+//          },
+//          Certificate().apply {
+//              this.profession = gasista
+//          }
+      )
       balance = 750.0
       debt = 100.0
     }
+    println("------- PROFESSIONS ASSIGNED ----------------- ")
     println("------- PROFESSIONALS CREATED & LOADED ------- ")
   }
 
+    /* * * * * * * * * * * *
+    *      PROFESSIONS     *
+    * * * * * * * * * * * */
+
+    private fun loadProfessions() {
+        if (professionRepository.count() == 0L) {
+            val professions = ProfessionsUtils.defaultProfessions
+                .map { Profession().apply { name = it } }
+            professionRepository.saveAll(professions)
+
+            println("------- PROFESSIONS LOADED ------- ")
+        }
+    }
+
+    private fun printSucess() {
+        println("* * * * * * * * * * * * * * * * * * * * * * *")
+        println("* ------- PROFESSIONS LOADED -------------- *")
+        println("* ------- PROFESSIONS ASSIGNED ------------ *")
+        println("* ------- PROFESSIONALS CREATED & LOADED -- *")
+        println("* ------- USERS CREATED & LOADED ---------- *")
+        println("* * * * * * * * * * * * * * * * * * * * * * *")
+    }
 
   override fun afterPropertiesSet() {
-    this.addProfessions()
+    this.loadProfessions()
+    this.addProfessionalInfo()
     this.createUsers()
+    this.printSucess()
   }
 }
