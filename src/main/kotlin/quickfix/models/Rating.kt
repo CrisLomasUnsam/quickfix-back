@@ -1,6 +1,7 @@
 package quickfix.models
 
 import jakarta.persistence.*
+import quickfix.utils.exceptions.BusinessException
 import java.time.LocalDate
 
 @Entity
@@ -23,6 +24,14 @@ class Rating : Identifier {
     lateinit var comment: String
 
     override fun validate() {
-        TODO("Not yet implemented")
+        if (!validScore(score)) throw BusinessException("El puntaje no puede ser mayor a 5 o menor a 1")
+        if (!validaDate(yearAndMonth)) throw BusinessException("Fecha fuera de rango válido")
+        if (!validComment(comment)) throw BusinessException("Debe agregar un comentario")
     }
+
+    private fun validComment(comment: String): Boolean = comment.isNotBlank()
+
+    private fun validaDate(date: LocalDate): Boolean = date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now())
+
+    private fun validScore(score: Int): Boolean = score in 1..5
 }
