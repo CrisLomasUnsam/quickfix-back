@@ -2,6 +2,7 @@ package quickfix.services
 
 import org.springframework.stereotype.Service
 import quickfix.dao.JobRepository
+import quickfix.dao.RatingRepository
 import quickfix.dao.UserRepository
 import quickfix.dto.rating.RatingDTO
 import quickfix.models.Rating
@@ -10,6 +11,7 @@ import quickfix.models.Rating
 class RatingService(
     val userRepository: UserRepository,
     val jobRepository: JobRepository,
+    val ratingRepository: RatingRepository
 ) {
     fun rateUser(ratingDTO: RatingDTO) {
         val userFrom = userRepository.findById(ratingDTO.userFromId)
@@ -20,4 +22,13 @@ class RatingService(
             //Acá se asignan las variables
         }
     }
+
+    fun findRatingsReceivedByUser(userId: Long): List<Rating> {
+        return ratingRepository.findByUserToId(userId)
+    }
+
+    fun findRatingsMadeByUser(userId: Long): List<Rating> {
+        return ratingRepository.findByUserFromId(userId)
+    }
+
 }
