@@ -12,9 +12,6 @@ data class RatingDTO(
     val comment: String
 )
 
-fun RatingDTO.toRating(): Rating =
-    Rating()
-
 fun Rating.toDTO(): RatingDTO =
     RatingDTO(
         userFromId = this.userFrom.id,
