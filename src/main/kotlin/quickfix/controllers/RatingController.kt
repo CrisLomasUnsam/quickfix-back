@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
 import quickfix.dto.rating.EditRatingDTO
 import quickfix.dto.rating.RatingDTO
+import quickfix.dto.rating.fromDTO
 import quickfix.dto.rating.toDTO
 import quickfix.services.RatingService
 
@@ -29,5 +30,5 @@ class RatingController(val ratingService: RatingService) {
 
     @PatchMapping("/edit/{id}")
     @Operation(summary = "Editar una calificación")
-    fun updateRating(@PathVariable id: Long, @RequestBody data: EditRatingDTO) = ratingService.updateRating(id, data)
+    fun updateRating(@PathVariable id: Long, @RequestBody data: EditRatingDTO) = ratingService.updateRating(id, data.fromDTO())
 }
