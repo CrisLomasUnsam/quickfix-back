@@ -25,7 +25,7 @@ class RatingController(val ratingService: RatingService) {
     fun findRatingsReceivedByUser(@PathVariable id: Long): List<RatingDTO> = ratingService.findRatingsReceivedByUser(id).map { it.toDTO() }
 
     @GetMapping("madeBy/{id}")
-    @Operation(summary = "Obtener calificaiones hechas por un usuario")
+    @Operation(summary = "Obtener calificaciones hechas por un usuario")
     fun findRatingsMadeByUser(@PathVariable id: Long): List<RatingDTO> = ratingService.findRatingsMadeByUser(id).map { it.toDTO() }
 
     @PatchMapping("/edit/{id}")
