@@ -9,9 +9,9 @@ import java.util.*
 @Component
 interface RatingRepository : CrudRepository<Rating, Long> {
 
-    @EntityGraph(attributePaths = ["user","job"])
+    @EntityGraph(attributePaths = ["userFrom","userTo","job"])
     fun findByUserToId(userId: Long): Optional<List<Rating>>
 
-    @EntityGraph(attributePaths = ["user","job"])
+    @EntityGraph(attributePaths = ["userFrom","userTo","job"])
     fun findByUserFromId(userId: Long): Optional<List<Rating>>
 }
