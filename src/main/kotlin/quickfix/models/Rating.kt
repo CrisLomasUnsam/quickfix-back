@@ -2,7 +2,7 @@ package quickfix.models
 
 import jakarta.persistence.*
 import quickfix.utils.exceptions.BusinessException
-import java.time.LocalDate
+import java.time.YearMonth
 
 @Entity
 class Rating : Identifier {
@@ -20,7 +20,7 @@ class Rating : Identifier {
     lateinit var job: Job
     
     var score: Int = 0
-    lateinit var yearAndMonth: LocalDate
+    lateinit var yearAndMonth: YearMonth
     lateinit var comment: String
 
     override fun validate() {
@@ -31,7 +31,7 @@ class Rating : Identifier {
 
     private fun validComment(comment: String): Boolean = comment.isNotBlank()
 
-    private fun validaDate(date: LocalDate): Boolean = date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now())
+    private fun validaDate(date: YearMonth): Boolean = date.isBefore(YearMonth.now()) || date == YearMonth.now()
 
     private fun validScore(score: Int): Boolean = score in 1..5
 }

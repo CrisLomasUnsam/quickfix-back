@@ -1,11 +1,11 @@
 package quickfix.dto.rating
 
 import quickfix.utils.datifyString
-import java.time.LocalDate
+import java.time.YearMonth
 
 data class EditRating(
     val score: Int?,
-    val yearAndMonth: LocalDate?,
+    val yearAndMonth: YearMonth?,
     val comment: String?
 )
 
