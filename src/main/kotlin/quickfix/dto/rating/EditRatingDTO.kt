@@ -18,7 +18,9 @@ data class EditRatingDTO(
 fun EditRatingDTO.fromDTO(): EditRating {
     return EditRating(
         score = score,
-        yearAndMonth = this.yearAndMonth?.let { datifyString(it) },
+        yearAndMonth = yearAndMonth
+            ?.takeIf { it.isNotBlank() }
+            ?.let { datifyString(it) },
         comment = comment
     )
 }
