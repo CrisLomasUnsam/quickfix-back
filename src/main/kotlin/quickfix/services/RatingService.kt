@@ -5,9 +5,10 @@ import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.JobRepository
 import quickfix.dao.RatingRepository
 import quickfix.dao.UserRepository
-import quickfix.dto.rating.EditRatingDTO
+import quickfix.dto.rating.EditRating
 import quickfix.dto.rating.RatingDTO
 import quickfix.models.Rating
+import quickfix.utils.datifyString
 import quickfix.utils.exceptions.BusinessException
 
 @Service
@@ -32,7 +33,7 @@ class RatingService(
             this.userTo = userTo
             this.job = job
             this.score = ratingDTO.score
-            this.yearAndMonth = ratingDTO.yearAndMonth
+            this.yearAndMonth = datifyString(ratingDTO.yearAndMonth)
             this.comment = ratingDTO.comment
         }.also { it.validate() }
         ratingRepository.save(rating)
@@ -47,7 +48,7 @@ class RatingService(
     }
 
     @Transactional
-    fun updateRating(id: Long, data: EditRatingDTO) {
+    fun updateRating(id: Long, data: EditRating) {
         val rating = ratingRepository.findById(id).orElseThrow { BusinessException("Rating no existe") }
         rating.apply {
             data.score?.let { this.score = it }
