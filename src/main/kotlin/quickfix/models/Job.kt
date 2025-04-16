@@ -10,10 +10,10 @@ class Job : Identifier {
     @Id @GeneratedValue
     override var id: Long = -1
 
-    @OneToOne(cascade = [CascadeType.ALL])
+    @ManyToOne
     lateinit var professional: User
 
-    @OneToOne(cascade = [CascadeType.ALL])
+    @ManyToOne
     lateinit var customer: User
 
     @Column(columnDefinition = "DATE")
