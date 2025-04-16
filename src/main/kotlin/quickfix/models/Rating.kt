@@ -1,6 +1,7 @@
 package quickfix.models
 
 import jakarta.persistence.*
+import quickfix.utils.converters.YearMonthConverter
 import quickfix.utils.exceptions.BusinessException
 import java.time.YearMonth
 
@@ -19,8 +20,10 @@ class Rating : Identifier {
     @OneToOne(cascade = [(CascadeType.ALL)])
     lateinit var job: Job
     
-    var score: Int = 0
+    @Convert(converter = YearMonthConverter::class)
     lateinit var yearAndMonth: YearMonth
+
+    var score: Int = 0
     lateinit var comment: String
 
     override fun validate() {
