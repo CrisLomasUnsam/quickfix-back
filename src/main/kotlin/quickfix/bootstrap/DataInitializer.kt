@@ -59,10 +59,12 @@ class DataInitializer : InitializingBean {
         initProfessions()
         initCertificates()
         initProfessionalInfos()
-        initAddresses()
-        initUsers()
-        initJobs()
-        initRatings()
+
+        if (userRepository.count() == 0L) {
+            initUsers()
+            initJobs()
+            initRatings()
+        }
         println("************** Data Initialization Complete **************")
     }
 
@@ -92,9 +94,9 @@ class DataInitializer : InitializingBean {
 
     fun initProfessionalInfos() {
         professionalInfo1 = ProfessionalInfo().apply {
-            balance = 0.0
             professions = mutableSetOf(electricista, gasista)
             certificates = mutableSetOf(certificateElectricista1, certificateGasista)
+            balance = 0.0
             debt = 200.0
         }
         professionalInfo2 = ProfessionalInfo().apply {
@@ -109,27 +111,15 @@ class DataInitializer : InitializingBean {
             balance = 750.0
             debt = 100.0
         }
-
-//        if (professionalInfoRepository.count() == 0L) {
-//            professionalInfoRepository.save(professionalInfo1)
-//            professionalInfoRepository.save(professionalInfo2)
-//            professionalInfoRepository.save(professionalInfo3)
-//        }
     }
 
-    fun initAddresses() {
-        //address1 = Address().apply { street = "Calle Falsa 120"; city = "Buenos Aires"; zipCode = "1000" }
-        //address2 = Address().apply { street = "Calle Falsa 121"; city = "Buenos Aires"; zipCode = "1001" }
-        //address3 = Address().apply { street = "Calle Falsa 122"; city = "Buenos Aires"; zipCode = "1002" }
-       // address4 = Address().apply { street = "Calle Falsa 123"; city = "Buenos Aires"; zipCode = "1003" }
-        //address5 = Address().apply { street = "Calle Falsa 124"; city = "Buenos Aires"; zipCode = "1004" }
-        //address6 = Address().apply { street = "Calle Falsa 125"; city = "Buenos Aires"; zipCode = "1005" }
-
-//        if (addressRepository.count() == 0L) {
-//            listOf(address1, address2, address3, address4, address5, address6).forEach {
-//                addressRepository.save(it)
-//            }
-//        }
+    private fun createUser(user: User) {
+        val exists = userRepository.findByDni(user.dni)
+        if (exists.isPresent) {
+            user.id = exists.get().id
+        } else {
+            userRepository.save(user)
+        }
     }
 
     fun initUsers() {
@@ -146,12 +136,14 @@ class DataInitializer : InitializingBean {
             verified = true
             professionalInfo = professionalInfo1
         }
+        createUser(professional1)
+
         professional2 = User().apply {
             mail = "cris@example.com"
             name = "Cristina"
             lastName = "Palacios"
             password = "456123"
-            dni = 12345677
+            dni = 12345679
             avatar = "img2"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.FEMALE
@@ -159,12 +151,14 @@ class DataInitializer : InitializingBean {
             verified = false
             professionalInfo = professionalInfo2
         }
+        createUser(professional2)
+
         professional3 = User().apply {
             mail = "tomi@example.com"
             name = "Tomaso"
             lastName = "Perez"
             password = "pass123"
-            dni = 12345675
+            dni = 12345671
             avatar = "img3"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.FEMALE
@@ -172,63 +166,72 @@ class DataInitializer : InitializingBean {
             verified = true
             professionalInfo = professionalInfo3
         }
+        createUser(professional3)
+
         customer1 = User().apply {
-            mail = "juan@example.com"
+            mail = "customer1@example.com"
             name = "Juan"
             lastName = "Contardo"
             password = "securepassword"
-            dni = 12345673
+            dni = 12345672
             avatar = "img4"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.MALE
             address = Address().apply { street = "Calle Falsa 123"; city = "Buenos Aires"; zipCode = "1003" }
             verified = false
         }
+        createUser(customer1)
+
         customer2 = User().apply {
-            mail = "rodri@example.com"
+            mail = "customer2@example.com"
             name = "Rodrigo"
             lastName = "Bueno"
             password = "123111"
-            dni = 12345672
+            dni = 12345673
             avatar = "img5"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.MALE
             address = Address().apply { street = "Calle Falsa 124"; city = "Buenos Aires"; zipCode = "1004" }
             verified = false
         }
+        createUser(customer2)
+
         customer3 = User().apply {
-            mail = "fer@example.com"
+            mail = "customer3@example.com"
             name = "Fer"
             lastName = "Dodino"
             password = "pass123"
-            dni = 12345678
+            dni = 12345674
             avatar = "img6"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.FEMALE
             address = Address().apply { street = "Calle Falsa 125"; city = "Buenos Aires"; zipCode = "1005" }
             verified = true
         }
-
-        userRepository.saveAll(listOf(professional1, professional2, professional3, customer1, customer2, customer3))
+        createUser(customer3)
     }
 
     fun initJobs() {
-        job1 = Job().apply { professional = professional1; customer = customer1; date = LocalDate.now(); done = true; price = 10000.0 }
-        job2 = Job().apply { professional = professional2; customer = customer2; date = LocalDate.now().minusDays(1); done = true; price = 20000.0 }
-        job3 = Job().apply { professional = professional3; customer = customer3; date = LocalDate.now().minusDays(2); done = true; price = 30000.0 }
-
         if (jobRepository.count() == 0L) {
-            jobRepository.saveAll(listOf(job1, job2, job3))
+
+            val users = userRepository.findAll().associateBy { it.mail}
+
+            job1 = Job().apply { professional = users["valen@example.com"]!!; customer = users["customer1@example.com"]!!; date = LocalDate.now(); done = true; price = 10000.0 }
+            job2 = Job().apply { professional = users["cris@example.com"]!!; customer = users["customer2@example.com"]!!; date = LocalDate.now().minusDays(1); done = true; price = 20000.0 }
+            job3 = Job().apply { professional = users["tomi@example.com"]!!; customer = users["customer3@example.com"]!!; date = LocalDate.now().minusDays(2); done = true; price = 30000.0 }
+            jobRepository.saveAll(setOf(job1, job2, job3))
         }
     }
 
     fun initRatings() {
-        rating1 = Rating().apply { userFrom = customer1; userTo = professional1; job = job1; score = 3; yearAndMonth = YearMonth.now() ; comment = "Muy bueno" }
-        rating2 = Rating().apply { userFrom = customer2; userTo = professional2; job = job2; score = 1; yearAndMonth = YearMonth.now() ; comment = "Regular" }
-        rating3 = Rating().apply { userFrom = customer3; userTo = professional3; job = job3; score = 5; yearAndMonth = YearMonth.now() ; comment = "Excelente" }
-
         if (ratingRepository.count() == 0L) {
-            ratingRepository.saveAll(listOf(rating1, rating2, rating3))
+            val users = userRepository.findAll().associateBy { it.mail}
+            val jobs = jobRepository.findAll().associateBy { it.professional.mail }
+
+            rating1 = Rating().apply { userFrom = users["customer1@example.com"]!!; userTo = users["valen@example.com"]!!; job = jobs["valen@example.com"]!!; score = 3; yearAndMonth = YearMonth.now() ; comment = "Muy bueno" }
+            rating2 = Rating().apply { userFrom = users["customer2@example.com"]!!; userTo = users["cris@example.com"]!!; job =  jobs["cris@example.com"]!!; score = 1; yearAndMonth = YearMonth.now() ; comment = "Regular" }
+            rating3 = Rating().apply { userFrom = users["customer3@example.com"]!!; userTo = users["tomi@example.com"]!!; job =  jobs["tomi@example.com"]!!; score = 5; yearAndMonth = YearMonth.now() ; comment = "Excelente" }
+            ratingRepository.saveAll(setOf(rating1, rating2, rating3))
         }
     }
 }
