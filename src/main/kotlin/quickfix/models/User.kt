@@ -22,12 +22,13 @@ class User : Identifier {
     @Enumerated(EnumType.STRING)
     lateinit var gender : Gender
 
-    @OneToOne
+    @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true)
     lateinit var address : Address
-    var verified : Boolean = false
 
-    @OneToOne
-    var professionalInfo: ProfessionalInfo = ProfessionalInfo()
+    @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true)
+    lateinit var professionalInfo: ProfessionalInfo
+
+    var verified : Boolean = false
 
     companion object {
         const val EDAD_REQUERIDA = 18
