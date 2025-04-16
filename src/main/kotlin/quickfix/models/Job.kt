@@ -28,8 +28,13 @@ class Job : Identifier {
 
     lateinit var distance : Number
 
+    private fun validPrice(): Boolean = this.price > 0.0
+
+    private fun validDate(): Boolean = this.date.isBefore(LocalDate.now()) || this.date.isEqual(LocalDate.now())
+
     override fun validate() {
-        if (price <= 0) throw BusinessException("El precio debe ser mayor a cero")
+        if (!validPrice()) throw BusinessException("El precio debe ser mayor a cero")
+        if (!validDate()) throw BusinessException("La fecha no puede ser en el futuro")
     }
 
 }
