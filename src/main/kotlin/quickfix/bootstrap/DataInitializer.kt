@@ -13,12 +13,6 @@ import java.time.YearMonth
 class DataInitializer : InitializingBean {
 
     @Autowired
-    private lateinit var professionalInfoRepository: ProfessionalInfoRepository
-
-    @Autowired
-    private lateinit var addressRepository: AddressRepository
-
-    @Autowired
     private lateinit var ratingRepository: RatingRepository
 
     @Autowired
@@ -43,13 +37,6 @@ class DataInitializer : InitializingBean {
     private lateinit var professionalInfo1: ProfessionalInfo
     private lateinit var professionalInfo2: ProfessionalInfo
     private lateinit var professionalInfo3: ProfessionalInfo
-
-    private lateinit var address1: Address
-    private lateinit var address2: Address
-    private lateinit var address3: Address
-    private lateinit var address4: Address
-    private lateinit var address5: Address
-    private lateinit var address6: Address
 
     private lateinit var professional1: User
     private lateinit var professional2: User
