@@ -8,8 +8,8 @@ import quickfix.dao.UserRepository
 import quickfix.dto.rating.EditRating
 import quickfix.dto.rating.RatingDTO
 import quickfix.models.Rating
-import quickfix.utils.datifyString
 import quickfix.utils.exceptions.BusinessException
+import java.time.YearMonth
 
 @Service
 class RatingService(
@@ -28,12 +28,13 @@ class RatingService(
         val job = jobRepository.findById(ratingDTO.jobId).orElseThrow {
             BusinessException("Job no existe")
         }
+
         val rating = Rating().apply {
             this.userFrom = userFrom
             this.userTo = userTo
             this.job = job
             this.score = ratingDTO.score
-            this.yearAndMonth = datifyString(ratingDTO.yearAndMonth)
+            this.yearAndMonth = YearMonth.now() /* Se está creando la rating ahora y se encarga sólo el back */
             this.comment = ratingDTO.comment
         }.also { it.validate() }
         ratingRepository.save(rating)
