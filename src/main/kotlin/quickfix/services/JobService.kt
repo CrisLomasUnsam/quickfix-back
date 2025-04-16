@@ -2,11 +2,12 @@ package quickfix.services
 
 import org.springframework.stereotype.Service
 import quickfix.dao.JobRepository
+import quickfix.dto.job.JobOfferDTO
+import quickfix.dto.job.JobRequestDTO
 import quickfix.dto.message.ChatMessageDTO
 import quickfix.dto.message.RedisMessageDTO
 import quickfix.models.Job
 import quickfix.utils.exceptions.BusinessException
-import quickfix.utils.searchParameters.JobSearchParameters
 
 @Service
 class JobService(
