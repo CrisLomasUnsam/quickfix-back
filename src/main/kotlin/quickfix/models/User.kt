@@ -15,6 +15,7 @@ class User : Identifier {
     lateinit var name : String
     lateinit var lastName : String
     lateinit var password : String
+    @Column(unique = true)
     var dni : Int = 0
     lateinit var avatar: String
     lateinit var dateBirth : LocalDate
