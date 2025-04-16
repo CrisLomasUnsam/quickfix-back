@@ -22,11 +22,11 @@ class User : Identifier {
     @Enumerated(EnumType.STRING)
     lateinit var gender : Gender
 
-    @OneToOne(cascade = [CascadeType.ALL])
+    @OneToOne
     lateinit var address : Address
     var verified : Boolean = false
 
-    @OneToOne(cascade = [CascadeType.ALL])
+    @OneToOne
     var professionalInfo: ProfessionalInfo = ProfessionalInfo()
 
     companion object {
