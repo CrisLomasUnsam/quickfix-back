@@ -11,13 +11,13 @@ class Rating : Identifier {
     @Id @GeneratedValue
     override var id: Long = -1
 
-    @OneToOne(cascade = [(CascadeType.ALL)])
+    @ManyToOne
     lateinit var userFrom: User
 
-    @OneToOne(cascade = [(CascadeType.ALL)])
+    @ManyToOne
     lateinit var userTo: User
 
-    @OneToOne(cascade = [(CascadeType.ALL)])
+    @OneToOne
     lateinit var job: Job
     
     @Convert(converter = YearMonthConverter::class)
