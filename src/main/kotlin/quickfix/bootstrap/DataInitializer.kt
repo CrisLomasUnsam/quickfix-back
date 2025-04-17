@@ -5,12 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import quickfix.dao.*
 import quickfix.models.*
-import quickfix.services.ProfessionService
+import quickfix.services.*
 import quickfix.utils.ProfessionsUtils
 import java.time.LocalDate
 
 @Service
 class DataInitializer : InitializingBean {
+
+    @Autowired
+    private lateinit var addressService: AddressService
 
     @Autowired
     private lateinit var professionService: ProfessionService
@@ -26,6 +29,16 @@ class DataInitializer : InitializingBean {
 
     @Autowired
     private lateinit var professionRepository: ProfessionRepository
+
+    @Autowired
+    private lateinit var addressRepository: AddressRepository
+
+    private lateinit var address1: Address
+    private lateinit var address2: Address
+    private lateinit var address3: Address
+    private lateinit var address4: Address
+    private lateinit var address5: Address
+    private lateinit var address6: Address
 
     private lateinit var electricista: Profession
     private lateinit var gasista: Profession
@@ -57,18 +70,32 @@ class DataInitializer : InitializingBean {
     private lateinit var rating3: Rating
 
     override fun afterPropertiesSet() {
+
         println("************** Initializing QuickFix Data **************")
+        loadAddresses()
         loadProfessions()
         initProfessions()
         initCertificates()
         initProfessionalInfos()
 
         if (userRepository.count() == 0L) {
-            initUsers()
-            initJobs()
-            initRatings()
+          initUsers()
+          initJobs()
+          initRatings()
         }
         println("************** Data Initialization Complete **************")
+    }
+
+    fun loadAddresses() {
+        if (addressRepository.count() == 0L) {
+            address1 = Address().apply { street = "Rafaela 5053"; city = "CABA"; zipCode = "1000" }
+            address2 = Address().apply { street = "Av. Corrientes 3247"; city = "CABA"; zipCode = "1001" }
+            address3 = Address().apply { street = "San Martín 850" ; city = "San Miguel de Tucumán"; zipCode = "1002" }
+            address4 = Address().apply { street = "Boulevard Oroño 1265"; city = "Rosario" ;zipCode = "1003" }
+            address5 = Address().apply { street = "Av. Colón 1654"; city = "Córdoba"; zipCode = "1004" }
+            address6 = Address().apply { street = "Av. Mondongo 1000"; city = "Córdoba"; zipCode = "1005"}
+            addressRepository.saveAll(listOf(address1, address2, address3, address4, address5, address6))
+        }
     }
 
     fun loadProfessions() {
@@ -126,6 +153,7 @@ class DataInitializer : InitializingBean {
     }
 
     fun initUsers() {
+        address1 = addressService.getAddressByZipCode("1000")
         professional1 = User().apply {
             mail = "valen@example.com"
             name = "Valentina"
@@ -135,12 +163,13 @@ class DataInitializer : InitializingBean {
             avatar = "img1"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.FEMALE
-            address = Address().apply { street = "Calle Falsa 120"; city = "Buenos Aires"; zipCode = "1000" }
+            address = address1
             verified = true
             professionalInfo = professionalInfo1
         }
         createUser(professional1)
 
+        address2 = addressService.getAddressByZipCode("1001")
         professional2 = User().apply {
             mail = "cris@example.com"
             name = "Cristina"
@@ -150,12 +179,13 @@ class DataInitializer : InitializingBean {
             avatar = "img2"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.FEMALE
-            address = Address().apply { street = "Calle Falsa 121"; city = "Buenos Aires"; zipCode = "1001" }
+            address = address2
             verified = false
             professionalInfo = professionalInfo2
         }
         createUser(professional2)
 
+        address3 = addressService.getAddressByZipCode("1002")
         professional3 = User().apply {
             mail = "tomi@example.com"
             name = "Tomaso"
@@ -165,12 +195,13 @@ class DataInitializer : InitializingBean {
             avatar = "img3"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.FEMALE
-            address = Address().apply { street = "Calle Falsa 122"; city = "Buenos Aires"; zipCode = "1002" }
+            address = address3
             verified = true
             professionalInfo = professionalInfo3
         }
         createUser(professional3)
 
+        address4 = addressService.getAddressByZipCode("1003")
         customer1 = User().apply {
             mail = "customer1@example.com"
             name = "Juan"
@@ -180,11 +211,12 @@ class DataInitializer : InitializingBean {
             avatar = "img4"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.MALE
-            address = Address().apply { street = "Calle Falsa 123"; city = "Buenos Aires"; zipCode = "1003" }
+            address = address4
             verified = false
         }
         createUser(customer1)
 
+        address5 = addressService.getAddressByZipCode("1004")
         customer2 = User().apply {
             mail = "customer2@example.com"
             name = "Rodrigo"
@@ -193,12 +225,13 @@ class DataInitializer : InitializingBean {
             dni = 12345673
             avatar = "img5"
             dateBirth = LocalDate.of(1995, 5, 23)
-            gender = Gender.MALE
-            address = Address().apply { street = "Calle Falsa 124"; city = "Buenos Aires"; zipCode = "1004" }
+            gender = Gender.OTHER
+            address = address5
             verified = false
         }
         createUser(customer2)
 
+        address6 = addressService.getAddressByZipCode("1005")
         customer3 = User().apply {
             mail = "customer3@example.com"
             name = "Fer"
@@ -208,7 +241,7 @@ class DataInitializer : InitializingBean {
             avatar = "img6"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.FEMALE
-            address = Address().apply { street = "Calle Falsa 125"; city = "Buenos Aires"; zipCode = "1005" }
+            address = address6
             verified = true
         }
         createUser(customer3)
