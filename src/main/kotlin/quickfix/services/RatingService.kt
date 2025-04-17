@@ -9,7 +9,7 @@ import quickfix.dto.rating.EditRating
 import quickfix.dto.rating.RatingDTO
 import quickfix.models.Rating
 import quickfix.utils.exceptions.BusinessException
-import java.time.YearMonth
+import java.time.LocalDate
 
 @Service
 class RatingService(
@@ -34,7 +34,7 @@ class RatingService(
             this.userTo = userTo
             this.job = job
             this.score = ratingDTO.score
-            this.yearAndMonth = YearMonth.now() /* Se está creando la rating ahora y se encarga sólo el back */
+            this.yearAndMonth = LocalDate.now()
             this.comment = ratingDTO.comment
         }.also { it.validate() }
         ratingRepository.save(rating)
@@ -53,9 +53,7 @@ class RatingService(
         val rating = ratingRepository.findById(id).orElseThrow { BusinessException("Rating no existe") }
         rating.apply {
             data.score?.let { this.score = it }
-            data.yearAndMonth?.let { this.yearAndMonth = it }
             data.comment?.let { rating.comment = it }
         }.also { it.validate() }
-        ratingRepository.save(rating)
     }
 }
