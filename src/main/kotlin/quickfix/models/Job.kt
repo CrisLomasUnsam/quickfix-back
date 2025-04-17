@@ -1,6 +1,7 @@
 package quickfix.models
 
 import jakarta.persistence.*
+import quickfix.utils.enums.JobStatus
 import quickfix.utils.exceptions.BusinessException
 import java.time.LocalDate
 
@@ -21,13 +22,18 @@ class Job : Identifier {
 
     var done: Boolean = false
 
-    val inProgress: Boolean = !done
+    @OneToOne(cascade = [(CascadeType.ALL)])
+    lateinit var profession : Profession
 
-    var canceled: Boolean = false
+    @Enumerated(EnumType.STRING)
+    var status : JobStatus = JobStatus.PENDING
+
+    //Esto va a ser la fecha y hora actual + los minutos definidos en availability
+    lateinit var initDateTime: LocalDate
 
     var price: Double = 0.0
 
-    lateinit var distance : Number
+    fun calculateDistance() : Number = -1
 
     private fun validPrice(): Boolean = this.price > 0.0
 

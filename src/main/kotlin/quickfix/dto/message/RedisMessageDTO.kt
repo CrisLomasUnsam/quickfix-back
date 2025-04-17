@@ -1,7 +1,16 @@
 package quickfix.dto.message
 
-data class RedisMessageDTO(
-    val msg : String,
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+
+data class RedisMessageDTO @JsonCreator constructor(
+
+    @JsonProperty("msg")
+    val msg: String,
+
+    @JsonProperty("senderIsCustomer")
     val senderIsCustomer: Boolean,
-    val timestamp : Long
+
+    @JsonProperty("timestamp")
+    val timestamp: Long
 )

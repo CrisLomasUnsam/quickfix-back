@@ -3,12 +3,8 @@ package quickfix.bootstrap
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import quickfix.dao.JobRepository
-import quickfix.dao.ProfessionRepository
-import quickfix.dao.RatingRepository
-import quickfix.dao.UserRepository
+import quickfix.dao.*
 import quickfix.models.*
-import quickfix.services.ProfessionService
 import quickfix.utils.ProfessionsUtils
 import java.time.LocalDate
 

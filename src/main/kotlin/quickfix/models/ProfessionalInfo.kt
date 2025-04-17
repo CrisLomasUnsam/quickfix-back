@@ -11,7 +11,7 @@ class ProfessionalInfo : Identifier {
     @ManyToMany(cascade = [(CascadeType.ALL)])
     var professions: Set<Profession> = mutableSetOf()
 
-    @OneToMany(cascade = [(CascadeType.ALL)])
+    @OneToMany(cascade = [(CascadeType.ALL)], orphanRemoval = true)
     var certificates: MutableSet<Certificate> = mutableSetOf()
 
     var balance: Double = 0.0
