@@ -3,14 +3,20 @@ package quickfix.bootstrap
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import quickfix.dao.*
+import quickfix.dao.JobRepository
+import quickfix.dao.ProfessionRepository
+import quickfix.dao.RatingRepository
+import quickfix.dao.UserRepository
 import quickfix.models.*
+import quickfix.services.ProfessionService
 import quickfix.utils.ProfessionsUtils
 import java.time.LocalDate
-import java.time.YearMonth
 
 @Service
 class DataInitializer : InitializingBean {
+
+    @Autowired
+    private lateinit var professionService: ProfessionService
 
     @Autowired
     private lateinit var ratingRepository: RatingRepository
@@ -79,9 +85,9 @@ class DataInitializer : InitializingBean {
     }
 
     fun initProfessions() {
-        electricista = professionRepository.findByNameContainingIgnoreCase("electricista")
-        gasista = professionRepository.findByNameContainingIgnoreCase("gasista")
-        jardinero = professionRepository.findByNameContainingIgnoreCase("jardinero")
+        electricista = professionService.getProfessionByName("electricista")
+        gasista = professionService.getProfessionByName("gasista")
+        jardinero = professionService.getProfessionByName("jardinero")
     }
 
     fun initCertificates() {
@@ -228,9 +234,9 @@ class DataInitializer : InitializingBean {
             val users = userRepository.findAll().associateBy { it.mail}
             val jobs = jobRepository.findAll().associateBy { it.professional.mail }
 
-            rating1 = Rating().apply { userFrom = users["customer1@example.com"]!!; userTo = users["valen@example.com"]!!; job = jobs["valen@example.com"]!!; score = 3; yearAndMonth = YearMonth.now() ; comment = "Muy bueno" }
-            rating2 = Rating().apply { userFrom = users["customer2@example.com"]!!; userTo = users["cris@example.com"]!!; job =  jobs["cris@example.com"]!!; score = 1; yearAndMonth = YearMonth.now() ; comment = "Regular" }
-            rating3 = Rating().apply { userFrom = users["customer3@example.com"]!!; userTo = users["tomi@example.com"]!!; job =  jobs["tomi@example.com"]!!; score = 5; yearAndMonth = YearMonth.now() ; comment = "Excelente" }
+            rating1 = Rating().apply { userFrom = users["customer1@example.com"]!!; userTo = users["valen@example.com"]!!; job = jobs["valen@example.com"]!!; score = 3; yearAndMonth = LocalDate.now() ; comment = "Muy bueno" }
+            rating2 = Rating().apply { userFrom = users["customer2@example.com"]!!; userTo = users["cris@example.com"]!!; job =  jobs["cris@example.com"]!!; score = 1; yearAndMonth = LocalDate.now() ; comment = "Regular" }
+            rating3 = Rating().apply { userFrom = users["customer3@example.com"]!!; userTo = users["tomi@example.com"]!!; job =  jobs["tomi@example.com"]!!; score = 5; yearAndMonth = LocalDate.now() ; comment = "Excelente" }
             ratingRepository.saveAll(setOf(rating1, rating2, rating3))
         }
     }
