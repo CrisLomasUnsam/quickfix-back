@@ -26,7 +26,7 @@ class Rating : Identifier {
 
     override fun validate() {
         if (!validScore(score)) throw BusinessException("El puntaje no puede ser mayor a 5 o menor a 1")
-        if (!validaDate(yearAndMonth)) throw BusinessException("Fecha fuera de rango válido")
+        if (!validDate(yearAndMonth)) throw BusinessException("Fecha fuera de rango válido")
         if (!validComment(comment)) throw BusinessException("Debe agregar un comentario")
         if (!jobIncludesUsers()) throw BusinessException("El job a valorar no contiene a uno/ambos usuarios")
         if (userFrom.id == userTo.id) throw BusinessException("Un usuario no puede calificarse a sí mismo")
@@ -36,7 +36,7 @@ class Rating : Identifier {
 
     private fun validComment(comment: String): Boolean = comment.isNotBlank()
 
-    private fun validaDate(date: LocalDate): Boolean = date.year == job.date.year && date.month >= job.date.month
+    private fun validDate(ratingDate: LocalDate): Boolean = ratingDate >= job.date
 
     private fun validScore(score: Int): Boolean = score in 1..5
 }
