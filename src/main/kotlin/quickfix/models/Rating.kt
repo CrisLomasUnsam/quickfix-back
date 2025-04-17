@@ -1,9 +1,8 @@
 package quickfix.models
 
 import jakarta.persistence.*
-import quickfix.utils.converters.YearMonthConverter
 import quickfix.utils.exceptions.BusinessException
-import java.time.YearMonth
+import java.time.LocalDate
 
 @Entity
 class Rating : Identifier {
@@ -20,8 +19,7 @@ class Rating : Identifier {
     @OneToOne
     lateinit var job: Job
     
-    @Convert(converter = YearMonthConverter::class)
-    lateinit var yearAndMonth: YearMonth
+    lateinit var yearAndMonth: LocalDate
 
     var score: Int = 0
     lateinit var comment: String
@@ -38,7 +36,7 @@ class Rating : Identifier {
 
     private fun validComment(comment: String): Boolean = comment.isNotBlank()
 
-    private fun validaDate(date: YearMonth): Boolean = date.year == job.date.year && date.month >= job.date.month
+    private fun validaDate(date: LocalDate): Boolean = date.year == job.date.year && date.month >= job.date.month
 
     private fun validScore(score: Int): Boolean = score in 1..5
 }
