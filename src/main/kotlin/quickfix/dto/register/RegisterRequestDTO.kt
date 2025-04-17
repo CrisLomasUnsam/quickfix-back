@@ -1,8 +1,9 @@
 package quickfix.dto.register
 
 import quickfix.models.*
-import java.time.LocalDate
-
+import quickfix.utils.DateWithDayFormatter
+import quickfix.utils.datifyString
+import quickfix.utils.stringifyDate
 
 class RegisterRequestDTO (
     var mail: String,
@@ -11,7 +12,7 @@ class RegisterRequestDTO (
     var password: String,
     var dni: Int,
     var avatar: String,
-    var dateBirth: LocalDate,
+    var dateBirth: String,
     var gender: Gender,
     var address: Address,
 ){
@@ -24,7 +25,7 @@ class RegisterRequestDTO (
                 password = user.password,
                 dni = user.dni,
                 avatar = user.avatar,
-                dateBirth = user.dateBirth,
+                dateBirth = stringifyDate(user.dateBirth, DateWithDayFormatter),
                 gender = user.gender,
                 address = user.address
             )
@@ -33,7 +34,6 @@ class RegisterRequestDTO (
 }
 
 fun RegisterRequestDTO.toUser() : User {
-
     val request : RegisterRequestDTO = this
     return User().apply {
         mail = request.mail.trim()
@@ -42,7 +42,7 @@ fun RegisterRequestDTO.toUser() : User {
         password = request.password.trim()
         dni = request.dni
         avatar = request.avatar.trim()
-        dateBirth = request.dateBirth
+        dateBirth = datifyString(request.dateBirth, DateWithDayFormatter)
         gender = request.gender
         address = request.address
     }.apply {

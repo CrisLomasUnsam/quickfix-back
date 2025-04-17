@@ -9,7 +9,7 @@ data class UserModifiedInfoDTO(
     var name: String?,
     var lastName: String?,
     var dni: Int?,
-    var dateBirth: LocalDate?,
+    var dateBirth: String?,
     var gender: Gender?,
     var address: Address?
 )

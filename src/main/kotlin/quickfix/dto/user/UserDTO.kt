@@ -3,6 +3,8 @@ package quickfix.dto.user
 import quickfix.models.Address
 import quickfix.models.Gender
 import quickfix.models.User
+import quickfix.utils.DateWithDayFormatter
+import quickfix.utils.stringifyDate
 import java.time.LocalDate
 
 data class UserDTO(
@@ -11,7 +13,7 @@ data class UserDTO(
     var lastName: String,
     var dni: Int,
     var avatar: String,
-    var dateBirth: LocalDate,
+    var dateBirth: String,
     var gender: Gender,
     var address: Address
 ) {
@@ -24,7 +26,7 @@ data class UserDTO(
                 lastName = user.lastName,
                 dni = user.dni,
                 avatar = user.avatar,
-                dateBirth = user.dateBirth,
+                dateBirth = stringifyDate(user.dateBirth, DateWithDayFormatter),
                 gender = user.gender,
                 address = user.address
             )

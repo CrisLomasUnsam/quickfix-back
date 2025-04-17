@@ -1,6 +1,7 @@
 package quickfix.dto.rating
 
 import quickfix.models.Rating
+import quickfix.utils.YearAndMonthformatter
 import quickfix.utils.stringifyDate
 
 data class RatingDTO(
@@ -18,6 +19,6 @@ fun Rating.toDTO(): RatingDTO =
         userToId = this.userTo.id,
         jobId = this.job.id,
         score = this.score,
-        date = stringifyDate(this.yearAndMonth),
+        date = stringifyDate(this.yearAndMonth, YearAndMonthformatter),
         comment = this.comment
     )
