@@ -2,7 +2,6 @@ package quickfix.dto.user
 
 import quickfix.models.Address
 import quickfix.models.Gender
-import java.time.LocalDate
 
 data class UserModifiedInfoDTO(
     var mail: String?,

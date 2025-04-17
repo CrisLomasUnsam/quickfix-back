@@ -5,7 +5,6 @@ import quickfix.models.Gender
 import quickfix.models.User
 import quickfix.utils.DateWithDayFormatter
 import quickfix.utils.stringifyDate
-import java.time.LocalDate
 
 data class UserDTO(
     var mail: String,

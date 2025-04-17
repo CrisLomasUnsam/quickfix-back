@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import quickfix.dao.*
 import quickfix.models.*
+import quickfix.services.ProfessionService
 import quickfix.utils.ProfessionsUtils
 import java.time.LocalDate
 
