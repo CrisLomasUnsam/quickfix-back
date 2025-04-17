@@ -2,6 +2,8 @@ package quickfix.models
 
 import jakarta.persistence.*
 import quickfix.dto.user.UserModifiedInfoDTO
+import quickfix.utils.DateWithDayFormatter
+import quickfix.utils.datifyString
 import quickfix.utils.exceptions.BusinessException
 import java.time.LocalDate
 
@@ -100,7 +102,7 @@ class User : Identifier {
         }
         modifiedInfoDTO.dateBirth?.let {
             val oldDate = this.dateBirth
-            this.dateBirth = it
+            this.dateBirth = datifyString(modifiedInfoDTO.dateBirth!!, DateWithDayFormatter)
             if (!isAdult()) {
                 this.dateBirth = oldDate
                 throw BusinessException("Debe ser mayor de edad")
