@@ -27,7 +27,7 @@ class User : Identifier {
     lateinit var address : Address
 
     @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true)
-    lateinit var professionalInfo: ProfessionalInfo
+    var professionalInfo: ProfessionalInfo = ProfessionalInfo()
 
     var verified : Boolean = false
 
