@@ -31,5 +31,6 @@ class UserService(
     fun getJobOffers(customerId : Long) =
         redisService.getJobOffers(customerId)
 
-
+    fun cancelJobReq (professionId : Long, customerId : Long) =
+        redisService.removeJobRequest(professionId, customerId)
 }

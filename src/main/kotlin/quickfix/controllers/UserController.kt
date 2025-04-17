@@ -35,6 +35,10 @@ class UserController(
     fun requestJob(@RequestBody jobRequest : JobRequestDTO) =
         userService.requestJob(jobRequest)
 
+    @DeleteMapping("/requestJob/{professionId}/{customerId}")
+    @Operation(summary = "Cancela el job request")
+    fun cancelJobReq(@PathVariable professionId : Long, @PathVariable customerId : Long) = userService.cancelJobReq(professionId, customerId)
+
     /*************************
     JOB OFFER METHODS
      **************************/
