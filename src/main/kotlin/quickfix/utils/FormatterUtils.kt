@@ -5,14 +5,16 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
-val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM")
+val YearAndMonthformatter: DateTimeFormatter = DateTimeFormatter.ofPattern("MM/yyyy")
+val DateWithDayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
-fun stringifyDate(fecha: LocalDate): String = fecha.format(formatter)
-fun datifyString(fechaStr: String): LocalDate {
+fun stringifyDate(fecha: LocalDate, format: DateTimeFormatter): String = fecha.format(format)
+
+fun datifyString(fechaStr: String, format: DateTimeFormatter): LocalDate {
     return try {
-        LocalDate.parse(fechaStr, formatter)
+        LocalDate.parse(fechaStr, format)
     } catch (e: DateTimeParseException) {
-        throw BusinessException("La fecha no tiene el formato esperado: yyyy-MM-dd")
+        throw BusinessException("La fecha no tiene el formato esperado")
     }
 }
 
