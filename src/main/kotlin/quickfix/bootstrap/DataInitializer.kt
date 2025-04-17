@@ -3,6 +3,7 @@ package quickfix.bootstrap
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import quickfix.dao.AddressRepository
 import quickfix.dao.ProfessionRepository
 import quickfix.dao.UserRepository
 import quickfix.models.*
@@ -18,6 +19,47 @@ class DataInitializer : InitializingBean {
   @Autowired
   private lateinit var professionRepository: ProfessionRepository
 
+  @Autowired
+  private lateinit var addressRepository: AddressRepository
+
+
+  /* * * * * * * * * * * *
+   *      ADDRESS        *
+   * * * * * * * * * * * */
+
+
+  val address1 = Address().apply {
+    street = "Rafaela 5053"
+    city = "CABA"
+    zipCode = "A3052"
+  }
+
+  val address2 = Address().apply {
+    street = "Av. Corrientes 3247"
+    city = "CABA"
+    zipCode = "C1193"
+  }
+
+  val address3 = Address().apply {
+    street = "San Martín 850"
+    city = "San Miguel de Tucumán"
+    zipCode = "T4000"
+  }
+
+  val address4 = Address().apply {
+    street = "Boulevard Oroño 1265"
+    city = "Rosario"
+    zipCode = "S2000"
+  }
+
+  val address5 = Address().apply {
+    street = "Av. Colón 1654"
+    city = "Córdoba"
+    zipCode = "X5000"
+  }
+
+
+
   /* * * * * * * * * * * *
   *      USERS           *
   * * * * * * * * * * * */
@@ -31,11 +73,7 @@ class DataInitializer : InitializingBean {
     avatar = "https://static.wikia.nocookie.net/universo-reynandez/images/d/d7/Henry_Cavill.jpg/revision/latest?cb=20221023034502&path-prefix=es"
     dateBirth = LocalDate.of(1995, 5, 23)
     gender = Gender.FEMALE
-    address = Address().apply {
-        street = "Calle Falsa 123"
-        city= "Buenos Aires"
-        zipCode = "1000"
-    }
+    address = address1
     verified = true
   }
 
@@ -48,11 +86,7 @@ class DataInitializer : InitializingBean {
     avatar = "https://static.wikia.nocookie.net/universo-reynandez/images/d/d7/Henry_Cavill.jpg/revision/latest?cb=20221023034502&path-prefix=es"
     dateBirth = LocalDate.of(1995, 5, 23)
     gender = Gender.FEMALE
-    address = Address().apply {
-        street = "Calle Falsa 123"
-        city= "Buenos Aires"
-        zipCode = "1000"
-      }
+    address = address2
     verified = false
   }
 
@@ -65,11 +99,7 @@ class DataInitializer : InitializingBean {
     avatar = "https://static.wikia.nocookie.net/universo-reynandez/images/d/d7/Henry_Cavill.jpg/revision/latest?cb=20221023034502&path-prefix=es"
     dateBirth = LocalDate.of(1995, 5, 23)
     gender = Gender.FEMALE
-    address = Address().apply {
-        street = "Calle Segura 444"
-        city = "Buenos Aires"
-        zipCode = "1000"
-    }
+    address = address3
     verified = true
   }
 
@@ -82,11 +112,7 @@ class DataInitializer : InitializingBean {
     avatar = "https://static.wikia.nocookie.net/universo-reynandez/images/d/d7/Henry_Cavill.jpg/revision/latest?cb=20221023034502&path-prefix=es"
     dateBirth = LocalDate.of(1995, 5, 23)
     gender = Gender.MALE
-    address = Address().apply {
-        street = "Calle Falsa 123"
-        city = "Formosa"
-        zipCode = "444"
-    }
+    address = address4
     verified = false
   }
 
@@ -99,11 +125,7 @@ class DataInitializer : InitializingBean {
     avatar = "https://static.wikia.nocookie.net/universo-reynandez/images/d/d7/Henry_Cavill.jpg/revision/latest?cb=20221023034502&path-prefix=es"
     dateBirth = LocalDate.of(1995, 5, 23)
     gender = Gender.MALE
-    address = Address().apply {
-        street = "Calle 123"
-        city = "Buenos Aires"
-        zipCode= "1000"
-    }
+    address = address5
     verified = false
   }
 
@@ -116,11 +138,7 @@ class DataInitializer : InitializingBean {
     avatar = "https://static.wikia.nocookie.net/universo-reynandez/images/d/d7/Henry_Cavill.jpg/revision/latest?cb=20221023034502&path-prefix=es"
     dateBirth = LocalDate.of(1995, 5, 23)
     gender = Gender.FEMALE
-    address = Address().apply {
-        street = "Calle Segura 444"
-        city = "Buenos Aires"
-        zipCode = "1000"
-    }
+    address = address1
     verified = true
   }
 
@@ -198,11 +216,28 @@ class DataInitializer : InitializingBean {
         }
     }
 
+  /* * * * * * * * * * * *
+   *      ADDRESS        *
+   * * * * * * * * * * * */
+
+  private fun createAdress() {
+    addressRepository.apply {
+      save(address1)
+      save(address2)
+      save(address3)
+      save(address4)
+      save(address5)
+    }
+    println("------- ADDRESS CREATED & LOADED ------- ")
+
+  }
+
     private fun printSucess() {
         println("* * * * * * * * * * * * * * * * * * * * * * *")
         println("* ------- PROFESSIONS LOADED -------------- *")
         println("* ------- PROFESSIONS ASSIGNED ------------ *")
         println("* ------- PROFESSIONALS CREATED & LOADED -- *")
+        println("* ------- ADDRESS CREATED & LOADED -------- *")
         println("* ------- USERS CREATED & LOADED ---------- *")
         println("* * * * * * * * * * * * * * * * * * * * * * *")
     }
@@ -212,5 +247,6 @@ class DataInitializer : InitializingBean {
     this.addProfessionalInfo()
     this.createUsers()
     this.printSucess()
+    this.createAdress()
   }
 }
