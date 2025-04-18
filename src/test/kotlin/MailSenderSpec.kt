@@ -62,11 +62,7 @@ class MailSenderSpec: DescribeSpec({
                 avatar = "...",
                 dateBirth = LocalDate.of(2001,1, 1),
                 gender = Gender.MALE,
-                address = Address(
-                    street = "Avenida siempre viva 123",
-                    city = "Springfield",
-                    zipCode = "01234"
-                )
+                address = Address().apply { street = "Avenida siempre viva 123"; city = "Springfield"; zipCode = "01234" }
             )
             try {
                 mockedRegisterService.registerUser(registerData)
