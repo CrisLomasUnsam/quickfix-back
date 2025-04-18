@@ -15,21 +15,20 @@ class UserService(
 ) {
 
     fun getUserById(id: Long): User =
-        userRepository.findById(id).orElseThrow{throw BusinessException()}
+        userRepository.findById(id).orElseThrow{ BusinessException("Usuario no encontrado") }
 
     fun changeUserInfo(id: Long, modifiedInfo: UserModifiedInfoDTO) {
-        val user = getUserById(id) ?: throw BusinessException()
+        val user = getUserById(id)
         user.updateUserInfo(modifiedInfo)
     }
 
     fun getProfessionalInfo(id : Long) : ProfessionalInfo =
-        userRepository.findById(id).orElseThrow{throw BusinessException()}.professionalInfo
+        this.getUserById(id).professionalInfo
 
     fun requestJob(jobRequest : JobRequestDTO) =
         redisService.requestJob(jobRequest)
 
     fun getJobOffers(customerId : Long) =
         redisService.getJobOffers(customerId)
-
 
 }

@@ -2,6 +2,8 @@ package quickfix.models
 
 import jakarta.persistence.*
 import quickfix.dto.user.UserModifiedInfoDTO
+import quickfix.utils.DateWithDayFormatter
+import quickfix.utils.datifyString
 import quickfix.utils.exceptions.BusinessException
 import java.time.LocalDate
 
@@ -15,6 +17,7 @@ class User : Identifier {
     lateinit var name : String
     lateinit var lastName : String
     lateinit var password : String
+    @Column(unique = true)
     var dni : Int = 0
     lateinit var avatar: String
     lateinit var dateBirth : LocalDate
@@ -22,12 +25,13 @@ class User : Identifier {
     @Enumerated(EnumType.STRING)
     lateinit var gender : Gender
 
-    @OneToOne(cascade = [CascadeType.ALL])
+    @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true)
     lateinit var address : Address
-    var verified : Boolean = false
 
-    @OneToOne(cascade = [CascadeType.ALL])
+    @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true)
     var professionalInfo: ProfessionalInfo = ProfessionalInfo()
+
+    var verified : Boolean = false
 
     companion object {
         const val EDAD_REQUERIDA = 18
@@ -98,7 +102,7 @@ class User : Identifier {
         }
         modifiedInfoDTO.dateBirth?.let {
             val oldDate = this.dateBirth
-            this.dateBirth = it
+            this.dateBirth = datifyString(modifiedInfoDTO.dateBirth!!, DateWithDayFormatter)
             if (!isAdult()) {
                 this.dateBirth = oldDate
                 throw BusinessException("Debe ser mayor de edad")
