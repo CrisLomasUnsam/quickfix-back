@@ -24,6 +24,7 @@ fun createCustomerUserMock(): CustomerUserMock {
             city = "Testville"
             zipCode = "1234"
         }
+
     }
     return CustomerUserMock(mockCustomer)
 }

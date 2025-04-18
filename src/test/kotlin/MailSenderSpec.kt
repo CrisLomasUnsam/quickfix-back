@@ -7,7 +7,9 @@ import io.mockk.verify
 import mocks.createMailSenderMock
 import quickfix.models.Address
 import quickfix.models.Gender
+import quickfix.utils.DateWithDayFormatter
 import quickfix.utils.mailSender.*
+import quickfix.utils.stringifyDate
 import java.time.LocalDate
 
 
@@ -60,13 +62,13 @@ class MailSenderSpec: DescribeSpec({
                 lastName = "Perez",
                 dni = 11222333,
                 avatar = "...",
-                dateBirth = LocalDate.of(2001,1, 1),
+                dateBirth = stringifyDate(LocalDate.of(2001,1, 1), DateWithDayFormatter),
                 gender = Gender.MALE,
-                address = Address(
-                    street = "Avenida siempre viva 123",
-                    city = "Springfield",
+                address = Address().apply {
+                    street = "Avenida siempre viva 123"
+                    city = "Springfield"
                     zipCode = "01234"
-                )
+                }
             )
             try {
                 mockedRegisterService.registerUser(registerData)
