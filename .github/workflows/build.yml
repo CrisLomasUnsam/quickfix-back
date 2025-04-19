@@ -9,13 +9,13 @@ name: build
 # en un branch sin PRs orientados a esas dos que indicamos no lo activarÃ¡.
 on:
   push:
-    branches: main
+    branches: [main]
   pull_request:
-    branches: main
+    branches: [main]
 
 permissions:
   contents: write
-
+  pull-requests: write
 
 # "jobs" describe los diferentes trabajos a realizar.
 jobs:

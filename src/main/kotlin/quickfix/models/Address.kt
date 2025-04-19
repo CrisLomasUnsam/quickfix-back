@@ -9,6 +9,7 @@ class Address : Identifier {
 
     @Id @GeneratedValue
     override var id: Long = -1
+
     lateinit var street: String
     lateinit var city: String
     lateinit var zipCode: String
