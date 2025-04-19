@@ -2,10 +2,10 @@ package quickfix.controllers
 
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.web.bind.annotation.*
+import quickfix.dto.job.CancelJobOfferDTO
 import quickfix.dto.job.JobOfferDTO
 import quickfix.dto.job.JobRequestDTO
 import quickfix.services.ProfessionalService
-import quickfix.services.RedisService
 
 @RestController
 @RequestMapping("/professional")
@@ -32,5 +32,10 @@ class ProfessionalController (
     @Operation(summary = "Utilizado para que el profesional pueda enviar su oferta a un determinado JobRequest")
     fun offerJob(@RequestBody jobOffer : JobOfferDTO) =
         professionalService.offerJob(jobOffer)
+
+    @DeleteMapping("/jobOffers")
+    @Operation(summary = "Utilizado para cancelar la oferta de un JobOffer")
+    fun cancelJobOffer(@RequestBody cancelJobOffer: CancelJobOfferDTO) =
+        professionalService.cancelJobOffer(cancelJobOffer)
 
 }

@@ -13,9 +13,6 @@ import quickfix.services.JobService
 class JobController(
     val jobService: JobService
 ){
-//    @GetMapping("/byUser/{id}")
-//    @Operation(summary = "Obtener todos los jobs de un customer")
-//    fun getJobsByUserId (@Parameter(description = "Id del user") @PathVariable id: Long) = jobService.getJobsByUser(id)
 
     @PostMapping
     fun createJob(@RequestBody job: Job) = jobService.createJob(job)

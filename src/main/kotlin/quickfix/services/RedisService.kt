@@ -22,12 +22,12 @@ class RedisService(
     JobRequest_ProfessionId_CustomerId_
      *******************************************************/
 
-    //TODO: Cambiar professionId: String -> Long al implementar professionRepository
-    private fun getJobRequestKey(professionId: String, customerId: Long) : String =
+
+    private fun getJobRequestKey(professionId: Long, customerId: Long) : String =
         "JobRequest_${professionId}_${customerId}_"
 
     fun requestJob(jobRequest : JobRequestDTO) {
-        val professionId = jobRequest.profession //TODO: Cuando se implemente el repositorio, cambiar por ID
+        val professionId = jobRequest.professionId
         val customerId = jobRequest.customerId
         val tempKey = "JobRequest_*_${customerId}_"
         val userHasPreviousRequest = redisJobRequestStorage.keys(tempKey).isNotEmpty()
@@ -52,9 +52,8 @@ class RedisService(
         return jobRequests
     }
 
-    //TODO: Implementar llamados a esta función y eliminar el toString cuando se implemente ProfessionalRepository
     fun removeJobRequest(professionId : Long, customerId: Long) {
-        val key = getJobRequestKey(professionId.toString(), customerId)
+        val key = getJobRequestKey(professionId, customerId)
         redisJobRequestStorage.delete(key)
     }
 
@@ -70,8 +69,7 @@ class RedisService(
     JobOffer_ProfessionId_CustomerId_ProfessionalId_
      *******************************************************/
 
-    //TODO: Cambiar professionId: String -> Long al implementar professionRepository
-    private fun getJobOfferKey(professionId: String, customerId: Long, professionalId: Long) : String =
+    private fun getJobOfferKey(professionId: Long, customerId: Long, professionalId: Long) : String =
         "JobOffer_${professionId}_${customerId}_${professionalId}_"
 
     fun getJobOffers(customerId : Long) : Set<JobOfferDTO> {
@@ -87,13 +85,12 @@ class RedisService(
         val professionalHasActiveOffer = redisJobOfferStorage.keys(keyPattern).isNotEmpty()
         if(professionalHasActiveOffer)
             throw BusinessException("No puede realizar más de una oferta simultáneamente.")
-        val key = getJobOfferKey(jobOffer.profession, jobOffer.professionalId, jobOffer.customerId)
+        val key = getJobOfferKey(jobOffer.professionId, jobOffer.professionalId, jobOffer.customerId)
         redisJobOfferStorage.opsForList().rightPush(key,jobOffer)
     }
 
-    //TODO: Implementar llamados a esta función y eliminar el toString cuando se implemente ProfessionalRepository
     fun removeJobOffer(professionId : Long, customerId: Long, professionalId: Long) {
-        val key = getJobOfferKey(professionId.toString(), customerId, professionalId)
+        val key = getJobOfferKey(professionId, customerId, professionalId)
         redisJobOfferStorage.delete(key)
     }
 
