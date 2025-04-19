@@ -8,6 +8,6 @@ import java.util.Optional
 @Component
 interface UserRepository: CrudRepository<User, Long>{
 
-    fun findByMail(mail: String): User? = this.findAll().find { it.mail == mail }
-    fun findByDni(dni: Int): Optional<User>
+    fun findByMail(mail: String): User?
+    fun findByDni(dni: Int): User?
 }
