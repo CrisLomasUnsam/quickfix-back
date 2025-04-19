@@ -1,6 +1,8 @@
 package quickfix.models
 
 import jakarta.persistence.*
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
 import quickfix.dto.user.UserModifiedInfoDTO
 import quickfix.utils.DateWithDayFormatter
 import quickfix.utils.datifyString
@@ -9,14 +11,15 @@ import java.time.LocalDate
 
 @Entity
 @Table(name = "users")
-class User : Identifier {
+class User : Identifier, UserDetails {
 
     @Id @GeneratedValue
     override var id: Long = -1
     lateinit var mail: String
     lateinit var name : String
     lateinit var lastName : String
-    lateinit var password : String
+    @Column(length = 60)
+    lateinit var encodedPassword : String
     @Column(unique = true)
     var dni : Int = 0
     lateinit var avatar: String
@@ -75,13 +78,13 @@ class User : Identifier {
         name.trim().isNotBlank() && !name.trim().contains(" ") && !name.any { it.isDigit() }
 
     private fun validPassword() : Boolean =
-        password.trim().length >= 6 && !(password.trim().contains(" "))
+        encodedPassword.trim().length >= 6 && !(encodedPassword.trim().contains(" "))
 
     private fun isAdult(): Boolean =
         dateBirth.plusYears(EDAD_REQUERIDA.toLong()).isBefore(LocalDate.now())
 
     fun verifyPassword(password : String) : Boolean =
-        this.password == password
+        this.encodedPassword == password
 
     fun updateUserInfo(modifiedInfoDTO: UserModifiedInfoDTO) {
         modifiedInfoDTO.mail?.let {
@@ -116,4 +119,13 @@ class User : Identifier {
         }
     }
 
+    override fun getUsername(): String {
+        return this.mail
+    }
+
+    override fun getPassword(): String {
+        return this.encodedPassword
+    }
+
+    override fun getAuthorities(): Collection<GrantedAuthority> = listOf() /*Esto es para roles*/
 }
