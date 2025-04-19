@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service
 import quickfix.dao.*
 import quickfix.models.*
 import quickfix.services.*
-import quickfix.utils.ProfessionsUtils
+import quickfix.utils.dataInitializer.Professions
 import java.time.LocalDate
 
 @Service
@@ -100,8 +100,8 @@ class DataInitializer : InitializingBean {
 
     fun loadProfessions() {
         if (professionRepository.count() == 0L) {
-            val professions = ProfessionsUtils.defaultProfessions.map {
-                Profession().apply { name = it }
+            val professions : List<Profession> = Professions.map { professionName ->
+                Profession().apply { this.name = professionName }
             }
             professionRepository.saveAll(professions)
             println("Professions loaded")
@@ -109,9 +109,9 @@ class DataInitializer : InitializingBean {
     }
 
     fun initProfessions() {
-        electricista = professionService.getProfessionByName("electricista")
-        gasista = professionService.getProfessionByName("gasista")
-        jardinero = professionService.getProfessionByName("jardinero")
+        electricista = professionService.getProfessionByName("Electricista")
+        gasista = professionService.getProfessionByName("Gasista")
+        jardinero = professionService.getProfessionByName("Jardinero")
     }
 
     fun initCertificates() {
