@@ -1,7 +1,7 @@
 package quickfix.utils
 
 import quickfix.models.Job
-import quickfix.models.Professions
+import quickfix.utils.enums.ProfessionTypes
 import quickfix.utils.enums.JobStatus
 
 private val jobStatusMapping = mapOf(
@@ -11,18 +11,18 @@ private val jobStatusMapping = mapOf(
 )
 
 private val professionMapping = mapOf(
-    "gasista" to Professions.GASISTA,
-    "carpintero" to Professions.CARPINTERO,
-    "albanil" to Professions.ALBANIL,
-    "albañil" to Professions.ALBANIL,
-    "pintor" to Professions.PINTOR,
-    "jardinero" to Professions.JARDINERO,
-    "plomero" to Professions.PLOMERO,
-    "arquitecto" to Professions.ARQUITECTO,
-    "mecanico" to Professions.MECANICO,
-    "mecánico" to Professions.MECANICO,
-    "electricista" to Professions.ELECTRICISTA,
-    "otros" to Professions.OTROS
+    "gasista" to ProfessionTypes.GASISTA,
+    "carpintero" to ProfessionTypes.CARPINTERO,
+    "albanil" to ProfessionTypes.ALBANIL,
+    "albañil" to ProfessionTypes.ALBANIL,
+    "pintor" to ProfessionTypes.PINTOR,
+    "jardinero" to ProfessionTypes.JARDINERO,
+    "plomero" to ProfessionTypes.PLOMERO,
+    "arquitecto" to ProfessionTypes.ARQUITECTO,
+    "mecanico" to ProfessionTypes.MECANICO,
+    "mecánico" to ProfessionTypes.MECANICO,
+    "electricista" to ProfessionTypes.ELECTRICISTA,
+    "otros" to ProfessionTypes.OTROS
 )
 
 fun hasMatchingStart(a: String, b: String, limit: Int = 5): Boolean {
@@ -48,6 +48,6 @@ fun matchProfessionFromString(param: String, element: Job): Boolean {
     }?.value
     return matched != null &&
             element.professional.professionalInfo.professions.any {
-                it.name.equals(matched.name, true)
+                it.professionType == matched
             }
 }

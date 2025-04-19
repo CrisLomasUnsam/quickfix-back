@@ -1,6 +1,6 @@
-package quickfix.models
+package quickfix.utils.enums
 
-enum class Professions {
+enum class ProfessionTypes {
     GASISTA,
     CARPINTERO,
     ALBANIL,

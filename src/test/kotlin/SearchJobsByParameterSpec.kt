@@ -1,8 +1,7 @@
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import quickfix.models.Profession
-import quickfix.models.Professions
+import quickfix.utils.enums.ProfessionTypes
 import quickfix.utils.hasMatchingStart
 import quickfix.utils.searchParameters.ISearchParameters
 
@@ -10,7 +9,7 @@ enum class MockedJobStatus { DONE, PENDING }
 
 data class MockedCustomer(val id: Long)
 
-data class Professional(val professions: List<Profession>)
+data class Professional(val professions: List<ProfessionTypes>)
 
 data class MockedJob(
     val done: Boolean,
@@ -19,35 +18,32 @@ data class MockedJob(
     val mockedCustomer: MockedCustomer
 )
 
-fun professionOf(profession: Professions) =
-    Profession().apply { name = profession.name }
-
 val mockedJob1 = MockedJob(
     done = true,
     inProgress = false,
-    professional = Professional(listOf(professionOf(Professions.JARDINERO))),
+    professional = Professional(listOf((ProfessionTypes.JARDINERO))),
     mockedCustomer = MockedCustomer(id = 1)
 )
 
 val mockedJob2 = MockedJob(
     done = false,
     inProgress = true,
-    professional = Professional(listOf(professionOf(Professions.JARDINERO))),
+    professional = Professional(listOf((ProfessionTypes.JARDINERO))),
     mockedCustomer = MockedCustomer(id = 1)
 )
 
 val mockedJob3 = MockedJob(
     done = false,
     inProgress = false,
-    professional = Professional(listOf(professionOf(Professions.ELECTRICISTA))),
+    professional = Professional(listOf((ProfessionTypes.ELECTRICISTA))),
     mockedCustomer = MockedCustomer(id = 2)
 )
 
 val listOfJobs = listOf(mockedJob1, mockedJob2, mockedJob3)
 
 val professionMapping = mapOf(
-    "gasista" to Professions.GASISTA,
-    "jardinero" to Professions.JARDINERO,
+    "gasista" to ProfessionTypes.GASISTA,
+    "jardinero" to ProfessionTypes.JARDINERO,
 )
 
 class MockedJobSearchParameters(private val parameter: String) : ISearchParameters<MockedJob> {
@@ -83,7 +79,7 @@ fun matchProfessionFromString(param: String, element: MockedJob): Boolean {
     }?.value
     return matchedProfession != null &&
             element.professional.professions.any {
-                it.name.equals(matchedProfession.name, ignoreCase = true)
+                it == matchedProfession
             }
 }
 
