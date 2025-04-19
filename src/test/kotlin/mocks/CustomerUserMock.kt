@@ -14,7 +14,7 @@ fun createCustomerUserMock(): CustomerUserMock {
         mail = "test.user@example.com"
         name = "Test"
         lastName = "User"
-        password = "securePassword123"
+        encodedPassword = "securePassword123"
         dni = 12345678
         avatar = "https://example.com/avatar.jpg"
         dateBirth = LocalDate.of(1995, 5, 20)

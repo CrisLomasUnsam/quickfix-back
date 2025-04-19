@@ -56,7 +56,7 @@ class MailSenderSpec: DescribeSpec({
         it("doesn't send the registration email to an invalid address") {
             val invalidAddress = ""
             val registerData = RegisterRequestDTO(
-                password = "123",
+                rawPassword = "123",
                 mail = invalidAddress,
                 name = "Carlos",
                 lastName = "Perez",
