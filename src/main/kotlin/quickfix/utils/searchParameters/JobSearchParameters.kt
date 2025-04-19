@@ -1,8 +1,8 @@
 package quickfix.utils.searchParameters
 
 import quickfix.models.Job
-import quickfix.utils.matchJobStatusFromString
-import quickfix.utils.matchProfessionFromString
+import quickfix.utils.jobs.matchJobStatusFromString
+import quickfix.utils.professions.matchProfessionFromString
 
 data class JobSearchParameters (
 
@@ -10,7 +10,7 @@ data class JobSearchParameters (
 
 ) : ISearchParameters<Job> {
 
-    override fun matches(element: Job): Boolean =
-        matchJobStatusFromString(parameter)?.let { element.status == it }
-        ?: matchProfessionFromString(parameter,element)
+    override fun matches(job: Job): Boolean =
+        matchJobStatusFromString(parameter)?.let { job.status == it }
+        ?: matchProfessionFromString(parameter, job)
 }

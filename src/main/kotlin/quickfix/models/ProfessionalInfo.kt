@@ -20,6 +20,9 @@ class ProfessionalInfo : Identifier {
     override fun validate() {
     }
 
+    fun hasProfession(professionName: String): Boolean =
+        this.professions.any { profession -> profession.name == professionName }
+
     private fun addConfirmedJob(): Boolean = TODO("Implement me")
     private fun removeConfirmedJob(): Boolean = TODO("Implement me")
 

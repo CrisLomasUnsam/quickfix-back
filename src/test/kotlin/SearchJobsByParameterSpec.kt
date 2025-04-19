@@ -1,7 +1,7 @@
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import quickfix.utils.enums.ProfessionTypes
+import quickfix.utils.enums.ProfessionType
 import quickfix.utils.hasMatchingStart
 import quickfix.utils.searchParameters.ISearchParameters
 
@@ -9,7 +9,7 @@ enum class MockedJobStatus { DONE, PENDING }
 
 data class MockedCustomer(val id: Long)
 
-data class Professional(val professions: List<ProfessionTypes>)
+data class Professional(val professions: List<ProfessionType>)
 
 data class MockedJob(
     val done: Boolean,
@@ -21,29 +21,29 @@ data class MockedJob(
 val mockedJob1 = MockedJob(
     done = true,
     inProgress = false,
-    professional = Professional(listOf((ProfessionTypes.JARDINERO))),
+    professional = Professional(listOf((ProfessionType.JARDINERO))),
     mockedCustomer = MockedCustomer(id = 1)
 )
 
 val mockedJob2 = MockedJob(
     done = false,
     inProgress = true,
-    professional = Professional(listOf((ProfessionTypes.JARDINERO))),
+    professional = Professional(listOf((ProfessionType.JARDINERO))),
     mockedCustomer = MockedCustomer(id = 1)
 )
 
 val mockedJob3 = MockedJob(
     done = false,
     inProgress = false,
-    professional = Professional(listOf((ProfessionTypes.ELECTRICISTA))),
+    professional = Professional(listOf((ProfessionType.ELECTRICISTA))),
     mockedCustomer = MockedCustomer(id = 2)
 )
 
 val listOfJobs = listOf(mockedJob1, mockedJob2, mockedJob3)
 
 val professionMapping = mapOf(
-    "gasista" to ProfessionTypes.GASISTA,
-    "jardinero" to ProfessionTypes.JARDINERO,
+    "gasista" to ProfessionType.GASISTA,
+    "jardinero" to ProfessionType.JARDINERO,
 )
 
 class MockedJobSearchParameters(private val parameter: String) : ISearchParameters<MockedJob> {
