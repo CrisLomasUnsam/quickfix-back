@@ -23,7 +23,7 @@ repositories {
 dependencies {
     val kotestVersion = "5.8.0"
 
-    // básicos de cualquier proyecto Spring Boot
+    // Spring Boot
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-hateoas")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -40,15 +40,18 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
 
-    //Api documentation
+    // OpenAPI
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 
     // PostgresSQL
     runtimeOnly("org.postgresql:postgresql")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
-    //Redis
+    // Redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
+    // Security
+    implementation("org.springframework.boot:spring-boot-starter-security")
 }
 
 kotlin {
