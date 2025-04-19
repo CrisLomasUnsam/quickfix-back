@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.media.SchemaProperty
 data class JobOfferDTO (
     val professionalId : Long,
     val customerId : Long,
-    val profession : String,
+    val professionId : Long,
     val name: String,
     val lastName: String,
     val avatar : String,
