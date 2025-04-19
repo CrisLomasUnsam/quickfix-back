@@ -1,7 +1,7 @@
 package quickfix.services
 
 import org.springframework.stereotype.Service
-import quickfix.dto.job.CancelOfferJobDTO
+import quickfix.dto.job.CancelJobOfferDTO
 import quickfix.dto.job.JobOfferDTO
 import quickfix.dto.job.JobRequestDTO
 
@@ -24,6 +24,6 @@ class ProfessionalService(
     fun offerJob(jobOffer : JobOfferDTO) =
         redisService.offerJob(jobOffer)
 
-    fun cancelOfferJob(cancelOfferJob: CancelOfferJobDTO) =
+    fun cancelJobOffer(cancelOfferJob: CancelJobOfferDTO) =
         redisService.removeJobOffer(cancelOfferJob.professionId, cancelOfferJob.customerId, cancelOfferJob.professionalId)
 }

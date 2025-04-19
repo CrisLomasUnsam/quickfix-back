@@ -1,6 +1,6 @@
 package quickfix.dto.job
 
-data class CancelOfferJobDTO (
+data class CancelJobOfferDTO (
     val professionId: Long,
     val customerId: Long,
     val professionalId: Long
