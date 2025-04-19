@@ -6,6 +6,7 @@ import quickfix.utils.exceptions.BusinessException
 @Schema(description = "Solicitud de un Job por un customer, consumido por observers")
 data class JobRequestDTO(
     var customerId: Long,
+    // TODO: cambiar professional a string por ahora lo dejo asi
     var professionId: Long,
     var detail: String,
     var addressId: Long
