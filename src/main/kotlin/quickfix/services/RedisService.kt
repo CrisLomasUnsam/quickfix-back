@@ -8,7 +8,6 @@ import quickfix.dto.job.JobRequestDTO
 import quickfix.dto.message.RedisMessageDTO
 import quickfix.dto.message.toRedisMessage
 import quickfix.utils.exceptions.BusinessException
-import java.time.Duration
 
 @Service
 class RedisService(
@@ -28,12 +27,16 @@ class RedisService(
 
     fun requestJob(jobRequest : JobRequestDTO) {
         val professionId = jobRequest.professionId
+            ?: throw BusinessException("No se encontró el id de profesión en la solicitud")
+
         val customerId = jobRequest.customerId
+
         val tempKey = "JobRequest_*_${customerId}_"
         val userHasPreviousRequest = redisJobRequestStorage.keys(tempKey).isNotEmpty()
 
         if(userHasPreviousRequest)
             throw BusinessException("Este usuario ya tiene una solicitud activa.")
+
 
         val key = getJobRequestKey(professionId, customerId)
         redisJobRequestStorage.opsForList().rightPush(key,jobRequest)
@@ -54,6 +57,10 @@ class RedisService(
 
     fun removeJobRequest(professionId : Long, customerId: Long) {
         val key = getJobRequestKey(professionId, customerId)
+
+        if (!redisJobRequestStorage.hasKey(key)) {
+            throw BusinessException("No existe una solicitud activa para el usuario $customerId en la profesión $professionId")
+        }
         redisJobRequestStorage.delete(key)
     }
 
