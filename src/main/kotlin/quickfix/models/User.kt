@@ -111,9 +111,7 @@ class User : Identifier {
         modifiedInfoDTO.gender?.let {
             this.gender = it
         }
-        modifiedInfoDTO.address?.let {
-            this.address = it
-        }
+
     }
 
 }
