@@ -2,6 +2,7 @@ package quickfix.controllers
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
 import quickfix.dto.job.CancelJobOfferDTO
 import quickfix.dto.job.JobOfferDTO
@@ -11,6 +12,7 @@ import quickfix.dto.professional.FinancesDTO
 import quickfix.dto.professional.NewCertificateDTO
 import quickfix.services.ProfessionalService
 
+@Tag(name = "Operaciones del profesional")
 @RestController
 @RequestMapping("/professional")
 @CrossOrigin (origins = ["*"])
@@ -47,24 +49,27 @@ class ProfessionalController (
      **************************/
 
     @GetMapping("/{professionalId}")
-    @Operation(summary = "Utilizado para obtener las finanzas del profesional (balance, ganancias y deuda)")
+    @Operation(summary = "Finanzas del profesional")
     fun getFinances(@PathVariable professionalId : Long) : FinancesDTO =
         professionalService.getFinances(professionalId)
 
     @GetMapping("/services/add/{professionalId}")
-    @Operation(summary = "Utilizada para agregar servicios brindados por el profesional")
+    @Operation(summary = "Agregar servicio brindado")
     fun addProfession(@PathVariable professionalId : Long, @RequestParam profession: String) =
         professionalService.addProfession(professionalId, profession)
 
     @DeleteMapping("/services/delete/{professionalId}")
+    @Operation(summary = "Eliminar servicio brindado")
     fun deleteProfession(@PathVariable professionalId : Long, @RequestParam profession: String) =
         professionalService.deleteProfession(professionalId, profession)
 
     @GetMapping("/certificates/{professionalId}")
+    @Operation(summary = "Obtener certificados")
     fun getCertificates(@PathVariable professionalId: Long) : List<CertificateDTO> =
         professionalService.getCertificates(professionalId)
 
     @PostMapping("/certificates/add/{professionalId}")
+    @Operation(summary = "Agregar certificado")
     fun addCertificate(@PathVariable professionalId : Long, @RequestBody dto: NewCertificateDTO) =
         professionalService.addCertificate(professionalId, dto)
 
