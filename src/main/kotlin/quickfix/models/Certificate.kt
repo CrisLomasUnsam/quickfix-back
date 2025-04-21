@@ -11,7 +11,7 @@ class Certificate : Identifier {
     @ManyToOne
     lateinit var profession: Profession
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     var imgs : MutableSet<String> = mutableSetOf()
 
     override fun validate() {
