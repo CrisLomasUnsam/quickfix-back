@@ -4,24 +4,20 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import quickfix.dao.*
-import quickfix.dto.register.RegisterRequestDTO
 import quickfix.models.*
 import quickfix.services.AddressService
 import quickfix.services.ProfessionService
-import quickfix.services.RegisterService
-import quickfix.services.UserService
 import quickfix.utils.dataInitializer.Professions
-import quickfix.utils.exceptions.BusinessException
 import java.time.LocalDate
 
 @Service
 class DataInitializer : InitializingBean {
 
-    @Autowired
-    private lateinit var userService: UserService
-
-    @Autowired
-    private lateinit var registerService: RegisterService
+//    @Autowired
+//    private lateinit var userService: UserService
+//
+//    @Autowired
+//    private lateinit var registerService: RegisterService
 
     @Autowired
     private lateinit var addressService: AddressService
@@ -92,13 +88,13 @@ class DataInitializer : InitializingBean {
         if (userRepository.count() != 0L) {
             println("DIRTY REPO !!!!!!!")
             userRepository.deleteAll()
-            registerUsers()
+            //registerUsers()
             initUsers()
             initJobs()
             initRatings()
         } else {
             println("CLEAN REPO !!!!!!!!")
-            registerUsers()
+            //registerUsers()
             initUsers()
             initJobs()
             initRatings()
@@ -164,7 +160,7 @@ class DataInitializer : InitializingBean {
         }
     }
 
-    private fun updateUser(user: User) {
+    private fun createUser(user: User) {
         val exists = userRepository.findByDni(user.dni)
         if (exists != null) {
             user.id = exists.id
@@ -172,59 +168,151 @@ class DataInitializer : InitializingBean {
         userRepository.save(user)
     }
 
-    fun registerUsers() {
-        if (userRepository.count() != 0L) { println(" DIRTY REPO !!!!") }
-        val users = listOf(
-            RegisterRequestDTO(mail = "valen@example.com", name = "Valentina", lastName = "Gomez", rawPassword = "securepassword", dni = 12345678, avatar = "img1", dateBirth = "23/05/1999", gender = Gender.FEMALE, address = addressService.getAddressByZipCode("1000")),
-            RegisterRequestDTO(mail = "cris@example.com", name = "Cristina", lastName = "Palacios", rawPassword = "456123", dni = 12345679, avatar = "img2", dateBirth = "20/06/1998", gender = Gender.FEMALE, address = addressService.getAddressByZipCode("1001")),
-            RegisterRequestDTO(mail = "tomi@example.com", name = "Tomaso", lastName = "Perez", rawPassword = "pass123", dni = 12345671, avatar = "img3", dateBirth = "09/08/2000", gender = Gender.FEMALE, address = addressService.getAddressByZipCode("1002")),
-            RegisterRequestDTO(mail = "customer1@example.com", name = "Juan", lastName = "Contardo", rawPassword = "securepassword", dni = 12345672, avatar = "img4", dateBirth = "21/11/1997", gender = Gender.MALE, address = addressService.getAddressByZipCode("1003")),
-            RegisterRequestDTO(mail = "customer2@example.com", name = "Rodrigo", lastName = "Bueno", rawPassword = "123111", dni = 12345673, avatar = "img5", dateBirth = "18/07/1999", gender = Gender.OTHER, address = addressService.getAddressByZipCode("1004")),
-            RegisterRequestDTO(mail = "customer3@example.com", name = "Fer", lastName = "Dodino", rawPassword = "pass123", dni = 12345674, avatar = "img6", dateBirth = "12/04/1995", gender = Gender.FEMALE, address = addressService.getAddressByZipCode("1005"))
-        )
-        users.forEach { user ->
-            try {
-                registerService.registerUser(user)
-                println("* * * USUARIO NUEVO REGISTRADO: ${user.mail} * * *")
-            } catch (ex: BusinessException) {
-                println(ex.message)
-            }
-        }
-    }
+//    fun registerUsers() {
+//        if (userRepository.count() != 0L) { println(" DIRTY REPO !!!!") }
+//        val users = listOf(
+//            RegisterRequestDTO(mail = "valen@example.com", name = "Valentina", lastName = "Gomez", rawPassword = "securepassword", dni = 12345678, avatar = "https://randomuser.me/api/portraits/women/1.jpg", dateBirth = "23/05/1999", gender = Gender.FEMALE, address = addressService.getAddressByZipCode("1000")),
+//            RegisterRequestDTO(mail = "cris@example.com", name = "Cristina", lastName = "Palacios", rawPassword = "456123", dni = 12345679, avatar = "https://randomuser.me/api/portraits/women/2.jpg", dateBirth = "20/06/1998", gender = Gender.FEMALE, address = addressService.getAddressByZipCode("1001")),
+//            RegisterRequestDTO(mail = "tomi@example.com", name = "Tomaso", lastName = "Perez", rawPassword = "pass123", dni = 12345671, avatar = "https://randomuser.me/api/portraits/women/3.jpg", dateBirth = "09/08/2000", gender = Gender.FEMALE, address = addressService.getAddressByZipCode("1002")),
+//            RegisterRequestDTO(mail = "customer1@example.com", name = "Juan", lastName = "Contardo", rawPassword = "securepassword", dni = 12345672, avatar = "https://randomuser.me/api/portraits/men/2.jpg", dateBirth = "21/11/1997", gender = Gender.MALE, address = addressService.getAddressByZipCode("1003")),
+//            RegisterRequestDTO(mail = "customer2@example.com", name = "Rodrigo", lastName = "Bueno", rawPassword = "123111", dni = 12345673, avatar = "https://randomuser.me/api/portraits/men/3.jpg", dateBirth = "18/07/1999", gender = Gender.OTHER, address = addressService.getAddressByZipCode("1004")),
+//            RegisterRequestDTO(mail = "customer3@example.com", name = "Fer", lastName = "Dodino", rawPassword = "pass123", dni = 12345674, avatar = "https://randomuser.me/api/portraits/women/4.jpg", dateBirth = "12/04/1995", gender = Gender.FEMALE, address = addressService.getAddressByZipCode("1005"))
+//        )
+//        users.forEach { user ->
+//            try {
+//                registerService.registerUser(user)
+//                println("* * * USUARIO NUEVO REGISTRADO: ${user.mail} * * *")
+//            } catch (ex: BusinessException) {
+//                println(ex.message)
+//            }
+//        }
+//    }
 
     fun initUsers() {
-        professional1 = userService.getUserByMail("valen@example.com").apply {
-            this.verified = true
-            this.professionalInfo = professionalInfo1
+        address1 = addressService.getAddressByZipCode("1000")
+        professional1 = User().apply {
+            mail = "valen@example.com"
+            name = "Valentina"
+            lastName = "Gomez"
+            encodedPassword = "dummyPassword"
+            dni = 12345678
+            avatar = "img1"
+            dateBirth = LocalDate.of(1995, 5, 23)
+            gender = Gender.FEMALE
+            address = address1
+            verified = true
+            professionalInfo = professionalInfo1
         }
-        updateUser(professional1)
+        createUser(professional1)
 
-        professional2 = userService.getUserByMail("cris@example.com").apply {
-            this.verified = false
-            this.professionalInfo = professionalInfo2
+        address2 = addressService.getAddressByZipCode("1001")
+        professional2 = User().apply {
+            mail = "cris@example.com"
+            name = "Cristina"
+            lastName = "Palacios"
+            encodedPassword = "dummyPassword"
+            dni = 12345679
+            avatar = "img2"
+            dateBirth = LocalDate.of(1995, 5, 23)
+            gender = Gender.FEMALE
+            address = address2
+            verified = true
+            professionalInfo = professionalInfo2
         }
-        updateUser(professional2)
+        createUser(professional2)
 
-        professional3 = userService.getUserByMail("tomi@example.com").apply {
-            this.verified = true
-            this.professionalInfo = professionalInfo3
+        address3 = addressService.getAddressByZipCode("1002")
+        professional3 = User().apply {
+            mail = "tomi@example.com"
+            name = "Tomaso"
+            lastName = "Perez"
+            encodedPassword = "dummyPassword"
+            dni = 12345671
+            avatar = "img3"
+            dateBirth = LocalDate.of(1995, 5, 23)
+            gender = Gender.FEMALE
+            address = address3
+            verified = true
+            professionalInfo = professionalInfo3
         }
-        updateUser(professional3)
+        createUser(professional3)
 
-        customer1 = userService.getUserByMail("customer1@example.com").apply {
-            this.verified = false
+        address4 = addressService.getAddressByZipCode("1003")
+        customer1 = User().apply {
+            mail = "customer1@example.com"
+            name = "Juan"
+            lastName = "Contardo"
+            encodedPassword = "dummyPassword"
+            dni = 12345672
+            avatar = "img4"
+            dateBirth = LocalDate.of(1995, 5, 23)
+            gender = Gender.MALE
+            address = address4
+            verified = true
         }
-        updateUser(customer1)
+        createUser(customer1)
 
-        customer2 = userService.getUserByMail("customer2@example.com").apply {
-            this.verified = false
+        address5 = addressService.getAddressByZipCode("1004")
+        customer2 = User().apply {
+            mail = "customer2@example.com"
+            name = "Rodrigo"
+            lastName = "Bueno"
+            encodedPassword = "dummyPassword"
+            dni = 12345673
+            avatar = "img5"
+            dateBirth = LocalDate.of(1995, 5, 23)
+            gender = Gender.OTHER
+            address = address5
+            verified = true
         }
-        updateUser(customer2)
+        createUser(customer2)
 
-        customer3 = userService.getUserByMail("customer3@example.com").apply {
-            this.verified = true
+        address6 = addressService.getAddressByZipCode("1005")
+        customer3 = User().apply {
+            mail = "customer3@example.com"
+            name = "Fer"
+            lastName = "Dodino"
+            encodedPassword = "dummyPassword"
+            dni = 12345674
+            avatar = "img6"
+            dateBirth = LocalDate.of(1995, 5, 23)
+            gender = Gender.FEMALE
+            address = address6
+            verified = true
         }
-        updateUser(customer3)
+        createUser(customer3)
+//        professional1 = userService.getUserByMail("valen@example.com").apply {
+//            this.verified = true
+//            this.professionalInfo = professionalInfo1
+//        }
+//        updateUser(professional1)
+//
+//        professional2 = userService.getUserByMail("cris@example.com").apply {
+//            this.verified = false
+//            this.professionalInfo = professionalInfo2
+//        }
+//        updateUser(professional2)
+//
+//        professional3 = userService.getUserByMail("tomi@example.com").apply {
+//            this.verified = true
+//            this.professionalInfo = professionalInfo3
+//        }
+//        updateUser(professional3)
+//
+//        customer1 = userService.getUserByMail("customer1@example.com").apply {
+//            this.verified = false
+//        }
+//        updateUser(customer1)
+//
+//        customer2 = userService.getUserByMail("customer2@example.com").apply {
+//            this.verified = false
+//        }
+//        updateUser(customer2)
+//
+//        customer3 = userService.getUserByMail("customer3@example.com").apply {
+//            this.verified = true
+//        }
+//        updateUser(customer3)
     }
 
     fun initJobs() {
