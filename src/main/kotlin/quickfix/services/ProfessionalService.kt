@@ -69,6 +69,7 @@ class ProfessionalService(
         professional.professionalInfo.certificates.remove(certificateMapEntity)
     }
 
+    @Transactional(readOnly = true)
     fun getCertificates(professionalId: Long): List<CertificateDTO> {
        val professional = userService.getUserById(professionalId)
        return professional.professionalInfo.certificates.map {
@@ -99,5 +100,6 @@ class ProfessionalService(
         val professional = userService.getUserById(professionalId)
         val certificate = professional.professionalInfo.certificates.find { it.imgs.any { img -> img.equals(imgPath,ignoreCase = true) } } ?: throw BusinessException("No se ha encontrado el certificado o su path es incorrecto")
         certificate.imgs.removeIf{ it.equals(imgPath,ignoreCase = true) }
+        if (certificate.imgs.isEmpty()) { professional.professionalInfo.certificates.remove(certificate) }
     }
 }
