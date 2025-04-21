@@ -12,8 +12,7 @@ import quickfix.services.UserService
 @RestController
 @RequestMapping("/user")
 @CrossOrigin(origins = ["*"])
-@Tag(name = "Operaciones relacionadas a la información de los usuarios")
-
+@Tag(name = "Usuarios", description = "Operaciones realizadas desde un usuario no profesional")
 class UserController(
     val userService: UserService
 ) {

@@ -12,11 +12,10 @@ import quickfix.dto.professional.FinancesDTO
 import quickfix.dto.professional.NewCertificateDTO
 import quickfix.services.ProfessionalService
 
-@Tag(name = "Operaciones del profesional")
 @RestController
 @RequestMapping("/professional")
 @CrossOrigin (origins = ["*"])
-
+@Tag(name = "Profesionales", description = "Operaciones realizadas desde un profesional")
 class ProfessionalController (
     private val professionalService : ProfessionalService
     ) {
