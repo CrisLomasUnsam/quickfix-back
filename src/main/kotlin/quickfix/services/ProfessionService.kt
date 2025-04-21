@@ -12,10 +12,10 @@ class ProfessionService(
     private val professionRepository: ProfessionRepository
 ){
     fun getProfessionById(id: Long): Profession =
-        professionRepository.findById(id).orElseThrow{ BusinessException("Usuario no encontrado") }
+        professionRepository.findById(id).orElseThrow{ BusinessException("La profesión no está disponible.") }
 
     fun getProfessionByName(profession : String) : Profession {
-        return professionRepository.findByName(profession).orElseThrow {  BusinessException("profession no encontrada")  }
+        return professionRepository.findByName(profession).orElseThrow {  BusinessException("La profesión no está disponible.")  }
     }
     //fun getProfessionByType(profession: ProfessionType) : Profession =
     //    professionRepository.findByProfessionType(profession)

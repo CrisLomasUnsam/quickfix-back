@@ -3,8 +3,8 @@ package quickfix.services
 import quickfix.dto.message.ChatMessageDTO
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
-import quickfix.dto.job.JobOfferDTO
-import quickfix.dto.job.JobRequestDTO
+import quickfix.dto.job.jobOffer.JobOfferDTO
+import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.message.RedisMessageDTO
 import quickfix.dto.message.toRedisMessage
 import quickfix.utils.exceptions.BusinessException
@@ -37,9 +37,8 @@ class RedisService(
         if(userHasPreviousRequest)
             throw BusinessException("Este usuario ya tiene una solicitud activa.")
 
-
         val key = getJobRequestKey(professionId, customerId)
-        redisJobRequestStorage.opsForList().rightPush(key,jobRequest)
+        redisJobRequestStorage.opsForValue().set(key,jobRequest)
         //TODO: Creo que es conveniente agregar TTL así no bloqueamos eternamente a un usuario
         //redisJobRequestStorage.expire(key, Duration.ofMinutes(5))
     }
@@ -58,9 +57,9 @@ class RedisService(
     fun removeJobRequest(professionId : Long, customerId: Long) {
         val key = getJobRequestKey(professionId, customerId)
 
-        if (!redisJobRequestStorage.hasKey(key)) {
+        if (!redisJobRequestStorage.hasKey(key))
             throw BusinessException("No existe una solicitud activa para el usuario $customerId en la profesión $professionId")
-        }
+
         redisJobRequestStorage.delete(key)
     }
 
@@ -89,12 +88,12 @@ class RedisService(
     }
 
     fun offerJob(jobOffer : JobOfferDTO) {
-        val keyPattern = "JobOffer_*_*_${jobOffer.professionalId}_"
+        val keyPattern = "JobOffer_*_*_${jobOffer.professional.id}_"
         val professionalHasActiveOffer = redisJobOfferStorage.keys(keyPattern).isNotEmpty()
         if(professionalHasActiveOffer)
             throw BusinessException("No puede realizar más de una oferta simultáneamente.")
-        val key = getJobOfferKey(jobOffer.professionId, jobOffer.professionalId, jobOffer.customerId)
-        redisJobOfferStorage.opsForList().rightPush(key,jobOffer)
+        val key = getJobOfferKey(jobOffer.professionId, jobOffer.professional.id, jobOffer.customerId)
+        redisJobOfferStorage.opsForValue().set(key,jobOffer)
     }
 
     fun removeJobOffer(professionId : Long, customerId: Long, professionalId: Long) {

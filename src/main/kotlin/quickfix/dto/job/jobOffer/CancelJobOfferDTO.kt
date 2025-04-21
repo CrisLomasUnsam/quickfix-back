@@ -1,4 +1,4 @@
-package quickfix.dto.job
+package quickfix.dto.job.jobOffer
 
 data class CancelJobOfferDTO (
     val professionId: Long,

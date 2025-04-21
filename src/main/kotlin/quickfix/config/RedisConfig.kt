@@ -7,8 +7,8 @@ import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer
 import org.springframework.data.redis.serializer.StringRedisSerializer
-import quickfix.dto.job.JobOfferDTO
-import quickfix.dto.job.JobRequestDTO
+import quickfix.dto.job.jobOffer.JobOfferDTO
+import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.message.RedisMessageDTO
 
 @Configuration

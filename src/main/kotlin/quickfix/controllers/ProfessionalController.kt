@@ -2,9 +2,10 @@ package quickfix.controllers
 
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.web.bind.annotation.*
-import quickfix.dto.job.CancelJobOfferDTO
-import quickfix.dto.job.JobOfferDTO
-import quickfix.dto.job.JobRequestDTO
+import quickfix.dto.job.jobOffer.CancelJobOfferDTO
+import quickfix.dto.job.jobOffer.JobOfferDTO
+import quickfix.dto.job.jobRequest.JobRequestDTO
+
 import quickfix.services.ProfessionalService
 
 @RestController

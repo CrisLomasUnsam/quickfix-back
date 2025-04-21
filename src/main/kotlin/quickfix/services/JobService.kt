@@ -1,10 +1,10 @@
 package quickfix.services
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.JobRepository
-import quickfix.dto.job.AcceptedJobOfferDTO
-import quickfix.dto.job.JobOfferDTO
-import quickfix.dto.job.JobRequestDTO
+import quickfix.dto.job.jobOffer.AcceptedJobOfferDTO
+import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.message.ChatMessageDTO
 import quickfix.dto.message.RedisMessageDTO
 import quickfix.models.Job
@@ -15,7 +15,9 @@ import quickfix.utils.exceptions.BusinessException
 @Service
 class JobService(
     val jobRepository: JobRepository,
-    val redisService: RedisService
+    val redisService: RedisService,
+    val userService: UserService,
+    val professionService: ProfessionService
 ){
   
     fun createJob(job: Job) {
@@ -27,6 +29,23 @@ class JobService(
         jobRepository.delete(job)
 
     fun getJobById(id: Long): Job = jobRepository.findById(id).orElseThrow { throw BusinessException() }
+
+    @Transactional(rollbackFor = [Exception::class])
+    fun acceptJobOffer(acceptedJob: AcceptedJobOfferDTO) {
+
+        val customer: User = userService.getUserById(acceptedJob.customerId)
+        val professional : User = userService.getUserById(acceptedJob.professionalId)
+        val profession: Profession = professionService.getProfessionById(acceptedJob.professionId)
+        val jobOffers : Set<JobOfferDTO> = redisService.getJobOffers(acceptedJob.customerId)
+
+        val offer = jobOffers.firstOrNull { it.professional.id == acceptedJob.professionalId } ?: throw BusinessException("…")
+
+        println(offer)
+
+        //Limpia el request y offer me parecio conveniente borrarla inmpediatamente a pesar de q tenga el ttl
+        redisService.removeJobRequest(profession.id, acceptedJob.customerId)
+        redisService.removeJobOffer(profession.id, acceptedJob.customerId, acceptedJob.professionalId)
+    }
 
 //    fun getJobsByUser(id: Long) = jobRepository.getAllByUserId(id)
 

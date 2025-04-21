@@ -3,9 +3,10 @@ package quickfix.controllers
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
-import quickfix.dto.job.AcceptedJobOfferDTO
-import quickfix.dto.job.JobOfferDTO
-import quickfix.dto.job.JobRequestDTO
+import quickfix.dto.job.jobOffer.AcceptedJobOfferDTO
+import quickfix.dto.job.jobOffer.JobOfferDTO
+import quickfix.dto.job.jobRequest.CancelJobRequestDTO
+import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.user.UserDTO
 import quickfix.dto.user.UserModifiedInfoDTO
 import quickfix.services.UserService
@@ -23,7 +24,11 @@ class UserController(
     fun userInfo(@PathVariable id: Long) : UserDTO =
         UserDTO.toDTO(userService.getUserById(id))
 
-    @PutMapping("/data/edit/{id}")
+    @GetMapping("/img/{id}")
+    fun userImg(@PathVariable id: Long) : String =
+        userService.getUserById(id).avatar
+
+    @PatchMapping("/data/edit/{id}")
     fun updateUserInfo(@PathVariable id: Long, @RequestBody modifiedInfo: UserModifiedInfoDTO) =
         userService.changeUserInfo(id,modifiedInfo)
 
@@ -36,9 +41,10 @@ class UserController(
     fun requestJob(@RequestBody jobRequest : JobRequestDTO) =
         userService.requestJob(jobRequest)
 
-    @DeleteMapping("/requestJob/{professionId}/{customerId}")
-    @Operation(summary = "Cancela el job request")
-    fun cancelJobRequest(@PathVariable professionId : Long, @PathVariable customerId : Long) = userService.cancelJobRequest(professionId, customerId)
+    @DeleteMapping("/requestJob")
+    @Operation(summary = "Cancelar un job request")
+    fun cancelJobRequest(@RequestBody cancelJobRequest : CancelJobRequestDTO) =
+        userService.cancelJobRequest(cancelJobRequest)
 
     /*************************
     JOB OFFER METHODS
@@ -48,9 +54,4 @@ class UserController(
     @Operation(summary = "Utilizado para el polling que devuelve las nuevas ofertas enviadas por los profesionales")
     fun getJobOffers(@PathVariable customerId: Long) : Set<JobOfferDTO> =
         userService.getJobOffers(customerId)
-
-    @PostMapping("/acceptedJobOfferDTO")
-    @Operation(summary = "aceptar una oferta de trbajo")
-    fun acceptJobOffer(@RequestBody acceptedJobOfferDTO : AcceptedJobOfferDTO)
-    = userService.acceptJobOffer(acceptedJobOfferDTO)
 }

@@ -11,7 +11,6 @@ data class UserDTO(
     var name: String,
     var lastName: String,
     var dni: Int,
-    var avatar: String,
     var dateBirth: String,
     var gender: Gender,
     var address: Address
@@ -24,7 +23,6 @@ data class UserDTO(
                 name = user.name,
                 lastName = user.lastName,
                 dni = user.dni,
-                avatar = user.avatar,
                 dateBirth = stringifyDate(user.dateBirth, DateWithDayFormatter),
                 gender = user.gender,
                 address = user.address

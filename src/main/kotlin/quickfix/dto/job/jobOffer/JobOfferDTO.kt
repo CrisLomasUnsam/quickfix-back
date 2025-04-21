@@ -1,7 +1,8 @@
-package quickfix.dto.job
+package quickfix.dto.job.jobOffer
 
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.SchemaProperty
+import quickfix.dto.professional.ProfessionalDTO
 import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.models.User
@@ -13,28 +14,11 @@ import quickfix.utils.enums.JobStatus
 @SchemaProperty(name = "availability", schema = Schema(description = "Disponibilidad del professional en minutos para iniciar el trabajo."))
 
 data class JobOfferDTO (
-    val professionalId : Long ,
     val customerId : Long,
     val professionId : Long,
-    val name: String,
-    val lastName: String,
-    val avatar : String,
-    val verified: Boolean,
+    val professional: ProfessionalDTO,
     val price: Double,
-    val averageRating: Double,
     val distance: Double,
     val estimatedArriveTime: Int,
     val availability: Int,
-    val hasVehicle: Boolean
 )
-fun JobOfferDTO.toDTO(
-    customer: User,
-    professional: User,
-    profession: Profession
-) : Job = Job().apply {
-    this.customer = customer
-    this.professional = professional
-    this.profession = profession
-    this.status = JobStatus.DONE
-    this.price  =this@toDTO.price
-}
