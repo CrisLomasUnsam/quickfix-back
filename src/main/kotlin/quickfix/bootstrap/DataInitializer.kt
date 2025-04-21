@@ -109,9 +109,9 @@ class DataInitializer : InitializingBean {
     }
 
     fun initProfessions() {
-        electricista = professionService.getProfessionByName("Electricista")
-        gasista = professionService.getProfessionByName("Gasista")
-        jardinero = professionService.getProfessionByName("Jardinero")
+        electricista = professionService.getByNameIgnoreCase("Electricista")
+        gasista = professionService.getByNameIgnoreCase("Gasista")
+        jardinero = professionService.getByNameIgnoreCase("Jardinero")
     }
 
     fun initCertificates() {

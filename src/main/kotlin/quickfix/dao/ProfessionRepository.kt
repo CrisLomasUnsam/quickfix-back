@@ -6,5 +6,5 @@ import quickfix.models.Profession
 
 @Component
 interface ProfessionRepository: CrudRepository<Profession, Long> {
-    fun findByName(name: String): Profession
+    fun findByNameIgnoreCase(name: String): Profession?
 }
