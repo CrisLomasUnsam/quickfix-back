@@ -1,10 +1,14 @@
 package quickfix.controllers
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import org.springframework.web.bind.annotation.*
 import quickfix.dto.job.CancelJobOfferDTO
 import quickfix.dto.job.JobOfferDTO
 import quickfix.dto.job.JobRequestDTO
+import quickfix.dto.professional.CertificateDTO
+import quickfix.dto.professional.FinancesDTO
+import quickfix.dto.professional.NewCertificateDTO
 import quickfix.services.ProfessionalService
 
 @RestController
@@ -12,7 +16,7 @@ import quickfix.services.ProfessionalService
 @CrossOrigin (origins = ["*"])
 
 class ProfessionalController (
-    val professionalService : ProfessionalService
+    private val professionalService : ProfessionalService
     ) {
 
     /*************************
@@ -38,4 +42,34 @@ class ProfessionalController (
     fun cancelJobOffer(@RequestBody cancelJobOffer: CancelJobOfferDTO) =
         professionalService.cancelJobOffer(cancelJobOffer)
 
+    /*************************
+        OTHER METHODS
+     **************************/
+
+    @GetMapping("/{professionalId}")
+    @Operation(summary = "Utilizado para obtener las finanzas del profesional (balance, ganancias y deuda)")
+    fun getFinances(@PathVariable professionalId : Long) : FinancesDTO =
+        professionalService.getFinances(professionalId)
+
+    @GetMapping("/services/add/{professionalId}")
+    @Operation(summary = "Utilizada para agregar servicios brindados por el profesional")
+    fun addProfession(@PathVariable professionalId : Long, @RequestParam profession: String) =
+        professionalService.addProfession(professionalId, profession)
+
+    @DeleteMapping("/services/delete/{professionalId}")
+    fun deleteProfession(@PathVariable professionalId : Long, @RequestParam profession: String) =
+        professionalService.deleteProfession(professionalId, profession)
+
+    @GetMapping("/certificates/{professionalId}")
+    fun getCertificates(@PathVariable professionalId: Long) : List<CertificateDTO> =
+        professionalService.getCertificates(professionalId)
+
+    @PostMapping("/certificates/add/{professionalId}")
+    fun addCertificate(@PathVariable professionalId : Long, @RequestBody dto: NewCertificateDTO) =
+        professionalService.addCertificate(professionalId, dto)
+
+    @DeleteMapping("/certificates/delete/{professionalId}")
+    @Operation(summary = "Borrar un certificado")
+    fun deleteCertificate(@PathVariable professionalId : Long, @Parameter(description = "Path de la imagen") @RequestParam imgPath: String) =
+        professionalService.deleteCertificate(professionalId, imgPath.trim())
 }
