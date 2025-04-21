@@ -1,6 +1,10 @@
 package quickfix.dto.job
 
 import io.swagger.v3.oas.annotations.media.Schema
+import quickfix.models.Job
+import quickfix.models.Profession
+import quickfix.models.User
+import quickfix.utils.enums.JobStatus
 import quickfix.utils.exceptions.BusinessException
 
 @Schema(description = "Solicitud de un Job por un customer, consumido por observers")
@@ -10,6 +14,8 @@ data class JobRequestDTO(
     var detail: String,
     var professionId: Long? = null
 )
+
+
 
 fun JobRequestDTO.validate() {
     validProfession(profession)

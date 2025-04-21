@@ -2,11 +2,14 @@ package quickfix.services
 
 import org.springframework.stereotype.Service
 import quickfix.dao.JobRepository
+import quickfix.dto.job.AcceptedJobOfferDTO
 import quickfix.dto.job.JobOfferDTO
 import quickfix.dto.job.JobRequestDTO
 import quickfix.dto.message.ChatMessageDTO
 import quickfix.dto.message.RedisMessageDTO
 import quickfix.models.Job
+import quickfix.models.Profession
+import quickfix.models.User
 import quickfix.utils.exceptions.BusinessException
 
 @Service
@@ -15,8 +18,10 @@ class JobService(
     val redisService: RedisService
 ){
   
-    fun createJob(job: Job) =
+    fun createJob(job: Job) {
         jobRepository.save(job)
+    }
+
 
     fun deleteJob(job: Job) =
         jobRepository.delete(job)

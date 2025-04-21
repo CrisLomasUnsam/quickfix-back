@@ -3,6 +3,7 @@ package quickfix.controllers
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
+import quickfix.dto.job.AcceptedJobOfferDTO
 import quickfix.dto.job.JobOfferDTO
 import quickfix.dto.job.JobRequestDTO
 import quickfix.dto.user.UserDTO
@@ -48,4 +49,8 @@ class UserController(
     fun getJobOffers(@PathVariable customerId: Long) : Set<JobOfferDTO> =
         userService.getJobOffers(customerId)
 
+    @PostMapping("/acceptedJobOfferDTO")
+    @Operation(summary = "aceptar una oferta de trbajo")
+    fun acceptJobOffer(@RequestBody acceptedJobOfferDTO : AcceptedJobOfferDTO)
+    = userService.acceptJobOffer(acceptedJobOfferDTO)
 }

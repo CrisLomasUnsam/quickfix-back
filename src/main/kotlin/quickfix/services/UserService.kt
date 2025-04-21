@@ -2,13 +2,12 @@ package quickfix.services
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import quickfix.dao.AddressRepository
-import quickfix.dao.ProfessionRepository
 import quickfix.dao.UserRepository
-import quickfix.dto.address.AddressDTO
+import quickfix.dto.job.AcceptedJobOfferDTO
 import quickfix.dto.job.JobRequestDTO
+import quickfix.dto.job.toDTO
 import quickfix.dto.user.UserModifiedInfoDTO
-import quickfix.models.Address
+import quickfix.models.Profession
 import quickfix.models.ProfessionalInfo
 import quickfix.models.User
 import quickfix.utils.exceptions.BusinessException
@@ -17,7 +16,9 @@ import quickfix.utils.exceptions.BusinessException
 class UserService(
     private val userRepository: UserRepository,
     private val redisService: RedisService,
-    private val professionRepository : ProfessionRepository,
+    private val professionService: ProfessionService,
+    private val jobService : JobService,
+
 ) {
 
     fun getUserById(id: Long): User =
@@ -45,8 +46,7 @@ class UserService(
             .orElseThrow { BusinessException("El cliente con id ${jobRequest.customerId} no existe.") }
 
 
-        val profession = professionRepository.findByName(jobRequest.profession)
-            .orElseThrow { BusinessException("la profession con id ${jobRequest.professionId} no existe.") }
+        val profession = professionService.getProfessionByName(jobRequest.profession)
 
 
         val updatedJobRequest = jobRequest.copy(professionId = profession.id)
@@ -63,9 +63,30 @@ class UserService(
         userRepository.findById(customerId)
             .orElseThrow { BusinessException("El cliente con id $customerId no existe.") }
 
-        professionRepository.findById(professionId)
-            .orElseThrow { BusinessException("La profesión con id $professionId no existe.") }
+        professionService.getProfessionById(professionId)
+
 
         redisService.removeJobRequest(professionId, customerId)
+    }
+    @Transactional(rollbackFor = [Exception::class])
+    fun acceptJobOffer(accepted: AcceptedJobOfferDTO) {
+
+        val customer: User = this.getUserById(accepted.customerId)
+        val professional : User = this.getUserById(accepted.professionalId)
+        val profession: Profession = professionService.getProfessionByName(accepted.profession)
+
+
+        val offerDTO = redisService.getJobOffers(accepted.customerId)
+println()
+
+        val offerProfessiona = offerDTO.firstOrNull { it.professionalId == accepted.professionalId }
+            ?: throw BusinessException("…")
+
+
+        jobService.createJob(offerProfessiona.toDTO( customer, professional, profession))
+
+        //Limpia el request y offer me parecio conveniente borrarla inmpediatamente a pesar de q tenga el ttl
+        redisService.removeJobRequest(profession.id, accepted.customerId)
+        redisService.removeJobOffer(profession.id, accepted.customerId, accepted.professionalId)
     }
 }

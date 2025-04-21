@@ -76,6 +76,7 @@ class RedisService(
     JobOffer_ProfessionId_CustomerId_ProfessionalId_
      *******************************************************/
 
+
     private fun getJobOfferKey(professionId: Long, customerId: Long, professionalId: Long) : String =
         "JobOffer_${professionId}_${customerId}_${professionalId}_"
 
