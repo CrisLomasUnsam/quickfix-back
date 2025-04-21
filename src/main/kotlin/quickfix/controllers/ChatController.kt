@@ -1,5 +1,6 @@
 package quickfix.controllers
 
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
 import quickfix.dto.message.ChatMessageDTO
 import quickfix.dto.message.RedisMessageDTO
@@ -8,7 +9,7 @@ import quickfix.services.JobService
 @RestController
 @RequestMapping("/chat")
 @CrossOrigin(origins = ["*"])
-
+@Tag(name = "Chat", description = "Operaciones relacionadas a la mensajería entre un customer y un professional")
 class ChatController (
     private val jobService: JobService
 ) {

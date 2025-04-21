@@ -1,6 +1,7 @@
 package quickfix.controllers
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
 import quickfix.dto.job.CancelJobOfferDTO
 import quickfix.dto.job.JobOfferDTO
@@ -10,7 +11,7 @@ import quickfix.services.ProfessionalService
 @RestController
 @RequestMapping("/professional")
 @CrossOrigin (origins = ["*"])
-
+@Tag(name = "Profesionales", description = "Operaciones realizadas desde un profesional")
 class ProfessionalController (
     val professionalService : ProfessionalService
     ) {
