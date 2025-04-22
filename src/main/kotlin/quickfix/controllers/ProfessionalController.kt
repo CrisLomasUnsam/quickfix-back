@@ -52,14 +52,14 @@ class ProfessionalController (
     fun getFinances(@PathVariable professionalId : Long) : FinancesDTO =
         professionalService.getFinances(professionalId)
 
-    @GetMapping("/services/add/{professionalId}")
+    @PostMapping("/services/{professionalId}")
     @Operation(summary = "Agregar servicio brindado")
-    fun addProfession(@PathVariable professionalId : Long, @RequestParam profession: String) =
+    fun addProfession(@PathVariable professionalId : Long, @RequestBody profession: String) =
         professionalService.addProfession(professionalId, profession)
 
-    @DeleteMapping("/services/delete/{professionalId}")
+    @DeleteMapping("/services/{professionalId}")
     @Operation(summary = "Eliminar servicio brindado")
-    fun deleteProfession(@PathVariable professionalId : Long, @RequestParam profession: String) =
+    fun deleteProfession(@PathVariable professionalId : Long, @RequestBody profession: String) =
         professionalService.deleteProfession(professionalId, profession)
 
     @GetMapping("/certificates/{professionalId}")
@@ -67,13 +67,13 @@ class ProfessionalController (
     fun getCertificates(@PathVariable professionalId: Long) : List<CertificateDTO> =
         professionalService.getCertificates(professionalId)
 
-    @PostMapping("/certificates/add/{professionalId}")
+    @PostMapping("/certificates/{professionalId}")
     @Operation(summary = "Agregar certificado")
     fun addCertificate(@PathVariable professionalId : Long, @RequestBody dto: NewCertificateDTO) =
         professionalService.addCertificate(professionalId, dto)
 
-    @DeleteMapping("/certificates/delete/{professionalId}")
+    @DeleteMapping("/certificates/{professionalId}")
     @Operation(summary = "Borrar un certificado")
-    fun deleteCertificate(@PathVariable professionalId : Long, @Parameter(description = "Path de la imagen") @RequestParam imgPath: String) =
+    fun deleteCertificate(@PathVariable professionalId : Long, @Parameter(description = "Path de la imagen") @RequestBody imgPath: String) =
         professionalService.deleteCertificate(professionalId, imgPath.trim())
 }
