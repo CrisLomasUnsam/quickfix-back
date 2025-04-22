@@ -16,14 +16,13 @@ class JobController(
     val jobService: JobService
 ){
 
-    @PostMapping
-    fun createJob(@RequestBody job: Job) = jobService.createJob(job)
+    @GetMapping("/customer/{id}")
+    fun findJobsByCustomerId(@PathVariable id: Long) : List<Job> =
+        jobService.findJobsByCustomerId(id)
 
-    @DeleteMapping
-    fun deleteJob(@RequestBody job: Job) = jobService.deleteJob(job)
-
-    @GetMapping("/{id}")
-    fun getJobById(@PathVariable id: Long) = jobService.getJobById(id)
+    @GetMapping("/professional/{id}")
+    fun findJobsByProfessionalId(@PathVariable id: Long) : List<Job> =
+        jobService.findJobsByProfessionalId(id)
 
     @PostMapping("/acceptJobOffer")
     @Operation(summary = "aceptar una oferta de trbajo")

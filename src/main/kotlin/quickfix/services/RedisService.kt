@@ -60,6 +60,7 @@ class RedisService(
             throw BusinessException("No existe una solicitud activa para el usuario $customerId en la profesión $professionId")
 
         redisJobRequestStorage.delete(key)
+        this.removeAllJobOffers(professionId, customerId)
     }
 
     private fun validateCustomerHasAJobRequest(customerId : Long){
@@ -97,6 +98,12 @@ class RedisService(
     fun removeJobOffer(professionId : Long, customerId: Long, professionalId: Long) {
         val key = getJobOfferKey(professionId, customerId, professionalId)
         redisJobOfferStorage.delete(key)
+    }
+
+    private fun removeAllJobOffers(professionId : Long, customerId: Long){
+        val keyPattern = "JobOffer_${professionId}_${customerId}_*_"
+        val jobOfferKeys = redisJobOfferStorage.keys(keyPattern)
+        redisJobOfferStorage.delete(jobOfferKeys)
     }
 
     /******************************************************

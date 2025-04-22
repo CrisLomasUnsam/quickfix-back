@@ -21,9 +21,8 @@ class UserService(
         userRepository.findById(id).orElseThrow{ BusinessException("Usuario no encontrado") }
 
     fun assertUserExists(id: Long) {
-        if (!userRepository.existsById(id)) {
+        if (!userRepository.existsById(id))
             throw BusinessException("Usuario no encontrado: $id")
-        }
     }
     @Transactional(rollbackFor = [Exception::class])
     fun changeUserInfo(id: Long, modifiedInfo: UserModifiedInfoDTO) {
@@ -39,8 +38,8 @@ class UserService(
 
     fun requestJob(jobRequest : JobRequestDTO) {
         this.assertUserExists(jobRequest.customerId)
-        val profession = professionService.getProfessionById(jobRequest.professionId)
-        redisService.requestJob(jobRequest, profession.id)
+        professionService.assertProfessionExists(jobRequest.professionId)
+        redisService.requestJob(jobRequest, jobRequest.professionId)
     }
 
     fun getJobOffers(customerId : Long) =
