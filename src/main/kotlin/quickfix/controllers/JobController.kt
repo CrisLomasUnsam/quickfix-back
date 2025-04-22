@@ -17,15 +17,17 @@ class JobController(
 ){
 
     @GetMapping("/customer/{id}")
+    @Operation(summary = "Obtiene todos los servicios pedidos por un usuario")
     fun findJobsByCustomerId(@PathVariable id: Long) : List<Job> =
         jobService.findJobsByCustomerId(id)
 
     @GetMapping("/professional/{id}")
+    @Operation(summary = "Obtiene todos los servicios realizados por un profesional")
     fun findJobsByProfessionalId(@PathVariable id: Long) : List<Job> =
         jobService.findJobsByProfessionalId(id)
 
     @PostMapping("/acceptJobOffer")
-    @Operation(summary = "aceptar una oferta de trbajo")
+    @Operation(summary = "Aceptar una oferta de trbajo")
     fun acceptJobOffer(@RequestBody acceptedJobOfferDTO : AcceptedJobOfferDTO)
             = jobService.acceptJobOffer(acceptedJobOfferDTO)
 

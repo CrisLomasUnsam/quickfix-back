@@ -1,6 +1,5 @@
 package quickfix.services
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Service
 import quickfix.dto.job.jobOffer.CancelJobOfferDTO
 import quickfix.dto.job.jobOffer.JobOfferDTO
@@ -77,7 +76,7 @@ class ProfessionalService(
     @Transactional(rollbackFor = [Exception::class])
     fun addCertificate(professionalId: Long, newCert: NewCertificateDTO) {
         val professionalInfo : ProfessionalInfo = userService.getProfessionalInfo(professionalId)
-        val profession = professionService.getById(newCert.professionId)
+        val profession = professionService.getProfessionById(newCert.professionId)
         professionalInfo.validateCertificateAlreadyExists(newCert.name)
 
         val newCertificate = Certificate().apply {

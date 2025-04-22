@@ -8,6 +8,6 @@ import java.util.Optional
 @Component
 interface ProfessionRepository: CrudRepository<Profession, Long> {
   
-    fun findByNameIgnoreCase(name: String): Profession?
+    fun findByNameIgnoreCase(name: String): Optional<Profession>
   
 }

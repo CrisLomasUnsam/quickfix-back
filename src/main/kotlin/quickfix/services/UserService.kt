@@ -7,6 +7,7 @@ import quickfix.dto.job.jobRequest.CancelJobRequestDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.user.UserModifiedInfoDTO
 import quickfix.models.Profession
+import quickfix.models.ProfessionalInfo
 import quickfix.models.User
 import quickfix.utils.exceptions.BusinessException
 
@@ -26,6 +27,12 @@ class UserService(
         if (!userRepository.existsById(id))
             throw BusinessException("Usuario no encontrado: $id")
     }
+
+    fun getProfessionalInfo(userId: Long) : ProfessionalInfo {
+        val user = userRepository.findUserWithProfessionalInfoById(userId).orElseThrow{ BusinessException() }
+        return user.professionalInfo
+    }
+
     @Transactional(rollbackFor = [Exception::class])
     fun changeUserInfo(id: Long, modifiedInfo: UserModifiedInfoDTO) {
         val user = this.getUserById(id)
