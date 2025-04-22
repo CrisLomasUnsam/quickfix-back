@@ -1,6 +1,6 @@
 package quickfix.dto.professional
 
 data class FinancesDTO (
-    val balanceActual: Double,
-    val deudaActual: Double
+    val balance: Double,
+    val debt: Double
 )

@@ -10,6 +10,11 @@ import quickfix.utils.exceptions.BusinessException
 class ProfessionService(
     private val professionRepository: ProfessionRepository
 ){
-    fun getByNameIgnoreCase(profession : String) : Profession = professionRepository.findByNameIgnoreCase(profession) ?: throw BusinessException("Profesión no encontrada")
+
+    fun getById(id: Long) : Profession =
+        professionRepository.findById(id).orElseThrow { throw BusinessException() }
+
+    fun getByNameIgnoreCase(profession : String) : Profession =
+        professionRepository.findByNameIgnoreCase(profession) ?: throw BusinessException("Profesión no encontrada")
 
 }

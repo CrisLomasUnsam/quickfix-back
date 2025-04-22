@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.*
 import quickfix.dto.job.CancelJobOfferDTO
 import quickfix.dto.job.JobOfferDTO
 import quickfix.dto.job.JobRequestDTO
-import quickfix.dto.professional.CertificateDTO
 import quickfix.dto.professional.FinancesDTO
 import quickfix.dto.professional.NewCertificateDTO
+import quickfix.models.Certificate
 import quickfix.services.ProfessionalService
 
 @RestController
@@ -64,7 +64,7 @@ class ProfessionalController (
 
     @GetMapping("/certificates/{professionalId}")
     @Operation(summary = "Obtener certificados")
-    fun getCertificates(@PathVariable professionalId: Long) : List<CertificateDTO> =
+    fun getCertificates(@PathVariable professionalId: Long) : Set<Certificate> =
         professionalService.getCertificates(professionalId)
 
     @PostMapping("/certificates/{professionalId}")

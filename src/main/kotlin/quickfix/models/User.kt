@@ -18,10 +18,13 @@ class User : Identifier, UserDetails {
     lateinit var mail: String
     lateinit var name : String
     lateinit var lastName : String
+
     @Column(length = 60)
-    lateinit var password : String
+    private lateinit var _password : String
+
     @Column(unique = true)
     var dni : Int = 0
+
     lateinit var avatar: String
     lateinit var dateBirth : LocalDate
 
@@ -38,6 +41,14 @@ class User : Identifier, UserDetails {
 
     companion object {
         const val EDAD_REQUERIDA = 18
+    }
+
+    override fun getUsername(): String = mail
+    override fun getAuthorities(): Collection<GrantedAuthority> = listOf() /*Esto es para roles*/
+    override fun getPassword(): String = _password
+
+    fun setPassword(password: String) {
+        this._password = password
     }
 
     override fun validate() = validateCommonFields()
@@ -118,14 +129,4 @@ class User : Identifier, UserDetails {
             this.address = it
         }
     }
-
-    override fun getUsername(): String {
-        return this.mail
-    }
-
-    override fun getPassword(): String {
-        return this.password
-    }
-
-    override fun getAuthorities(): Collection<GrantedAuthority> = listOf() /*Esto es para roles*/
 }

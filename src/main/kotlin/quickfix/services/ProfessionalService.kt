@@ -2,15 +2,13 @@ package quickfix.services
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import quickfix.dao.UserRepository
 import quickfix.dto.job.CancelJobOfferDTO
 import quickfix.dto.job.JobOfferDTO
 import quickfix.dto.job.JobRequestDTO
-import quickfix.dto.professional.CertificateDTO
 import quickfix.dto.professional.FinancesDTO
 import quickfix.dto.professional.NewCertificateDTO
 import quickfix.models.Certificate
-import quickfix.models.User
+import quickfix.models.ProfessionalInfo
 import quickfix.utils.exceptions.BusinessException
 import java.sql.SQLException
 
@@ -18,7 +16,6 @@ import java.sql.SQLException
 class ProfessionalService(
     val redisService: RedisService,
     val userService: UserService,
-    private val userRepository: UserRepository,
     private val professionService: ProfessionService
 )  {
 
@@ -41,65 +38,57 @@ class ProfessionalService(
     fun getFinances(professionalId: Long): FinancesDTO {
         val professional = userService.getUserById(professionalId)
         val financesDTO = FinancesDTO(
-            balanceActual = professional.professionalInfo.balance,
-            deudaActual = professional.professionalInfo.debt
+            balance = professional.professionalInfo.balance,
+            debt = professional.professionalInfo.debt
         )
         return financesDTO
     }
 
     @Transactional(rollbackFor = [SQLException::class, Exception::class])
-    fun addProfession(professionalId: Long, profession: String) {
+    fun addProfession(professionalId: Long, professionName: String) {
         val professional = userService.getUserById(professionalId)
-        val professionEntity = professionService.getByNameIgnoreCase(profession)
-        if (professional.professionalInfo.professions.contains(professionEntity)) { throw BusinessException("La profesión ya forma parte de sus servicios") }
-        professional.professionalInfo.professions.add(professionEntity)
+        val profession = professionService.getByNameIgnoreCase(professionName)
+
+        if (professional.professionalInfo.hasProfession(profession.id))
+            throw BusinessException("La profesión ya forma parte de sus servicios")
+
+        professional.professionalInfo.addProfession(profession)
     }
 
     @Transactional(rollbackFor = [SQLException::class, Exception::class])
-    fun deleteProfession(professionalId: Long, profession: String) {
+    fun deleteProfession(professionalId: Long, professionName: String) {
         val professional = userService.getUserById(professionalId)
-        val professionEntity = professionService.getByNameIgnoreCase(profession)
-        if (!professional.professionalInfo.professions.contains(professionEntity)) { throw BusinessException("La profesión no forma parte de sus servicios") }
-        professional.professionalInfo.professions.remove(professionEntity)
-        deleteAllCertificates(professional, profession)
-    }
+        val professionId = professionService.getByNameIgnoreCase(professionName).id
 
-    private fun deleteAllCertificates(professional: User, profession: String) {
-        val certificateMapEntity = professional.professionalInfo.certificates.find { it.profession.name.equals(profession, ignoreCase = true) } ?: throw BusinessException("No se han encontrado certificados asociados a esa profesión")
-        professional.professionalInfo.certificates.remove(certificateMapEntity)
+        if (!professional.professionalInfo.hasProfession(professionId))
+            throw BusinessException("La profesión no forma parte de sus servicios")
+
+        professional.professionalInfo.removeProfession(professionId)
     }
 
     @Transactional(readOnly = true)
-    fun getCertificates(professionalId: Long): List<CertificateDTO> {
+    fun getCertificates(professionalId: Long): Set<Certificate> {
        val professional = userService.getUserById(professionalId)
-       return professional.professionalInfo.certificates.map {
-           CertificateDTO(
-               profession = it.profession.name,
-               imgs = it.imgs
-           )
-       }
+       return professional.professionalInfo.certificates.toSet()
     }
 
-    @Transactional(rollbackFor = [SQLException::class, Exception::class])
-    fun addCertificate(professionalId: Long, dto: NewCertificateDTO) {
-        val professional = userService.getUserById(professionalId)
-        val professionFromDto = dto.profession
-        val professionEntity = professionService.getByNameIgnoreCase(professionFromDto)
-        val certificateMappingExists = professional.professionalInfo.certificates.find { it.profession.name == professionEntity.name }
-        if (certificateMappingExists != null) {
-            certificateMappingExists.imgs.add(dto.img.trim())
-        } else {
-            val newCertificate = Certificate().apply { this.profession = professionEntity; this.imgs.add(dto.img.trim()) }
-            professional.professionalInfo.certificates.add(newCertificate)
+    @Transactional(rollbackFor = [Exception::class])
+    fun addCertificate(professionalId: Long, newCert: NewCertificateDTO) {
+        val professionalInfo : ProfessionalInfo = userService.getProfessionalInfo(professionalId)
+        val profession = professionService.getById(newCert.professionId)
+        professionalInfo.validateCertificateAlreadyExists(newCert.name)
+
+        val newCertificate = Certificate().apply {
+            this.name = newCert.name
+            this.profession = profession;
+            this.img = newCert.img.trim()
         }
-        userRepository.save(professional)
+        professionalInfo.addCertificate(newCertificate)
     }
 
     @Transactional(rollbackFor = [SQLException::class, Exception::class])
-    fun deleteCertificate(professionalId: Long, imgPath: String) {
-        val professional = userService.getUserById(professionalId)
-        val certificate = professional.professionalInfo.certificates.find { it.imgs.any { img -> img.equals(imgPath,ignoreCase = true) } } ?: throw BusinessException("No se ha encontrado el certificado o su path es incorrecto")
-        certificate.imgs.removeIf{ it.equals(imgPath,ignoreCase = true) }
-        if (certificate.imgs.isEmpty()) { professional.professionalInfo.certificates.remove(certificate) }
+    fun deleteCertificate(professionalId: Long, certificateName: String) {
+        val professionalInfo = userService.getProfessionalInfo(professionalId)
+        professionalInfo.deleteCertificate(certificateName)
     }
 }
