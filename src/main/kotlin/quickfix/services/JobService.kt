@@ -1,27 +1,60 @@
 package quickfix.services
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.JobRepository
-import quickfix.dto.job.JobOfferDTO
-import quickfix.dto.job.JobRequestDTO
+import quickfix.dto.job.jobOffer.AcceptedJobOfferDTO
+import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.message.ChatMessageDTO
 import quickfix.dto.message.RedisMessageDTO
 import quickfix.models.Job
+import quickfix.models.Profession
+import quickfix.models.User
 import quickfix.utils.exceptions.BusinessException
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Service
 class JobService(
     val jobRepository: JobRepository,
-    val redisService: RedisService
+    val redisService: RedisService,
+    val userService: UserService,
+    val professionService: ProfessionService
 ){
-  
-    fun createJob(job: Job) =
+
+    fun findJobsByCustomerId(id: Long): List<Job> =
+        jobRepository.findAllByCustomerId(id)
+
+    fun findJobsByProfessionalId(id: Long): List<Job> =
+        jobRepository.findAllByProfessionalId(id)
+
+    private fun getJobById(id: Long): Job =
+        jobRepository.findById(id).orElseThrow { throw BusinessException() }
+
+    @Transactional(rollbackFor = [Exception::class])
+    fun acceptJobOffer(acceptedJob: AcceptedJobOfferDTO) {
+
+        val customer: User = userService.getUserById(acceptedJob.customerId)
+        val professional : User = userService.getUserById(acceptedJob.professionalId)
+        val profession: Profession = professionService.getProfessionById(acceptedJob.professionId)
+
+        val jobOffers : Set<JobOfferDTO> = redisService.getJobOffers(acceptedJob.customerId)
+        val jobOffer = jobOffers.firstOrNull { it.professional.id == acceptedJob.professionalId }
+            ?: throw BusinessException("No existe oferta de este profesional para el usuario.")
+
+        val job = Job().apply {
+            this.professional = professional
+            this.customer = customer
+            this.date = LocalDate.now()
+            this.profession = profession
+            this.price = jobOffer.price
+        }
+
         jobRepository.save(job)
 
-    fun deleteJob(job: Job) =
-        jobRepository.delete(job)
-
-    fun getJobById(id: Long): Job = jobRepository.findById(id).orElseThrow { throw BusinessException() }
+        //Limpia el request y offer me parecio conveniente borrarla inmpediatamente a pesar de q tenga el ttl
+        redisService.removeJobRequest(profession.id, acceptedJob.customerId)
+    }
 
 //    fun getJobsByUser(id: Long) = jobRepository.getAllByUserId(id)
 

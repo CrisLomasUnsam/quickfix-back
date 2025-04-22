@@ -9,6 +9,10 @@ import quickfix.utils.exceptions.BusinessException
 @Component
 interface JobRepository : CrudRepository<Job, Long> {
 
+    fun findAllByCustomerId(customerId: Long): List<Job>
+
+    fun findAllByProfessionalId(professionalId: Long): List<Job>
+
 //    fun setToDone(id: Long){
 //        TODO("Not yet implemented")
 //    }

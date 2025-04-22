@@ -147,7 +147,7 @@ class DataInitializer : InitializingBean {
             debt = 200.0
         }
         professionalInfo2 = ProfessionalInfo().apply {
-            professions = mutableSetOf(jardinero)
+            professions = mutableSetOf(electricista, jardinero)
             certificates = mutableSetOf(certificateJardinero)
             balance = 500.0
             debt = 50.0
@@ -196,7 +196,7 @@ class DataInitializer : InitializingBean {
             lastName = "Gomez"
             password = "dummyPassword"
             dni = 12345678
-            avatar = "img1"
+            avatar = "imgValen1"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.FEMALE
             address = address1
@@ -212,7 +212,7 @@ class DataInitializer : InitializingBean {
             lastName = "Palacios"
             password = "dummyPassword"
             dni = 12345679
-            avatar = "img2"
+            avatar = "imgCris2"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.FEMALE
             address = address2
@@ -228,7 +228,7 @@ class DataInitializer : InitializingBean {
             lastName = "Perez"
             password = "dummyPassword"
             dni = 12345671
-            avatar = "img3"
+            avatar = "imgTomi3"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.FEMALE
             address = address3
@@ -244,7 +244,7 @@ class DataInitializer : InitializingBean {
             lastName = "Contardo"
             password = "dummyPassword"
             dni = 12345672
-            avatar = "img4"
+            avatar = "imgJuan4"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.MALE
             address = address4
@@ -259,7 +259,7 @@ class DataInitializer : InitializingBean {
             lastName = "Bueno"
             password = "dummyPassword"
             dni = 12345673
-            avatar = "img5"
+            avatar = "imgRodri5"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.OTHER
             address = address5
@@ -274,7 +274,7 @@ class DataInitializer : InitializingBean {
             lastName = "Dodino"
             password = "dummyPassword"
             dni = 12345674
-            avatar = "img6"
+            avatar = "imgFer6"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.FEMALE
             address = address6

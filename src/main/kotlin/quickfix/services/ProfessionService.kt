@@ -3,18 +3,23 @@ package quickfix.services
 import org.springframework.stereotype.Service
 import quickfix.dao.ProfessionRepository
 import quickfix.models.Profession
+import quickfix.models.User
 import quickfix.utils.exceptions.BusinessException
-
-
 @Service
 class ProfessionService(
     private val professionRepository: ProfessionRepository
 ){
 
-    fun getById(id: Long) : Profession =
-        professionRepository.findById(id).orElseThrow { throw BusinessException() }
+    fun assertProfessionExists(professionId: Long) {
+        if(!professionRepository.existsById(professionId))
+            throw BusinessException("La profesión no existe")
+    }
 
-    fun getByNameIgnoreCase(profession : String) : Profession =
-        professionRepository.findByNameIgnoreCase(profession) ?: throw BusinessException("Profesión no encontrada")
+    fun getProfessionById(id: Long): Profession =
+        professionRepository.findById(id).orElseThrow{ BusinessException("La profesión no está disponible.") }
+
+    fun getProfessionByName(profession : String) : Profession {
+        return professionRepository.findByNameIgnoreCase(profession).orElseThrow {  BusinessException("La profesión no está disponible.")  }
+    }
 
 }
