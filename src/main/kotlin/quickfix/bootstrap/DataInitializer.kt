@@ -109,17 +109,17 @@ class DataInitializer : InitializingBean {
     }
 
     fun initProfessions() {
-        electricista = professionService.getProfessionByName("Electricista")
-        gasista = professionService.getProfessionByName("Gasista")
-        jardinero = professionService.getProfessionByName("Jardinero")
+        electricista = professionService.getByNameIgnoreCase("Electricista")
+        gasista = professionService.getByNameIgnoreCase("Gasista")
+        jardinero = professionService.getByNameIgnoreCase("Jardinero")
     }
 
     fun initCertificates() {
-        certificateElectricista1 = Certificate().apply { profession = electricista }
-        certificateGasista2 = Certificate().apply { profession = gasista }
-        certificateGasista = Certificate().apply { profession = gasista }
-        certificateJardinero = Certificate().apply { profession = jardinero }
-        certificateJardinero2 = Certificate().apply { profession = jardinero }
+        certificateElectricista1 = Certificate().apply { profession = electricista; imgs = mutableSetOf("img1") }
+        certificateGasista2 = Certificate().apply { profession = gasista; imgs = mutableSetOf("img2") }
+        certificateGasista = Certificate().apply { profession = gasista; imgs = mutableSetOf("img3") }
+        certificateJardinero = Certificate().apply { profession = jardinero; imgs = mutableSetOf("img4") }
+        certificateJardinero2 = Certificate().apply { profession = jardinero; imgs = mutableSetOf("img5") }
     }
 
     fun initProfessionalInfos() {
