@@ -32,7 +32,7 @@ class RegisterService(
     private fun userExists(mail: String) = userRepository.findByMail(mail)?.let { throw BusinessException("El usuario con mail ${it.mail} ya existe") }
 
     private fun registerNewUser(registerData: RegisterRequestDTO) {
-        val user = registerData.toUser().apply { this.encodedPassword = encodePassword(this.encodedPassword) }
+        val user = registerData.toUser().apply { this.password = encodePassword(this.password) }
         val savedUser = userRepository.save(user) /*Se persiste un usuario sin verificar aun pero cuyo mail no esta en la bbdd*/
         val token = UUID.randomUUID().toString()
         this.createVerificationTokenEntity(savedUser, token)

@@ -19,7 +19,7 @@ class User : Identifier, UserDetails {
     lateinit var name : String
     lateinit var lastName : String
     @Column(length = 60)
-    lateinit var encodedPassword : String
+    lateinit var password : String
     @Column(unique = true)
     var dni : Int = 0
     lateinit var avatar: String
@@ -78,13 +78,13 @@ class User : Identifier, UserDetails {
         name.trim().isNotBlank() && !name.trim().contains(" ") && !name.any { it.isDigit() }
 
     private fun validPassword() : Boolean =
-        encodedPassword.trim().length >= 6 && !(encodedPassword.trim().contains(" "))
+        password.trim().length >= 6 && !(password.trim().contains(" "))
 
     private fun isAdult(): Boolean =
         dateBirth.plusYears(EDAD_REQUERIDA.toLong()).isBefore(LocalDate.now())
 
     fun verifyPassword(password : String) : Boolean =
-        this.encodedPassword == password
+        this.password == password
 
     fun updateUserInfo(modifiedInfoDTO: UserModifiedInfoDTO) {
         modifiedInfoDTO.mail?.let {
@@ -124,7 +124,7 @@ class User : Identifier, UserDetails {
     }
 
     override fun getPassword(): String {
-        return this.encodedPassword
+        return this.password
     }
 
     override fun getAuthorities(): Collection<GrantedAuthority> = listOf() /*Esto es para roles*/

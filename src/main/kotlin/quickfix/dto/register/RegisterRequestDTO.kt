@@ -22,7 +22,7 @@ fun RegisterRequestDTO.toUser() : User {
         mail = request.mail.trim()
         name = request.name.trim()
         lastName = request.lastName.trim()
-        encodedPassword = request.rawPassword.trim()
+        password = request.rawPassword.trim()
         dni = request.dni
         avatar = request.avatar.trim()
         dateBirth = datifyString(request.dateBirth, DateWithDayFormatter)

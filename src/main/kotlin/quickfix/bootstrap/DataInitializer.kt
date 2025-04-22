@@ -194,7 +194,7 @@ class DataInitializer : InitializingBean {
             mail = "valen@example.com"
             name = "Valentina"
             lastName = "Gomez"
-            encodedPassword = "dummyPassword"
+            password = "dummyPassword"
             dni = 12345678
             avatar = "img1"
             dateBirth = LocalDate.of(1995, 5, 23)
@@ -210,7 +210,7 @@ class DataInitializer : InitializingBean {
             mail = "cris@example.com"
             name = "Cristina"
             lastName = "Palacios"
-            encodedPassword = "dummyPassword"
+            password = "dummyPassword"
             dni = 12345679
             avatar = "img2"
             dateBirth = LocalDate.of(1995, 5, 23)
@@ -226,7 +226,7 @@ class DataInitializer : InitializingBean {
             mail = "tomi@example.com"
             name = "Tomaso"
             lastName = "Perez"
-            encodedPassword = "dummyPassword"
+            password = "dummyPassword"
             dni = 12345671
             avatar = "img3"
             dateBirth = LocalDate.of(1995, 5, 23)
@@ -242,7 +242,7 @@ class DataInitializer : InitializingBean {
             mail = "customer1@example.com"
             name = "Juan"
             lastName = "Contardo"
-            encodedPassword = "dummyPassword"
+            password = "dummyPassword"
             dni = 12345672
             avatar = "img4"
             dateBirth = LocalDate.of(1995, 5, 23)
@@ -257,7 +257,7 @@ class DataInitializer : InitializingBean {
             mail = "customer2@example.com"
             name = "Rodrigo"
             lastName = "Bueno"
-            encodedPassword = "dummyPassword"
+            password = "dummyPassword"
             dni = 12345673
             avatar = "img5"
             dateBirth = LocalDate.of(1995, 5, 23)
@@ -272,7 +272,7 @@ class DataInitializer : InitializingBean {
             mail = "customer3@example.com"
             name = "Fer"
             lastName = "Dodino"
-            encodedPassword = "dummyPassword"
+            password = "dummyPassword"
             dni = 12345674
             avatar = "img6"
             dateBirth = LocalDate.of(1995, 5, 23)
