@@ -10,7 +10,7 @@ data class JobSearchParameters (
 
 ) : ISearchParameters<Job> {
 
-    override fun matches(job: Job): Boolean =
-        matchJobStatusFromString(parameter)?.let { job.status == it }
-        ?: matchProfessionFromString(parameter, job)
+    override fun matches(element: Job): Boolean =
+        matchJobStatusFromString(parameter)?.let { element.status == it }
+        ?: matchProfessionFromString(parameter, element)
 }

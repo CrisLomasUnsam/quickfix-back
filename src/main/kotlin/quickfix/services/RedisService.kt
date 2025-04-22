@@ -1,14 +1,13 @@
 package quickfix.services
 
-import quickfix.dto.message.ChatMessageDTO
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import quickfix.dto.job.JobOfferDTO
 import quickfix.dto.job.JobRequestDTO
+import quickfix.dto.message.ChatMessageDTO
 import quickfix.dto.message.RedisMessageDTO
 import quickfix.dto.message.toRedisMessage
 import quickfix.utils.exceptions.BusinessException
-import java.time.Duration
 
 @Service
 class RedisService(
