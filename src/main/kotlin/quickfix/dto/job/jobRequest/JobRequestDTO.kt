@@ -16,14 +16,17 @@ data class JobRequestDTO @JsonCreator constructor(
 
     @JsonProperty("detail")
     var detail: String
+
 )
 
 
 
 fun JobRequestDTO.validate() {
+    validCustomer(customerId)
     validProfession(professionId)
     validDetail(detail)
 }
 
+private fun validCustomer(customerId: Long) { if(customerId < 1) throw BusinessException() }
 private fun validProfession(professionId: Long) { if(professionId < 1) throw BusinessException() }
 private fun validDetail(detail: String) { if(detail.isBlank()) throw BusinessException() }

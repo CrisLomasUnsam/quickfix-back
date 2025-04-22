@@ -1,5 +1,7 @@
 package quickfix.dto.job.jobOffer
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.SchemaProperty
 import quickfix.dto.professional.ProfessionalDTO
@@ -7,18 +9,45 @@ import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.models.User
 import quickfix.utils.enums.JobStatus
+import java.time.LocalDate
 
 @Schema(description = "Oferta enviada por un profesional como respuesta a un jobRequest")
 @SchemaProperty(name = "distance", schema = Schema(description = "Distancia en kilómetros a la que se encuentra el profesional del usuario que inició la búsqueda."))
 @SchemaProperty(name = "estimatedArriveTime", schema = Schema(description = "Tiempo de llegada estimado en minutos del profesional. Calculado en base a la distancia"))
 @SchemaProperty(name = "availability", schema = Schema(description = "Disponibilidad del professional en minutos para iniciar el trabajo."))
 
-data class JobOfferDTO (
-    val customerId : Long,
-    val professionId : Long,
-    val professional: ProfessionalDTO,
-    val price: Double,
-    val distance: Double,
-    val estimatedArriveTime: Int,
-    val availability: Int,
+data class JobOfferDTO @JsonCreator constructor (
+
+    @JsonProperty("customerId")
+    var customerId : Long,
+
+    @JsonProperty("professionId")
+    var professionId : Long,
+
+    @JsonProperty("professional")
+    var professional: ProfessionalDTO,
+
+    @JsonProperty("price")
+    var price: Double,
+
+    @JsonProperty("distance")
+    var distance: Double,
+
+    @JsonProperty("estimatedArriveTime")
+    var estimatedArriveTime: Int,
+
+    @JsonProperty("availability")
+    var availability: Int,
+
 )
+fun JobOfferDTO.toDTO(
+    customer: User,
+    professional: User,
+    profession: Profession
+): Job = Job().apply {
+    this.customer      = customer
+    this.professional  = professional
+    this.profession    = profession
+    this.price         = this@toDTO.price
+    this.status        = JobStatus.DONE
+}

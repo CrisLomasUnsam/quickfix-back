@@ -14,6 +14,7 @@ class RedisService(
     private val redisJobRequestStorage: RedisTemplate<String, JobRequestDTO>,
     private val redisJobOfferStorage: RedisTemplate<String, JobOfferDTO>,
     private val redisChatStorage: RedisTemplate<String, RedisMessageDTO>
+
 ) {
 
     /******************************************************
@@ -27,8 +28,6 @@ class RedisService(
 
     fun requestJob(jobRequest : JobRequestDTO) {
         val professionId = jobRequest.professionId
-            ?: throw BusinessException("No se encontró el id de profesión en la solicitud")
-
         val customerId = jobRequest.customerId
 
         val tempKey = "JobRequest_*_${customerId}_"
@@ -75,7 +74,6 @@ class RedisService(
     JobOffer_ProfessionId_CustomerId_ProfessionalId_
      *******************************************************/
 
-
     private fun getJobOfferKey(professionId: Long, customerId: Long, professionalId: Long) : String =
         "JobOffer_${professionId}_${customerId}_${professionalId}_"
 
@@ -92,7 +90,7 @@ class RedisService(
         val professionalHasActiveOffer = redisJobOfferStorage.keys(keyPattern).isNotEmpty()
         if(professionalHasActiveOffer)
             throw BusinessException("No puede realizar más de una oferta simultáneamente.")
-        val key = getJobOfferKey(jobOffer.professionId, jobOffer.professional.id, jobOffer.customerId)
+        val key = getJobOfferKey(jobOffer.professionId, jobOffer.customerId, jobOffer.professional.id)
         redisJobOfferStorage.opsForValue().set(key,jobOffer)
     }
 

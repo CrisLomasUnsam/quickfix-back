@@ -18,11 +18,14 @@ class UserService(
     private val professionService: ProfessionService,
 
 ) {
-
     fun getUserById(id: Long): User =
         userRepository.findById(id).orElseThrow{ BusinessException("Usuario no encontrado") }
 
-
+    fun getExistById(id: Long) {
+        require(userRepository.existsById(id)) {
+            "No existe el user ${id}"
+        }
+    }
     @Transactional(rollbackFor = [Exception::class])
     fun changeUserInfo(id: Long, modifiedInfo: UserModifiedInfoDTO) {
 
@@ -38,13 +41,9 @@ class UserService(
         userRepository.findUserProfessionsById(id)?.professionalInfo!!.professions
 
     fun requestJob(jobRequest : JobRequestDTO) {
-
-         userRepository.findById(jobRequest.customerId)
-            .orElseThrow { BusinessException("El cliente con id ${jobRequest.customerId} no existe.") }
-
+        this.getExistById(jobRequest.customerId)
         val profession = professionService.getProfessionById(jobRequest.professionId)
         val updatedJobRequest = jobRequest.copy(professionId = profession.id)
-
         redisService.requestJob(updatedJobRequest)
     }
 
@@ -54,7 +53,7 @@ class UserService(
 
     fun cancelJobRequest (cancelJobRequest : CancelJobRequestDTO) {
         val (customerId, professionId) = cancelJobRequest
-        this.getUserById(customerId)
+        this.getExistById(customerId)
         professionService.getProfessionById(professionId)
         redisService.removeJobRequest(customerId, professionId)
     }

@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.JobRepository
 import quickfix.dto.job.jobOffer.AcceptedJobOfferDTO
 import quickfix.dto.job.jobOffer.JobOfferDTO
+import quickfix.dto.job.jobOffer.toDTO
 import quickfix.dto.message.ChatMessageDTO
 import quickfix.dto.message.RedisMessageDTO
 import quickfix.models.Job
@@ -24,7 +25,6 @@ class JobService(
         jobRepository.save(job)
     }
 
-
     fun deleteJob(job: Job) =
         jobRepository.delete(job)
 
@@ -36,11 +36,12 @@ class JobService(
         val customer: User = userService.getUserById(acceptedJob.customerId)
         val professional : User = userService.getUserById(acceptedJob.professionalId)
         val profession: Profession = professionService.getProfessionById(acceptedJob.professionId)
+
         val jobOffers : Set<JobOfferDTO> = redisService.getJobOffers(acceptedJob.customerId)
+        val offer = jobOffers.firstOrNull { it.professional.id == acceptedJob.professionalId }
+            ?: throw BusinessException("No existe oferta de este profesional para el usuario.")
 
-        val offer = jobOffers.firstOrNull { it.professional.id == acceptedJob.professionalId } ?: throw BusinessException("…")
-
-        println(offer)
+        this.createJob(offer.toDTO(customer, professional, profession))
 
         //Limpia el request y offer me parecio conveniente borrarla inmpediatamente a pesar de q tenga el ttl
         redisService.removeJobRequest(profession.id, acceptedJob.customerId)
