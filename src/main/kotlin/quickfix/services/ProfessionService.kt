@@ -19,9 +19,7 @@ class ProfessionService(
         professionRepository.findById(id).orElseThrow{ BusinessException("La profesión no está disponible.") }
 
     fun getProfessionByName(profession : String) : Profession {
-        return professionRepository.findByName(profession).orElseThrow {  BusinessException("La profesión no está disponible.")  }
+        return professionRepository.findByNameIgnoreCase(profession).orElseThrow {  BusinessException("La profesión no está disponible.")  }
     }
 
 }
-
-

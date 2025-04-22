@@ -1,6 +1,8 @@
 package quickfix.models
 
 import jakarta.persistence.*
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
 import quickfix.dto.user.UserModifiedInfoDTO
 import quickfix.utils.DateWithDayFormatter
 import quickfix.utils.datifyString
@@ -9,16 +11,20 @@ import java.time.LocalDate
 
 @Entity
 @Table(name = "users")
-class User : Identifier {
+class User : Identifier, UserDetails {
 
     @Id @GeneratedValue
     override var id: Long = -1
     lateinit var mail: String
     lateinit var name : String
     lateinit var lastName : String
-    lateinit var password : String
+
+    @Column(length = 60)
+    private lateinit var _password : String
+
     @Column(unique = true)
     var dni : Int = 0
+
     lateinit var avatar: String
     lateinit var dateBirth : LocalDate
 
@@ -35,6 +41,14 @@ class User : Identifier {
 
     companion object {
         const val EDAD_REQUERIDA = 18
+    }
+
+    override fun getUsername(): String = mail
+    override fun getAuthorities(): Collection<GrantedAuthority> = listOf() /*Esto es para roles*/
+    override fun getPassword(): String = _password
+
+    fun setPassword(password: String) {
+        this._password = password
     }
 
     override fun validate() = validateCommonFields()
@@ -116,5 +130,4 @@ class User : Identifier {
         }
 
     }
-
 }

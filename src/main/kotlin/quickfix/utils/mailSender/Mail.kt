@@ -1,8 +1,8 @@
 package quickfix.utils.mailSender
 
 data class Mail(
-    val from: String = "registration@quickfix.com",
+    val from: String = "quickfix.app.noreply@gmail.com",
     var to: String,
-    val subject: String = "Confirm your account",
-    var content: String = "Confirm your account by clicking on the link below",
+    val subject: String = "Confirme su cuenta",
+    var content: String
 )

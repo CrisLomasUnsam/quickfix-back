@@ -14,7 +14,7 @@ fun datifyString(fechaStr: String, format: DateTimeFormatter): LocalDate {
     return try {
         LocalDate.parse(fechaStr, format)
     } catch (e: DateTimeParseException) {
-        throw BusinessException("La fecha no tiene el formato esperado")
+        throw BusinessException("La fecha no tiene el formato esperado dd/MM/yyyy")
     }
 }
 
