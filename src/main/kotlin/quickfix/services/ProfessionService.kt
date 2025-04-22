@@ -3,6 +3,7 @@ package quickfix.services
 import org.springframework.stereotype.Service
 import quickfix.dao.ProfessionRepository
 import quickfix.models.Profession
+import quickfix.utils.exceptions.BusinessException
 
 
 @Service
