@@ -1,5 +1,4 @@
 package quickfix.models
-
 import jakarta.persistence.*
 
 @Entity

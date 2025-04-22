@@ -1,7 +1,7 @@
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import quickfix.utils.enums.ProfessionType
+import quickfix.utils.dataInitializer.Professions
 import quickfix.utils.hasMatchingStart
 import quickfix.utils.searchParameters.ISearchParameters
 
@@ -9,7 +9,7 @@ enum class MockedJobStatus { DONE, PENDING }
 
 data class MockedCustomer(val id: Long)
 
-data class Professional(val professions: List<ProfessionType>)
+data class Professional(val professions: List<String>)
 
 data class MockedJob(
     val done: Boolean,
@@ -21,30 +21,26 @@ data class MockedJob(
 val mockedJob1 = MockedJob(
     done = true,
     inProgress = false,
-    professional = Professional(listOf((ProfessionType.JARDINERO))),
+    professional = Professional(listOf(("Jardinero"))),
     mockedCustomer = MockedCustomer(id = 1)
 )
 
 val mockedJob2 = MockedJob(
     done = false,
     inProgress = true,
-    professional = Professional(listOf((ProfessionType.JARDINERO))),
+    professional = Professional(listOf(("Jardinero"))),
     mockedCustomer = MockedCustomer(id = 1)
 )
 
 val mockedJob3 = MockedJob(
     done = false,
     inProgress = false,
-    professional = Professional(listOf((ProfessionType.ELECTRICISTA))),
+    professional = Professional(listOf(("electricista"))),
     mockedCustomer = MockedCustomer(id = 2)
 )
 
 val listOfJobs = listOf(mockedJob1, mockedJob2, mockedJob3)
 
-val professionMapping = mapOf(
-    "gasista" to ProfessionType.GASISTA,
-    "jardinero" to ProfessionType.JARDINERO,
-)
 
 class MockedJobSearchParameters(private val parameter: String) : ISearchParameters<MockedJob> {
     override fun matches(element: MockedJob): Boolean =
@@ -71,16 +67,13 @@ fun matchMockedJobStatusFromString(param: String): MockedJobStatus? {
 }
 fun matchProfessionFromString(param: String, element: MockedJob): Boolean {
     val cleanedParam = param.trim().lowercase()
-    val matchedProfession = professionMapping.entries.find { (key, _) ->
-        cleanedParam.contains(key) ||
-                key.contains(cleanedParam) ||
-                hasMatchingStart(cleanedParam, key) ||
-                hasMatchingStart(key, cleanedParam)
-    }?.value
-    return matchedProfession != null &&
-            element.professional.professions.any {
-                it == matchedProfession
-            }
+    println("parametro: $cleanedParam")
+    val matched = Professions.find { profession ->
+        cleanedParam.contains(profession.lowercase()) || profession.lowercase().contains(cleanedParam) || hasMatchingStart(cleanedParam, profession.lowercase())
+    }
+    println("matched: $matched")
+    return matched != null &&
+            element.professional.professions.contains(matched)
 }
 
 class SearchJobsByParameterSpec : DescribeSpec({
@@ -105,8 +98,13 @@ class SearchJobsByParameterSpec : DescribeSpec({
                 jobList.size shouldBe 0
             }
 
+            it("should return 2 jobs for 'jardinero' "){
+                val jobList = searchByParameters(1, MockedJobSearchParameters("jardinero"))
+                jobList.size shouldBe 2
+            }
+
             it("should return jobs for 'jardinero' even when parameter is incomplete") {
-                val jobList = searchByParameters(1, MockedJobSearchParameters("jardineri"))
+                val jobList = searchByParameters(1, MockedJobSearchParameters("jardinero"))
                 jobList.size shouldBe 2
             }
         }

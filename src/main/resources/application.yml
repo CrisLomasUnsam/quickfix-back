@@ -27,6 +27,20 @@ spring:
       hibernate:
         format_sql: true
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: quickfix.app.noreply@gmail.com
+    password: qgujxcoxggxmiyfr
+
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    default-encoding: UTF-8
+
 # Para activar el Trace
 logging:
   level:

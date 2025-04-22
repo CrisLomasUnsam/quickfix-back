@@ -15,7 +15,9 @@ class UserService(
 ) {
 
     fun getUserById(id: Long): User =
-        userRepository.findById(id).orElseThrow{ BusinessException("Usuario no encontrado") }
+        userRepository.findById(id).orElseThrow{ BusinessException("Usuario no encontrado $id") }
+
+    fun getUserByMail(mail: String): User = userRepository.findByMail(mail) ?: throw BusinessException("Usuario no encontrado $mail")
 
     fun changeUserInfo(id: Long, modifiedInfo: UserModifiedInfoDTO) {
         val user = getUserById(id)
