@@ -8,11 +8,12 @@ class Certificate : Identifier {
     @Id @GeneratedValue
     override var id: Long = -1
 
+    lateinit var name: String
+
     @ManyToOne
     lateinit var profession: Profession
 
-    @ElementCollection
-    var imgs : MutableSet<String> = mutableSetOf()
+    lateinit var img : String
 
     override fun validate() {
         TODO("Not yet implemented")
