@@ -7,7 +7,6 @@ import quickfix.dto.job.jobRequest.CancelJobRequestDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.user.UserModifiedInfoDTO
 import quickfix.models.Profession
-import quickfix.models.ProfessionalInfo
 import quickfix.models.User
 import quickfix.utils.exceptions.BusinessException
 
@@ -21,39 +20,35 @@ class UserService(
     fun getUserById(id: Long): User =
         userRepository.findById(id).orElseThrow{ BusinessException("Usuario no encontrado") }
 
-    fun getExistById(id: Long) {
-        require(userRepository.existsById(id)) {
-            "No existe el user ${id}"
+    fun assertUserExists(id: Long) {
+        if (!userRepository.existsById(id)) {
+            throw BusinessException("Usuario no encontrado: $id")
         }
     }
     @Transactional(rollbackFor = [Exception::class])
     fun changeUserInfo(id: Long, modifiedInfo: UserModifiedInfoDTO) {
-
         val user = this.getUserById(id)
         user.updateUserInfo(modifiedInfo)
-
-        modifiedInfo.address?.let { addressDTO ->
-            user.address.updateAddressInfo(addressDTO)
-        }
     }
 
-    fun getProfessionsByUserId(id : Long) : Set<Profession> =
-        userRepository.findUserProfessionsById(id)?.professionalInfo!!.professions
+    fun getProfessionsByUserId(id: Long): Set<Profession> {
+        val info = userRepository.findUserProfessionsById(id)
+            ?: throw BusinessException("Usuario o ProfessionalInfo no encontrado")
+        return info.professionalInfo.professions
+    }
 
     fun requestJob(jobRequest : JobRequestDTO) {
-        this.getExistById(jobRequest.customerId)
+        this.assertUserExists(jobRequest.customerId)
         val profession = professionService.getProfessionById(jobRequest.professionId)
-        val updatedJobRequest = jobRequest.copy(professionId = profession.id)
-        redisService.requestJob(updatedJobRequest)
+        redisService.requestJob(jobRequest, profession.id)
     }
-
 
     fun getJobOffers(customerId : Long) =
         redisService.getJobOffers(customerId)
 
     fun cancelJobRequest (cancelJobRequest : CancelJobRequestDTO) {
         val (customerId, professionId) = cancelJobRequest
-        this.getExistById(customerId)
+        this.assertUserExists(customerId)
         professionService.getProfessionById(professionId)
         redisService.removeJobRequest(customerId, professionId)
     }

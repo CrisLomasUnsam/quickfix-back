@@ -26,8 +26,8 @@ class RedisService(
     private fun getJobRequestKey(professionId: Long, customerId: Long) : String =
         "JobRequest_${professionId}_${customerId}_"
 
-    fun requestJob(jobRequest : JobRequestDTO) {
-        val professionId = jobRequest.professionId
+    fun requestJob(jobRequest : JobRequestDTO, professionId : Long) {
+
         val customerId = jobRequest.customerId
 
         val tempKey = "JobRequest_*_${customerId}_"
