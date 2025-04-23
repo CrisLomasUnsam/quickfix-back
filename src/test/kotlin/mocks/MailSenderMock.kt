@@ -1,6 +1,6 @@
 package mocks
 
-import io.mockk.mockk
+/*import io.mockk.mockk
 import org.springframework.security.crypto.password.PasswordEncoder
 import quickfix.dao.UserRepository
 import quickfix.services.RegisterService
@@ -20,4 +20,4 @@ fun createMailSenderMock (): MailSenderMock{
     val mockedPasswordEncoder = mockk<PasswordEncoder>(relaxUnitFun = true)
     val mockedRegisterService = RegisterService(mockedMailObserver,mockedUserRepository,mockedPasswordEncoder)
     return MailSenderMock(mockedMailSender, mockedRegisterService, mockedUserRepository)
-}
+}*/
