@@ -19,12 +19,6 @@ interface JobRepository : CrudRepository<Job, Long> {
 
 
 
-
-//
-//    fun setToCancelled(id: Long){
-//        TODO("Not yet implemented")
-//    }
-
     @Query(
         value = """
         select *

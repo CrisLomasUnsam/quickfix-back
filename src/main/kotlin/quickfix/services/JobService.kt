@@ -62,15 +62,18 @@ class JobService(
 //    fun getJobsByUser(id: Long) = jobRepository.getAllByUserId(id)
 
     @Transactional
-    fun setJobAsDone(id: Long) {
-        val job = this.getJobById(id)
-            job.done = true
-            job.status = JobStatus.DONE
-            jobRepository.save(job)
-    }
-//
-//    fun setJobAsCancelled(id: Long) = jobRepository.setToCancelled(id)
+    fun setJobAsDone(id: Long) =
+        updateJobStatus(id,  true,  JobStatus.DONE)
+    @Transactional
+    fun setJobAsCancelled(id: Long) =
+        updateJobStatus(id,  false, JobStatus.CANCELED)
 
+    private fun updateJobStatus(id: Long, done: Boolean, status: JobStatus) {
+        val job = this.getJobById(id)
+        job.done = done
+        job.status = status
+        jobRepository.save(job)
+    }
     fun getJobsByParameter(id: Long, parameter: String?): List<Job> =
         jobRepository.findJobByFilter(id, parameter)
 

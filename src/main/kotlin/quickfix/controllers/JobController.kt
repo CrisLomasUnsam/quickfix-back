@@ -36,9 +36,9 @@ class JobController(
 
     @PatchMapping("/{id}/complete")
     fun setJobAsDone(@PathVariable id: Long) = jobService.setJobAsDone(id)
-//
-//    @PatchMapping("/{id}/cancel")
-//    fun setJobAsCancelled(@PathVariable id: Long) = jobService.setJobAsCancelled(id)
+
+    @PatchMapping("/{id}/cancel")
+    fun setJobAsCancelled(@PathVariable id: Long) = jobService.setJobAsCancelled(id)
 
     @GetMapping("/filter/{userId}")
     @Operation(summary = "Buscar jobs por filtro")
