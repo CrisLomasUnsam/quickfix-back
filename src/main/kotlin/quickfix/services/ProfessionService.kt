@@ -23,15 +23,7 @@ class ProfessionService(
         return professionRepository.findByNameIgnoreCase(profession).orElseThrow {  BusinessException("La profesión no está disponible.")  }
     }
 
-    fun getProfessionByParameter(parameter: String?): List<Profession> {
-        return if (parameter.isNullOrBlank()) {
-            professionRepository.findAll().toList()
-        } else {
-            professionRepository.findProfessionByFilter(parameter)
-        }
-
-
-    }
-
+    fun getProfessionByParameter(parameter: String?): List<Profession> =
+            professionRepository.findProfessionByFilter(parameter ?: "")
 
 }
