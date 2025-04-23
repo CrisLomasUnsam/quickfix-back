@@ -10,7 +10,9 @@ import quickfix.dto.message.RedisMessageDTO
 import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.models.User
+import quickfix.utils.enums.JobStatus
 import quickfix.utils.exceptions.BusinessException
+import quickfix.utils.searchParameters.JobSearchParameters
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -21,6 +23,7 @@ class JobService(
     val userService: UserService,
     val professionService: ProfessionService
 ){
+
 
     fun findJobsByCustomerId(id: Long): List<Job> =
         jobRepository.findAllByCustomerId(id)
@@ -58,14 +61,19 @@ class JobService(
 
 //    fun getJobsByUser(id: Long) = jobRepository.getAllByUserId(id)
 
-//    fun setJobAsDone(id: Long) = jobRepository.setToDone(id)
+    @Transactional
+    fun setJobAsDone(id: Long) {
+        val job = this.getJobById(id)
+            job.done = true
+            job.status = JobStatus.DONE
+            jobRepository.save(job)
+    }
 //
 //    fun setJobAsCancelled(id: Long) = jobRepository.setToCancelled(id)
 
-//    fun getJobsByParameter(id: Long, parameter: String): List<Job> {
-//        val searchParameters = JobSearchParameters(parameter)
-//        return jobRepository.searchByParameters(id, searchParameters)
-//    }
+    fun getJobsByParameter(id: Long, parameter: String?): List<Job> =
+        jobRepository.findJobByFilter(id, parameter)
+
 
     /*************************
         CHAT METHODS
