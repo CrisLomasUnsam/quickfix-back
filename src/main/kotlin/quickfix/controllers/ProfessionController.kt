@@ -12,7 +12,7 @@ import quickfix.services.ProfessionalService
 @RestController
 @RequestMapping("/profession")
 @CrossOrigin(origins = ["*"])
-@Tag(name = "Profesiones", description = "Operaciones realizadas desde una profession")
+@Tag(name = "Profesiones", description = "Operaciones para manejo de profesiones")
 class ProfessionController(
     private val professionService: ProfessionService
 ) {
