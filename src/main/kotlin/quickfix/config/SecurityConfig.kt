@@ -15,9 +15,8 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import quickfix.security.JwtAuthFilter
 import quickfix.utils.FRONTEND_URL
-
-// import org.springframework.security.web.csrf.CookieCsrfTokenRepository
-// import quickfix.security.CsrfTokenRequestHandler
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository
+import quickfix.security.CsrfTokenRequestHandler
 
 @Configuration
 class SecurityConfig {
@@ -47,17 +46,35 @@ class SecurityConfig {
             .cors { it.disable() }
             .csrf {
                 it.ignoringRequestMatchers(
+                    "/quickfix-api/v1/**",
+                    "/quickfix-api/swagger-config/**",
+                    "/swagger",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                    "/swagger-resources/**",
+                    "/swagger-resources/configuration/ui",
+                    "/swagger-resources/configuration/security",
+                    "/webjars/**",
                     "/registration",
                     "registration/login",
-                    "/swagger")
-//                it.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-//                it.csrfTokenRequestHandler(CsrfTokenRequestHandler())
+                    )
+                it.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                it.csrfTokenRequestHandler(CsrfTokenRequestHandler())
                 }
             .authorizeHttpRequests {
                 it.requestMatchers(
+                    "/quickfix-api/v1/**",
+                    "/quickfix-api/swagger-config/**",
+                    "/swagger",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                    "/swagger-resources/**",
+                    "/swagger-resources/configuration/ui",
+                    "/swagger-resources/configuration/security",
+                    "/webjars/**",
                     "/registration",
                     "/registration/login",
-                    "/swagger").permitAll()
+                    ).permitAll()
                 it.requestMatchers(HttpMethod.OPTIONS).permitAll()
                     .anyRequest().authenticated()
                 }
