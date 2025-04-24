@@ -46,16 +46,18 @@ class SecurityConfig {
         return httpSecurity
             .cors { it.disable() }
             .csrf {
-                it.ignoringRequestMatchers("/login")
-                it.ignoringRequestMatchers("/swagger-ui/index.html")
+                it.ignoringRequestMatchers(
+                    "/registration",
+                    "registration/login",
+                    "/swagger")
 //                it.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 //                it.csrfTokenRequestHandler(CsrfTokenRequestHandler())
                 }
             .authorizeHttpRequests {
-                it.requestMatchers("/login").permitAll()
-                it.requestMatchers( "/register").permitAll()
-                //it.requestMatchers("/error").permitAll()
-                it.requestMatchers("/swagger").permitAll()
+                it.requestMatchers(
+                    "/registration",
+                    "/registration/login",
+                    "/swagger").permitAll()
                 it.requestMatchers(HttpMethod.OPTIONS).permitAll()
                     .anyRequest().authenticated()
                 }
