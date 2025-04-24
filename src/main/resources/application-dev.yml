@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/quickfix?createDatabaseIfNotExist=true
+    url: jdbc:postgresql://localhost:5432/quickfix
     username: postgres
     password: postgres
   jpa:
