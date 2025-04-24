@@ -1,7 +1,6 @@
 package quickfix.utils.exceptions
-
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
 
-@ResponseStatus(HttpStatus.UNAUTHORIZED)
-class InvalidCredentialsException (msg : String = "Credenciales inválidas") : Exception(msg)
+@ResponseStatus(HttpStatus.NOT_FOUND)
+class NotFoundException(message: String) : RuntimeException(message)

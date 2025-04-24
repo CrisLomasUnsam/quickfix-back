@@ -12,6 +12,8 @@ springdoc:
     path: /quickfix-api
 
 spring:
+  profiles:
+    active: dev
   datasource:
     url: jdbc:postgresql://localhost:5432/quickfix
     username: postgres

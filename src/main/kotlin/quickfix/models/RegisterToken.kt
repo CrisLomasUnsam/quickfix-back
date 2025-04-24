@@ -4,7 +4,7 @@ import jakarta.persistence.*
 import java.time.LocalDateTime
 
 @Entity
-class VerificationToken: Identifier {
+class RegisterToken: Identifier {
 
     @Id @GeneratedValue
     override var id: Long = -1

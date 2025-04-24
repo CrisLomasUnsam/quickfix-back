@@ -2,7 +2,9 @@ package quickfix.models
 
 import jakarta.persistence.*
 import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.User
 import quickfix.dto.user.UserModifiedInfoDTO
 import quickfix.utils.DateWithDayFormatter
 import quickfix.utils.datifyString
@@ -15,18 +17,12 @@ class User : Identifier, UserDetails {
 
     @Id @GeneratedValue
     override var id: Long = -1
-    lateinit var mail: String
-    lateinit var name : String
-    lateinit var lastName : String
 
     @Column(length = 60)
     private lateinit var _password : String
 
     @Column(unique = true)
     var dni : Int = 0
-
-    lateinit var avatar: String
-    lateinit var dateBirth : LocalDate
 
     @Enumerated(EnumType.STRING)
     lateinit var gender : Gender
@@ -37,18 +33,36 @@ class User : Identifier, UserDetails {
     @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true)
     var professionalInfo: ProfessionalInfo = ProfessionalInfo()
 
+    @ManyToMany
+    val roles: MutableSet<Rol> = mutableSetOf()
+
+    lateinit var mail: String
+    lateinit var name : String
+    lateinit var lastName : String
+    lateinit var avatar: String
+    lateinit var dateBirth : LocalDate
     var verified : Boolean = false
+
 
     companion object {
         const val EDAD_REQUERIDA = 18
     }
 
-    override fun getUsername(): String = mail
-    override fun getAuthorities(): Collection<GrantedAuthority> = listOf() /*Esto es para roles*/
-    override fun getPassword(): String = _password
 
     fun setPassword(password: String) {
         this._password = password
+    }
+
+    override fun getUsername(): String = mail
+
+    override fun getAuthorities(): Collection<GrantedAuthority> = listOf() /*Esto es para roles*/
+
+    override fun getPassword(): String = _password
+
+    fun buildUser() = User(username, password, roles.map { SimpleGrantedAuthority(it.name) })
+
+    fun addRole(role: Rol) {
+        if (!roles.contains(role)) roles.add(role)
     }
 
     override fun validate() = validateCommonFields()
@@ -94,8 +108,8 @@ class User : Identifier, UserDetails {
     private fun isAdult(): Boolean =
         dateBirth.plusYears(EDAD_REQUERIDA.toLong()).isBefore(LocalDate.now())
 
-    fun verifyPassword(password : String) : Boolean =
-        this.password == password
+//    fun verifyPassword(password : String) : Boolean =
+//        this.password == password
 
     fun updateUserInfo(modifiedInfoDTO: UserModifiedInfoDTO) {
         modifiedInfoDTO.mail?.let {
@@ -128,6 +142,5 @@ class User : Identifier, UserDetails {
         modifiedInfoDTO.address?.let { addressDTO ->
             this.address.updateAddressInfo(addressDTO)
         }
-
     }
 }

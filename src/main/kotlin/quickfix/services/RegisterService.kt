@@ -9,7 +9,7 @@ import quickfix.dao.UserRepository
 import quickfix.dto.register.RegisterRequestDTO
 import quickfix.dto.register.toUser
 import quickfix.models.User
-import quickfix.models.VerificationToken
+import quickfix.models.RegisterToken
 import quickfix.utils.CONFIRM_FRONTEND_URL
 import quickfix.utils.FRONTEND_URL
 import quickfix.utils.events.OnRegistrationCompletedEvent
@@ -45,7 +45,7 @@ class RegisterService(
     private fun encodePassword(password: String) = passwordEncoder.encode(password)
 
     private fun createVerificationTokenEntity(user: User, token: String) {
-        val newToken = VerificationToken().apply { this.user = user; this.token = token }
+        val newToken = RegisterToken().apply { this.user = user; this.token = token }
         tokenRepository.save(newToken)
     }
 
