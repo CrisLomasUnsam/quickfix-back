@@ -8,7 +8,6 @@ import quickfix.services.JobService
 
 @RestController
 @RequestMapping("/chat")
-@CrossOrigin(origins = ["*"])
 @Tag(name = "Chat", description = "Operaciones relacionadas a la mensajería entre un customer y un professional")
 class ChatController (
     private val jobService: JobService

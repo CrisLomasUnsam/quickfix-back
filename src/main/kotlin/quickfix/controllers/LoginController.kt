@@ -8,7 +8,6 @@ import quickfix.services.UserService
 
 @RestController
 @RequestMapping("/login")
-@CrossOrigin("*")
 @Tag(name = "Login")
 class LoginController (
     private val userService: UserService

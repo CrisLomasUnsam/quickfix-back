@@ -8,7 +8,6 @@ import quickfix.services.RegisterService
 
 @RestController
 @RequestMapping("/registration")
-@CrossOrigin(origins = ["*"], allowedHeaders = ["*"])
 @Tag(name = "Registro", description = "Operaciones para registrar nuevos usuarios")
 
 class RegisterController(

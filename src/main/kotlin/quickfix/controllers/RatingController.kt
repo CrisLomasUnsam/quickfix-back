@@ -11,7 +11,6 @@ import quickfix.services.RatingService
 
 @RestController
 @RequestMapping("/rating")
-@CrossOrigin(origins = ["*"])
 @Tag(name = "Calificaciones", description = "Operaciones relacionadas a la calificación entre usuarios")
 class RatingController(val ratingService: RatingService) {
 

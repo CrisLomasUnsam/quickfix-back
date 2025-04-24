@@ -9,7 +9,6 @@ import quickfix.services.JobService
 
 @RestController
 @RequestMapping("/job")
-@CrossOrigin("*")
 @Tag(name = "Jobs", description = "Operaciones relacionadas a los Jobs")
 
 class JobController(

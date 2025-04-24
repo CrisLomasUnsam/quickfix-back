@@ -14,7 +14,6 @@ import quickfix.services.ProfessionalService
 
 @RestController
 @RequestMapping("/professional")
-@CrossOrigin (origins = ["*"])
 @Tag(name = "Profesionales", description = "Operaciones realizadas desde un profesional")
 class ProfessionalController (
     private val professionalService : ProfessionalService
