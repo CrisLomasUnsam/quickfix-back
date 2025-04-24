@@ -10,6 +10,7 @@ import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.professional.FinancesDTO
 import quickfix.dto.professional.NewCertificateDTO
 import quickfix.models.Certificate
+import quickfix.models.Profession
 import quickfix.services.ProfessionalService
 
 @RestController
@@ -52,12 +53,18 @@ class ProfessionalController (
     fun getFinances(@PathVariable professionalId : Long) : FinancesDTO =
         professionalService.getFinances(professionalId)
 
-    @PostMapping("/services/{professionalId}")
+    @PostMapping("/professions/{professionalId}")
+    @Operation(summary = "Obtener los servicios brindados")
+    fun getProfessions(@PathVariable professionalId : Long) : List<Profession> =
+        professionalService.getProfessions(professionalId)
+
+
+    @PostMapping("/professions/{professionalId}")
     @Operation(summary = "Agregar servicio brindado")
     fun addProfession(@PathVariable professionalId : Long, @RequestBody profession: String) =
         professionalService.addProfession(professionalId, profession)
 
-    @DeleteMapping("/services/{professionalId}")
+    @DeleteMapping("/professions/{professionalId}")
     @Operation(summary = "Eliminar servicio brindado")
     fun deleteProfession(@PathVariable professionalId : Long, @RequestBody profession: String) =
         professionalService.deleteProfession(professionalId, profession)

@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional
 import quickfix.dto.professional.FinancesDTO
 import quickfix.dto.professional.NewCertificateDTO
 import quickfix.models.Certificate
+import quickfix.models.Profession
 import quickfix.models.ProfessionalInfo
 import quickfix.utils.exceptions.BusinessException
 import java.sql.SQLException
@@ -43,6 +44,11 @@ class ProfessionalService(
             debt = professional.professionalInfo.debt
         )
         return financesDTO
+    }
+
+    fun getProfessions(proffesionalId: Long) : List<Profession> {
+        val professionIds : Set<Long> = this.getProfessionIds(proffesionalId)
+        return professionIds.map { professionService.getProfessionById(it) }
     }
 
     @Transactional(rollbackFor = [SQLException::class, Exception::class])
