@@ -2,7 +2,7 @@ package quickfix.services
 
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
-import quickfix.dto.job.jobOffer.JobOfferDTO
+import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.message.ChatMessageDTO
 import quickfix.dto.message.RedisMessageDTO
@@ -12,7 +12,7 @@ import quickfix.utils.exceptions.BusinessException
 @Service
 class RedisService(
     private val redisJobRequestStorage: RedisTemplate<String, JobRequestDTO>,
-    private val redisJobOfferStorage: RedisTemplate<String, JobOfferDTO>,
+    private val redisJobOfferStorage: RedisTemplate<String, CreateJobOfferDTO>,
     private val redisChatStorage: RedisTemplate<String, RedisMessageDTO>
 
 ) {
@@ -78,20 +78,19 @@ class RedisService(
     private fun getJobOfferKey(professionId: Long, customerId: Long, professionalId: Long) : String =
         "JobOffer_${professionId}_${customerId}_${professionalId}_"
 
-    fun getJobOffers(customerId : Long) : Set<JobOfferDTO> {
+    fun getJobOffers(customerId : Long) : Set<CreateJobOfferDTO> {
         validateCustomerHasAJobRequest(customerId)
-        //TODO: Validar professionId? se supone que un usuario no va a tener más de un request activo
         val keyPattern = "JobOffer_*_${customerId}_*_"
         val jobOfferKeys = redisJobOfferStorage.keys(keyPattern)
         return redisJobOfferStorage.opsForValue().multiGet(jobOfferKeys)?.toSet() ?: emptySet()
     }
 
-    fun offerJob(jobOffer : JobOfferDTO) {
-        val keyPattern = "JobOffer_*_*_${jobOffer.professional.id}_"
+    fun offerJob(jobOffer : CreateJobOfferDTO) {
+        val keyPattern = "JobOffer_*_*_${jobOffer.professionalId}_"
         val professionalHasActiveOffer = redisJobOfferStorage.keys(keyPattern).isNotEmpty()
         if(professionalHasActiveOffer)
             throw BusinessException("No puede realizar más de una oferta simultáneamente.")
-        val key = getJobOfferKey(jobOffer.professionId, jobOffer.customerId, jobOffer.professional.id)
+        val key = getJobOfferKey(jobOffer.professionId, jobOffer.customerId, jobOffer.professionalId)
         redisJobOfferStorage.opsForValue().set(key,jobOffer)
     }
 
