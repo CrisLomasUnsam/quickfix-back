@@ -1,19 +1,13 @@
 package quickfix.services
 
 import org.springframework.stereotype.Service
-import quickfix.dto.job.jobOffer.CancelJobOfferDTO
-import quickfix.dto.job.jobOffer.JobOfferDTO
-import quickfix.dto.job.jobRequest.JobRequestDTO
 import org.springframework.transaction.annotation.Transactional
-import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.professional.FinancesDTO
 import quickfix.dto.professional.NewCertificateDTO
-import quickfix.dto.professional.ProfessionalDTO
 import quickfix.models.Certificate
 import quickfix.models.Profession
 import quickfix.models.ProfessionalInfo
 import quickfix.utils.exceptions.BusinessException
-import java.sql.SQLException
 
 @Service
 class ProfessionalService(
@@ -36,11 +30,12 @@ class ProfessionalService(
     }
 
     fun getProfessions(proffesionalId: Long) : List<Profession> {
+        userService.assertUserExists(proffesionalId)
         val professionIds : Set<Long> = this.getProfessionIds(proffesionalId)
         return professionIds.map { professionService.getProfessionById(it) }
     }
 
-    @Transactional(rollbackFor = [SQLException::class, Exception::class])
+    @Transactional(rollbackFor = [Exception::class])
     fun addProfession(professionalId: Long, professionName: String) {
         val professional = userService.getUserById(professionalId)
         val profession = professionService.getByNameIgnoreCase(professionName)
@@ -51,7 +46,7 @@ class ProfessionalService(
         professional.professionalInfo.addProfession(profession)
     }
 
-    @Transactional(rollbackFor = [SQLException::class, Exception::class])
+    @Transactional(rollbackFor = [Exception::class])
     fun deleteProfession(professionalId: Long, professionName: String) {
         val professional = userService.getUserById(professionalId)
         val professionId = professionService.getByNameIgnoreCase(professionName).id
@@ -82,7 +77,7 @@ class ProfessionalService(
         professionalInfo.addCertificate(newCertificate)
     }
 
-    @Transactional(rollbackFor = [SQLException::class, Exception::class])
+    @Transactional(rollbackFor = [Exception::class])
     fun deleteCertificate(professionalId: Long, certificateName: String) {
         val professionalInfo = userService.getProfessionalInfo(professionalId)
         professionalInfo.deleteCertificate(certificateName)

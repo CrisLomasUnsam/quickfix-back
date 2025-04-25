@@ -9,11 +9,11 @@ import quickfix.utils.exceptions.BusinessException
 class ProfessionService(
     private val professionRepository: ProfessionRepository
 ){
+
     fun assertProfessionExists(professionId: Long) {
         if(!professionRepository.existsById(professionId))
             throw BusinessException("La profesión no existe")
     }
-
 
     fun getProfessionById(id: Long): Profession =
         professionRepository.findById(id).orElseThrow{ BusinessException("La profesión no está disponible.") }
@@ -21,8 +21,5 @@ class ProfessionService(
     fun getByNameIgnoreCase(profession : String) : Profession {
         return professionRepository.findByNameIgnoreCase(profession).orElseThrow {  BusinessException("La profesión no está disponible.")  }
     }
-
-    fun getProfessionByParameter(parameter: String?): List<Profession> =
-            professionRepository.findProfessionByFilter(parameter ?: "")
 
 }

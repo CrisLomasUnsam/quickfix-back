@@ -13,14 +13,4 @@ interface ProfessionRepository: CrudRepository<Profession, Long> {
   
     fun findByNameIgnoreCase(name: String): Optional<Profession>
 
-    @Query(
-        value = """
-        select *
-           from profession p
-           where LOWER(p.name) LIKE LOWER(CONCAT('%', :param, '%'))
-        """,
-        nativeQuery = true
-    )
-    fun findProfessionByFilter(@Param("param") param: String): List<Profession>
-
 }

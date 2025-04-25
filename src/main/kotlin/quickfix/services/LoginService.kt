@@ -18,6 +18,9 @@ class LoginService (
 
     /* JWT */
 
+    fun validUser(mail: String): User = userRepository.findByMail(mail)
+        ?: throw InvalidCredentialsException()
+
     @Transactional(readOnly = true)
     fun login(loginDTO: LoginDTO): String {
         val user = validUser(loginDTO.mail)
@@ -27,7 +30,4 @@ class LoginService (
 
         return jwtTokenUtils.createToken(user.mail, user.roles.map { it.name })!! // agregar roles si los tenés
     }
-
-    private fun validUser(mail: String): User = userRepository.findByMail(mail)
-        ?: throw InvalidCredentialsException()
 }

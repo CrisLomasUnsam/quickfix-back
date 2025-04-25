@@ -22,7 +22,7 @@ class ProfessionalController (
     fun getFinances(@PathVariable professionalId : Long) : FinancesDTO =
         professionalService.getFinances(professionalId)
 
-    @PostMapping("/professions/{professionalId}")
+    @GetMapping("/professions/{professionalId}")
     @Operation(summary = "Obtener los servicios brindados")
     fun getProfessions(@PathVariable professionalId : Long) : List<Profession> =
         professionalService.getProfessions(professionalId)
