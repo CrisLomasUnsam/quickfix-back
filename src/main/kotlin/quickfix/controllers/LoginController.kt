@@ -13,8 +13,6 @@ class LoginController (
     private val userService: UserService
 ) {
     @PostMapping
-    fun loginCustomer(@RequestBody loginDTO: LoginDTO) =
+    fun login(@RequestBody loginDTO: LoginDTO) =
         userService.login(loginDTO)
-
-
 }
