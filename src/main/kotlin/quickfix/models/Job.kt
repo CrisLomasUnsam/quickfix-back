@@ -22,7 +22,7 @@ class Job : Identifier {
 
     var done: Boolean = false
 
-    @OneToOne(cascade = [(CascadeType.ALL)])
+    @OneToOne(cascade = [(CascadeType.ALL)],  optional = true)
     lateinit var profession : Profession
 
     @Enumerated(EnumType.STRING)

@@ -18,6 +18,7 @@ class ProfessionalInfo : Identifier {
     var balance: Double = 0.0
     var debt: Double = 0.0
 
+    var hasVehicle: Boolean = false
     override fun validate() {}
 
     fun addProfession(profession: Profession) {

@@ -281,38 +281,6 @@ class DataInitializer : InitializingBean {
             verified = true
         }
         createUser(customer3)
-//        professional1 = userService.getUserByMail("valen@example.com").apply {
-//            this.verified = true
-//            this.professionalInfo = professionalInfo1
-//        }
-//        updateUser(professional1)
-//
-//        professional2 = userService.getUserByMail("cris@example.com").apply {
-//            this.verified = false
-//            this.professionalInfo = professionalInfo2
-//        }
-//        updateUser(professional2)
-//
-//        professional3 = userService.getUserByMail("tomi@example.com").apply {
-//            this.verified = true
-//            this.professionalInfo = professionalInfo3
-//        }
-//        updateUser(professional3)
-//
-//        customer1 = userService.getUserByMail("customer1@example.com").apply {
-//            this.verified = false
-//        }
-//        updateUser(customer1)
-//
-//        customer2 = userService.getUserByMail("customer2@example.com").apply {
-//            this.verified = false
-//        }
-//        updateUser(customer2)
-//
-//        customer3 = userService.getUserByMail("customer3@example.com").apply {
-//            this.verified = true
-//        }
-//        updateUser(customer3)
     }
 
     fun initJobs() {
@@ -320,9 +288,9 @@ class DataInitializer : InitializingBean {
 
             val users = userRepository.findAll().associateBy { it.mail}
 
-            job1 = Job().apply { professional = users["valen@example.com"]!!; customer = users["customer1@example.com"]!!; date = LocalDate.now(); done = true; price = 10000.0 }
-            job2 = Job().apply { professional = users["cris@example.com"]!!; customer = users["customer2@example.com"]!!; date = LocalDate.now().minusDays(1); done = true; price = 20000.0 }
-            job3 = Job().apply { professional = users["tomi@example.com"]!!; customer = users["customer3@example.com"]!!; date = LocalDate.now().minusDays(2); done = true; price = 30000.0 }
+            job1 = Job().apply { professional = users["valen@example.com"]!!; customer = users["customer1@example.com"]!!; date = LocalDate.now(); done = true; price = 10000.0 ; profession = electricista }
+            job2 = Job().apply { professional = users["cris@example.com"]!!; customer = users["customer2@example.com"]!!; date = LocalDate.now().minusDays(1); done = true; price = 20000.0; profession = jardinero  }
+            job3 = Job().apply { professional = users["tomi@example.com"]!!; customer = users["customer3@example.com"]!!; date = LocalDate.now().minusDays(2); done = true; price = 30000.0; profession = gasista  }
             jobRepository.saveAll(setOf(job1, job2, job3))
         }
     }

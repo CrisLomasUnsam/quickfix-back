@@ -4,6 +4,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import quickfix.dao.UserRepository
 import quickfix.dto.login.LoginDTO
+import quickfix.models.User
 import quickfix.utils.exceptions.InvalidCredentialsException
 
 @Component
@@ -13,14 +14,20 @@ class LoginService (
 ) {
 
     fun loginUser(loginDTO: LoginDTO) {
-        val user = findUserByMail(loginDTO.mail)
-
-        if (!passwordEncoder.matches(loginDTO.password, user.password)) {
+        val user = this.findUserByMail(loginDTO.mail)
+        if (!validPassword(user, loginDTO))
             throw InvalidCredentialsException()
-        }
-
-//        retornar JWT aquí
     }
 
-    private fun findUserByMail(mail: String) = userRepository.findByMail(mail)?: throw InvalidCredentialsException()
+    private fun validPassword(user: User, loginDTO: LoginDTO): Boolean {
+
+        if (!passwordEncoder.matches(loginDTO.password, user.password))
+            throw InvalidCredentialsException()
+
+        return user.verifyPassword(loginDTO.password)
+        //Retornar JWT aca
+    }
+
+    private fun findUserByMail(mail: String) =
+        userRepository.findByMail(mail)?: throw InvalidCredentialsException()
 }

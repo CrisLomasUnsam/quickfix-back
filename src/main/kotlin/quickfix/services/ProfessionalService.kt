@@ -5,8 +5,10 @@ import quickfix.dto.job.jobOffer.CancelJobOfferDTO
 import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
 import org.springframework.transaction.annotation.Transactional
+import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.professional.FinancesDTO
 import quickfix.dto.professional.NewCertificateDTO
+import quickfix.dto.professional.ProfessionalDTO
 import quickfix.models.Certificate
 import quickfix.models.Profession
 import quickfix.models.ProfessionalInfo
@@ -15,27 +17,14 @@ import java.sql.SQLException
 
 @Service
 class ProfessionalService(
-    val redisService: RedisService,
     val userService: UserService,
-    private val professionService: ProfessionService
+    val professionService: ProfessionService
 )  {
 
-
-    private fun getProfessionIds(professionalId : Long) : Set<Long> {
+    fun getProfessionIds(professionalId : Long) : Set<Long> {
         val professions = userService.getProfessionsByUserId(professionalId)
         return professions.map { it.id }.toSet()
     }
-
-    fun getJobRequests(professionalId : Long) : Set<JobRequestDTO> {
-        val professionIds : Set<Long> = getProfessionIds(professionalId)
-        return redisService.getJobRequests(professionIds)
-    }
-
-    fun offerJob(jobOffer : JobOfferDTO) =
-        redisService.offerJob(jobOffer)
-
-    fun cancelJobOffer(cancelOfferJob: CancelJobOfferDTO) =
-        redisService.removeJobOffer(cancelOfferJob.professionId, cancelOfferJob.customerId, cancelOfferJob.professionalId)
 
     fun getFinances(professionalId: Long): FinancesDTO {
         val professional = userService.getUserById(professionalId)

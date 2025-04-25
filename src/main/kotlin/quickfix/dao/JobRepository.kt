@@ -1,10 +1,11 @@
 package quickfix.dao
 
+import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
+import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Component
 import quickfix.models.Job
-import quickfix.utils.searchParameters.ISearchParameters
-import quickfix.utils.exceptions.BusinessException
+import quickfix.models.Rating
 
 @Component
 interface JobRepository : CrudRepository<Job, Long> {
@@ -13,21 +14,38 @@ interface JobRepository : CrudRepository<Job, Long> {
 
     fun findAllByProfessionalId(professionalId: Long): List<Job>
 
-//    fun setToDone(id: Long){
-//        TODO("Not yet implemented")
-//    }
-//
-//    fun setToCancelled(id: Long){
-//        TODO("Not yet implemented")
-//    }
+    @Query(
+        value = """
+        select *
+           from job j
+           where j.customer_id = :customerId
+            and (
+                :param is null
+            or j.id::text              ILIKE CONCAT('%', :param, '%')
+            or j.status                ILIKE CONCAT('%', :param, '%')
+            or j.profession_id::text   ILIKE CONCAT('%', :param, '%')
+            or j.professional_id::text ILIKE CONCAT('%', :param, '%')
+            )
+        """,
+        nativeQuery = true
+    )
+    fun findJobByFilter(@Param("customerId") customerId: Long, @Param("param") param: String?) : List<Job>
 
-//    fun searchByParameters(id: Long, parameters: ISearchParameters<Job>): List<Job> {
-//        val jobsFilteredByCustomer = this.findAll().filter { it.customer.id == id }
-//        return jobsFilteredByCustomer.filter { parameters.matches(it) }
-//    }
-//
-//    fun getAllByUserId(customerId: Long): List<Job> =
-//        this.findAll()
-//            .filter { it.customer.id == customerId }
-//            .ifEmpty { throw BusinessException("No existen servicios pertenecientes al cliente.") }
+    //TODO: Test
+    @Query(value= """
+        select * from ratings r
+        join users u on u.id = r.user_to_id
+        join jobs j on j.id = r.job_id
+        where r.user_to_id = :userToId and j.customer_id = :userToId
+    """, nativeQuery = true)
+    fun findRatingsByCustomerId(@Param("userToId") userToId: Long): List<Rating>
+
+    //TODO: Test
+    @Query(value= """
+        select * from ratings r
+        join users u on u.id = r.user_to_id
+        join jobs j on j.id = r.job_id
+        where r.user_to_id = :userToId and j.professional_id = :userToId
+    """, nativeQuery = true)
+    fun findRatingsByProfessionalId(@Param("userToId") userToId: Long): List<Rating>
 }
