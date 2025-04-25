@@ -2,9 +2,7 @@ package quickfix.models
 
 import jakarta.persistence.*
 import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.security.core.userdetails.User
 import quickfix.dto.user.UserModifiedInfoDTO
 import quickfix.utils.DateWithDayFormatter
 import quickfix.utils.datifyString
