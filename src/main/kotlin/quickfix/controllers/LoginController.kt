@@ -12,7 +12,7 @@ import quickfix.services.UserService
 class LoginController (
     private val userService: UserService
 ) {
-    @PostMapping("/")
+    @PostMapping
     fun loginCustomer(@RequestBody loginDTO: LoginDTO) =
         userService.login(loginDTO)
 

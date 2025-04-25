@@ -25,7 +25,7 @@ class JwtTokenUtils {
 
     val logger: Logger = LoggerFactory.getLogger(JwtTokenUtils::class.java)
 
-    fun createToken(mail: String, roles: List<String>): String {
+    fun createToken(mail: String, roles: List<String>): String? {
         val longExpirationTime = accessTokenMinutes.minutes.inWholeMilliseconds
 
         val now = Date()

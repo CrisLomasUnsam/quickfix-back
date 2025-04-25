@@ -52,11 +52,9 @@ class SecurityConfig {
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                     "/swagger-resources/**",
-                    "/swagger-resources/configuration/ui",
-                    "/swagger-resources/configuration/security",
-                    "/webjars/**",
                     "/registration",
-                    "registration/login",
+                    "registration/confirm",
+                    "/login"
                     )
                 it.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 it.csrfTokenRequestHandler(CsrfTokenRequestHandler())
@@ -69,25 +67,21 @@ class SecurityConfig {
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                     "/swagger-resources/**",
-                    "/swagger-resources/configuration/ui",
-                    "/swagger-resources/configuration/security",
-                    "/webjars/**",
                     "/registration",
-                    "/registration/login",
+                    "/registration/confirm",
+                    "/login",
                     ).permitAll()
                 it.requestMatchers(HttpMethod.OPTIONS).permitAll()
-                    .anyRequest().authenticated()
+                it.anyRequest().authenticated()
                 }
-            .httpBasic(Customizer.withDefaults())
-            .sessionManagement { configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
-            .exceptionHandling(Customizer.withDefaults())
+            .httpBasic(
+                Customizer.withDefaults())
+            .sessionManagement {
+                configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+            .addFilterBefore(
+                jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .exceptionHandling(
+                Customizer.withDefaults())
             .build()
     }
-
-//    @Bean
-//    fun userDetailsService(userRepository: UserRepository): UserDetailsService = UserDetailsService { mail ->
-//        userRepository.findByMail(mail) ?: throw UsernameNotFoundException("Usuario con email $mail no encontrado")
-//    }
 }
-

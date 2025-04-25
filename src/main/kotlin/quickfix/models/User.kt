@@ -43,11 +43,9 @@ class User : Identifier, UserDetails {
     lateinit var dateBirth : LocalDate
     var verified : Boolean = false
 
-
     companion object {
         const val EDAD_REQUERIDA = 18
     }
-
 
     fun setPassword(password: String) {
         this._password = password
@@ -58,8 +56,6 @@ class User : Identifier, UserDetails {
     override fun getAuthorities(): Collection<GrantedAuthority> = listOf() /*Esto es para roles*/
 
     override fun getPassword(): String = _password
-
-    fun buildUser() = User(username, password, roles.map { SimpleGrantedAuthority(it.name) })
 
     fun addRole(role: Rol) {
         if (!roles.contains(role)) roles.add(role)

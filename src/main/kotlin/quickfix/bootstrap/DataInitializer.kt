@@ -1,10 +1,14 @@
 package quickfix.bootstrap
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import quickfix.dao.*
 import quickfix.models.*
+import quickfix.security.Roles
 import quickfix.services.AddressService
 import quickfix.services.ProfessionService
 import quickfix.utils.dataInitializer.Professions
@@ -18,6 +22,12 @@ class DataInitializer : InitializingBean {
 //
 //    @Autowired
 //    private lateinit var registerService: RegisterService
+
+    @Autowired
+    private lateinit var passwordEncoder: PasswordEncoder
+
+    @Autowired
+    private lateinit var roleRepository: RoleRepository
 
     @Autowired
     private lateinit var addressService: AddressService
@@ -39,6 +49,8 @@ class DataInitializer : InitializingBean {
 
     @Autowired
     private lateinit var addressRepository: AddressRepository
+
+    val logger: Logger = LoggerFactory.getLogger(DataInitializer::class.java)
 
     private lateinit var address1: Address
     private lateinit var address2: Address
@@ -102,6 +114,19 @@ class DataInitializer : InitializingBean {
         println("************** Data Initialization Complete **************")
     }
 
+    private fun createRole(roleName: String): Rol {
+        val rol = roleRepository.findByName(roleName)
+        if (rol.isEmpty) {
+            logger.info("Creando rol $roleName")
+            return roleRepository.save(Rol().apply {
+                name = roleName
+            })
+        } else {
+            logger.info("Rol $roleName ya existe")
+            return rol.get()
+        }
+    }
+
     fun loadAddresses() {
         if (addressRepository.count() == 0L) {
             address1 = Address().apply { street = "Rafaela 5053"; city = "CABA"; zipCode = "1000" }
@@ -160,12 +185,15 @@ class DataInitializer : InitializingBean {
         }
     }
 
-    private fun createUser(user: User) {
+    private fun createUser(user: User, rol: Rol) {
         val exists = userRepository.findByDni(user.dni)
         if (exists != null) {
             user.id = exists.id
         }
-        userRepository.save(user)
+        userRepository.save(user.apply {
+            this.password = passwordEncoder.encode(user.password)
+            addRole(rol)
+        })
     }
 
 //    fun registerUsers() {
@@ -189,6 +217,11 @@ class DataInitializer : InitializingBean {
 //    }
 
     fun initUsers() {
+        val admin = createRole(Roles.ADMIN.name)
+        val readonly = createRole(Roles.READONLY.name)
+        val customer = createRole(Roles.CUSTOMER.name)
+        val professional = createRole(Roles.PROFESSIONAL.name)
+
         address1 = addressService.getAddressByZipCode("1000")
         professional1 = User().apply {
             mail = "valen@example.com"
@@ -203,7 +236,7 @@ class DataInitializer : InitializingBean {
             verified = true
             professionalInfo = professionalInfo1
         }
-        createUser(professional1)
+        createUser(professional1, professional)
 
         address2 = addressService.getAddressByZipCode("1001")
         professional2 = User().apply {
@@ -219,7 +252,7 @@ class DataInitializer : InitializingBean {
             verified = true
             professionalInfo = professionalInfo2
         }
-        createUser(professional2)
+        createUser(professional2, professional)
 
         address3 = addressService.getAddressByZipCode("1002")
         professional3 = User().apply {
@@ -235,7 +268,7 @@ class DataInitializer : InitializingBean {
             verified = true
             professionalInfo = professionalInfo3
         }
-        createUser(professional3)
+        createUser(professional3, professional)
 
         address4 = addressService.getAddressByZipCode("1003")
         customer1 = User().apply {
@@ -250,7 +283,7 @@ class DataInitializer : InitializingBean {
             address = address4
             verified = true
         }
-        createUser(customer1)
+        createUser(customer1, customer)
 
         address5 = addressService.getAddressByZipCode("1004")
         customer2 = User().apply {
@@ -265,7 +298,7 @@ class DataInitializer : InitializingBean {
             address = address5
             verified = true
         }
-        createUser(customer2)
+        createUser(customer2, customer)
 
         address6 = addressService.getAddressByZipCode("1005")
         customer3 = User().apply {
@@ -280,7 +313,8 @@ class DataInitializer : InitializingBean {
             address = address6
             verified = true
         }
-        createUser(customer3)
+        createUser(customer3, customer)
+
 //        professional1 = userService.getUserByMail("valen@example.com").apply {
 //            this.verified = true
 //            this.professionalInfo = professionalInfo1
@@ -313,6 +347,7 @@ class DataInitializer : InitializingBean {
 //            this.verified = true
 //        }
 //        updateUser(customer3)
+
     }
 
     fun initJobs() {

@@ -22,9 +22,9 @@ import java.util.*
 @Service
 class RegisterService(
     private val userRepository: UserRepository,
-    private val passwordEncoder: PasswordEncoder,
     private val eventPublisher: ApplicationEventPublisher,
-    private val tokenRepository: TokenRepository
+    private val tokenRepository: TokenRepository,
+    private val passwordEncoder: PasswordEncoder
 ) {
     @Transactional(rollbackFor = [SQLException::class, Exception::class])
     fun registerUser(registerData: RegisterRequestDTO) = userExists(registerData.mail) ?: registerNewUser(registerData)

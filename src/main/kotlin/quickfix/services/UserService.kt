@@ -75,24 +75,21 @@ class UserService(
 
     @Transactional(readOnly = true)
     fun login(loginDTO: LoginDTO): String {
-        val user = userRepository.findByMail(loginDTO.mail)
-            ?: throw InvalidCredentialsException()
+        val user = validUser(loginDTO.mail)
 
         if (!passwordEncoder.matches(loginDTO.password, user.password)) {
             throw InvalidCredentialsException()
         }
 
-        return jwtTokenUtils.createToken(user.mail, listOf()) // agregar roles si los tenés
+        return jwtTokenUtils.createToken(user.mail, user.roles.map { it.name })!! // agregar roles si los tenés
     }
 
-    @Transactional
-    fun validateUser(mail: String): User = userRepository.findByMail(mail)
+    fun validUser(mail: String): User = userRepository.findByMail(mail)
         ?: throw InvalidCredentialsException()
 
     @Transactional
     override fun loadUserByUsername(mail: String?): UserDetails {
-        if (mail.isNullOrEmpty()) throw InvalidCredentialsException()
-        val user = validateUser(mail)
-        return user.buildUser()
+        if (mail == null) throw InvalidCredentialsException()
+        return validUser(mail)
     }
 }

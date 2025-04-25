@@ -31,7 +31,7 @@ class JwtAuthFilter : OncePerRequestFilter() {
             if (bearerOfToken != null && bearerOfToken.startsWith("Bearer ")) {
                 val token = bearerOfToken.substringAfter("Bearer ")
                 val usernamePAT = jwtTokenUtils.getAuthentication(token)
-                userService.validateUser(usernamePAT.name)
+                userService.validUser(usernamePAT.name)
                 SecurityContextHolder.getContext().authentication = usernamePAT
                 logger.info("usernamePostAuthToken: $usernamePAT")
             }
