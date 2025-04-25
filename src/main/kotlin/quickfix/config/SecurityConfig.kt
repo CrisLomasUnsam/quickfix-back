@@ -17,6 +17,7 @@ import quickfix.security.JwtAuthFilter
 import quickfix.utils.FRONTEND_URL
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import quickfix.security.CsrfTokenRequestHandler
+import quickfix.security.Roles
 
 @Configuration
 class SecurityConfig {
@@ -34,7 +35,7 @@ class SecurityConfig {
                 registry.addMapping("/**")
                     .allowedOrigins(FRONTEND_URL)
                     .allowedHeaders("*")
-                    .allowedMethods("POST", "GET", "PUT","PATCH", "DELETE")
+                    .allowedMethods("POST", "GET","PATCH", "DELETE")
                     .allowCredentials(true)
             }
         }
@@ -72,6 +73,9 @@ class SecurityConfig {
                     "/login",
                     ).permitAll()
                 it.requestMatchers(HttpMethod.OPTIONS).permitAll()
+                it.requestMatchers(HttpMethod.POST, "/user/**","/professional/**","/rating/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.PATCH, "/user/**","/rating/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.DELETE, "/user/**","/professional/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
                 it.anyRequest().authenticated()
                 }
             .httpBasic(
