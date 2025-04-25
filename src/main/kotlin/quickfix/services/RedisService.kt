@@ -11,6 +11,7 @@ import quickfix.utils.exceptions.BusinessException
 
 @Service
 class RedisService(
+
     private val redisJobRequestStorage: RedisTemplate<String, JobRequestDTO>,
     private val redisJobOfferStorage: RedisTemplate<String, CreateJobOfferDTO>,
     private val redisChatStorage: RedisTemplate<String, RedisMessageDTO>
