@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.SchemaProperty
 import quickfix.dto.professional.ProfessionalDTO
-import quickfix.models.Job
 
 @Schema(description = "Oferta enviada por un profesional como respuesta a un jobRequest")
 @SchemaProperty(name = "distance", schema = Schema(description = "Distancia en kilómetros a la que se encuentra el profesional del usuario que inició la búsqueda."))
@@ -35,16 +34,4 @@ data class JobOfferDTO @JsonCreator constructor (
     @JsonProperty("availability")
     var availability: Int,
 
-){
-    companion object {
-        fun fromRequest(request: CreateJobOfferRequest, professionalDto: ProfessionalDTO): JobOfferDTO = JobOfferDTO(
-            customerId         = request.customerId,
-            professionId       = request.professionId,
-            professional       = professionalDto,
-            price              = request.price,
-            distance           = request.distance,
-            estimatedArriveTime = request.estimatedArriveTime,
-            availability       = request.availability
-        )
-    }
-}
+)
