@@ -18,8 +18,7 @@ import java.sql.SQLException
 class ProfessionalService(
     val redisService: RedisService,
     val userService: UserService,
-    val professionService: ProfessionService,
-    val ratingService: RatingService,
+    val professionService: ProfessionService
 )  {
 
     private fun getProfessionIds(professionalId : Long) : Set<Long> {
@@ -32,12 +31,8 @@ class ProfessionalService(
         return redisService.getJobRequests(professionIds)
     }
 
-    fun offerJob(request : CreateJobOfferDTO) {
-        val profEntity  = this.userService.getUserById(request.professionalId)
-        val avgRating = ratingService.getAverageRatingForProfessional(profEntity.id)
-        val professionalDto = ProfessionalDTO.fromUser(profEntity, avgRating)
-        val jobOfferDto = JobOfferDTO.fromRequest(request, professionalDto)
-        redisService.offerJob(jobOfferDto)
+    fun offerJob(jobOffer : CreateJobOfferDTO) {
+        redisService.offerJob(jobOffer)
     }
 
     fun cancelJobOffer(cancelOfferJob: CancelJobOfferDTO) =
