@@ -132,11 +132,11 @@ class DataInitializer : InitializingBean {
     }
 
     fun initCertificates() {
-        certificateElectricista1 = Certificate().apply { profession = electricista; img = "img1" }
-        certificateGasista2 = Certificate().apply { profession = gasista; img = "img2" }
-        certificateGasista = Certificate().apply { profession = gasista; img = "img3" }
-        certificateJardinero = Certificate().apply { profession = jardinero; img = "img4" }
-        certificateJardinero2 = Certificate().apply { profession = jardinero; img = "img5" }
+        certificateElectricista1 = Certificate().apply { profession = electricista; img = "img1"; name= "img1" }
+        certificateGasista2 = Certificate().apply { profession = gasista; img = "img2"; name= "img2" }
+        certificateGasista = Certificate().apply { profession = gasista; img = "img3" ; name= "img3"}
+        certificateJardinero = Certificate().apply { profession = jardinero; img = "img4"; name= "img4" }
+        certificateJardinero2 = Certificate().apply { profession = jardinero; img = "img5" ; name= "img5"}
     }
 
     fun initProfessionalInfos() {

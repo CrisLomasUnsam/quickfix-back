@@ -3,6 +3,7 @@ package quickfix.services
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.UserRepository
+import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobRequest.CancelJobRequestDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.user.UserModifiedInfoDTO
@@ -28,10 +29,8 @@ class UserService(
             throw BusinessException("Usuario no encontrado: $id")
     }
 
-    fun getProfessionalInfo(userId: Long) : ProfessionalInfo {
-        val user = userRepository.findUserWithProfessionalInfoById(userId).orElseThrow{ BusinessException() }
-        return user.professionalInfo
-    }
+    fun getProfessionalInfo(userId: Long) : ProfessionalInfo =
+        userRepository.findUserWithProfessionalInfoById(userId).orElseThrow{ BusinessException() }.professionalInfo
 
     @Transactional(rollbackFor = [Exception::class])
     fun changeUserInfo(id: Long, modifiedInfo: UserModifiedInfoDTO) {
@@ -39,11 +38,8 @@ class UserService(
         user.updateUserInfo(modifiedInfo)
     }
 
-    fun getProfessionsByUserId(id: Long): Set<Profession> {
-        val info = userRepository.findUserProfessionsById(id)
-            ?: throw BusinessException("Usuario o ProfessionalInfo no encontrado")
-        return info.professionalInfo.professions
-    }
+    fun getProfessionsByUserId(id: Long): Set<Profession> =
+        userRepository.findUserProfessionsById(id).orElseThrow { BusinessException() }.professionalInfo.professions
 
     fun requestJob(jobRequest : JobRequestDTO) {
         this.assertUserExists(jobRequest.customerId)
@@ -51,7 +47,7 @@ class UserService(
         redisService.requestJob(jobRequest, jobRequest.professionId)
     }
 
-    fun getJobOffers(customerId : Long) =
+    fun getJobOffers(customerId : Long): Set<JobOfferDTO> =
         redisService.getJobOffers(customerId)
 
     fun cancelJobRequest (cancelJobRequest : CancelJobRequestDTO) {

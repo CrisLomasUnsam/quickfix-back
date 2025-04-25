@@ -5,8 +5,11 @@ import quickfix.dto.job.jobOffer.CancelJobOfferDTO
 import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
 import org.springframework.transaction.annotation.Transactional
+import quickfix.dao.RatingRepository
+import quickfix.dto.job.jobOffer.CreateJobOfferRequest
 import quickfix.dto.professional.FinancesDTO
 import quickfix.dto.professional.NewCertificateDTO
+import quickfix.dto.professional.ProfessionalDTO
 import quickfix.models.Certificate
 import quickfix.models.ProfessionalInfo
 import quickfix.utils.exceptions.BusinessException
@@ -16,9 +19,9 @@ import java.sql.SQLException
 class ProfessionalService(
     val redisService: RedisService,
     val userService: UserService,
-    private val professionService: ProfessionService
+    val professionService: ProfessionService,
+    val ratingService: RatingService,
 )  {
-
 
     private fun getProfessionIds(professionalId : Long) : Set<Long> {
         val professions = userService.getProfessionsByUserId(professionalId)
@@ -30,8 +33,13 @@ class ProfessionalService(
         return redisService.getJobRequests(professionIds)
     }
 
-    fun offerJob(jobOffer : JobOfferDTO) =
-        redisService.offerJob(jobOffer)
+    fun offerJob(request : CreateJobOfferRequest) {
+        val profEntity  = this.userService.getUserById(request.professionalId)
+        val avgRating = ratingService.getAverageRatingForProfessional(profEntity.id)
+        val professionalDto = ProfessionalDTO.fromUser(profEntity, avgRating)
+        val jobOfferDto = JobOfferDTO.fromRequest(request, professionalDto)
+        redisService.offerJob(jobOfferDto)
+    }
 
     fun cancelJobOffer(cancelOfferJob: CancelJobOfferDTO) =
         redisService.removeJobOffer(cancelOfferJob.professionId, cancelOfferJob.customerId, cancelOfferJob.professionalId)

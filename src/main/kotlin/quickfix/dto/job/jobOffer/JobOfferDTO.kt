@@ -35,4 +35,16 @@ data class JobOfferDTO @JsonCreator constructor (
     @JsonProperty("availability")
     var availability: Int,
 
-)
+){
+    companion object {
+        fun fromRequest(request: CreateJobOfferRequest, professionalDto: ProfessionalDTO): JobOfferDTO = JobOfferDTO(
+            customerId         = request.customerId,
+            professionId       = request.professionId,
+            professional       = professionalDto,
+            price              = request.price,
+            distance           = request.distance,
+            estimatedArriveTime = request.estimatedArriveTime,
+            availability       = request.availability
+        )
+    }
+}

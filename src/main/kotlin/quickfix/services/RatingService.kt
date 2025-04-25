@@ -56,4 +56,14 @@ class RatingService(
             data.comment?.let { rating.comment = it }
         }.also { it.validate() }
     }
+
+    fun getAverageRatingForProfessional(professionalId: Long): Double {
+        val ratings = findRatingsReceivedByUser(professionalId)
+        return ratings
+            .map { it.score }
+            .average()
+            .takeIf { !it.isNaN() }
+            ?: 0.0
+    }
+
 }

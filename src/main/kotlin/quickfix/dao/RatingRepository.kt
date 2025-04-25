@@ -11,4 +11,6 @@ interface RatingRepository : CrudRepository<Rating, Long> {
     fun findByUserToId(userId: Long): Optional<List<Rating>>
 
     fun findByUserFromId(userId: Long): Optional<List<Rating>>
+
+
 }
