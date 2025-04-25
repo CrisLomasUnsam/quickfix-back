@@ -5,8 +5,7 @@ import quickfix.dto.job.jobOffer.CancelJobOfferDTO
 import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
 import org.springframework.transaction.annotation.Transactional
-import quickfix.dao.RatingRepository
-import quickfix.dto.job.jobOffer.CreateJobOfferRequest
+import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.professional.FinancesDTO
 import quickfix.dto.professional.NewCertificateDTO
 import quickfix.dto.professional.ProfessionalDTO
@@ -33,7 +32,7 @@ class ProfessionalService(
         return redisService.getJobRequests(professionIds)
     }
 
-    fun offerJob(request : CreateJobOfferRequest) {
+    fun offerJob(request : CreateJobOfferDTO) {
         val profEntity  = this.userService.getUserById(request.professionalId)
         val avgRating = ratingService.getAverageRatingForProfessional(profEntity.id)
         val professionalDto = ProfessionalDTO.fromUser(profEntity, avgRating)

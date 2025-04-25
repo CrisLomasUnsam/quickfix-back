@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
 import quickfix.dto.job.jobOffer.CancelJobOfferDTO
-import quickfix.dto.job.jobOffer.CreateJobOfferRequest
+import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.professional.FinancesDTO
 import quickfix.dto.professional.NewCertificateDTO
@@ -35,7 +35,7 @@ class ProfessionalController (
 
     @PostMapping("/jobOffers")
     @Operation(summary = "Utilizado para que el profesional pueda enviar su oferta a un determinado JobRequest")
-    fun offerJob(@RequestBody jobOffer : CreateJobOfferRequest) =
+    fun offerJob(@RequestBody jobOffer : CreateJobOfferDTO) =
         professionalService.offerJob(jobOffer)
 
     @DeleteMapping("/jobOffers")
