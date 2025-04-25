@@ -17,12 +17,6 @@ import java.time.LocalDate
 @Service
 class DataInitializer : InitializingBean {
 
-//    @Autowired
-//    private lateinit var userService: UserService
-//
-//    @Autowired
-//    private lateinit var registerService: RegisterService
-
     @Autowired
     private lateinit var passwordEncoder: PasswordEncoder
 
@@ -196,33 +190,15 @@ class DataInitializer : InitializingBean {
         })
     }
 
-//    fun registerUsers() {
-//        if (userRepository.count() != 0L) { println(" DIRTY REPO !!!!") }
-//        val users = listOf(
-//            RegisterRequestDTO(mail = "valen@example.com", name = "Valentina", lastName = "Gomez", rawPassword = "securepassword", dni = 12345678, avatar = "https://randomuser.me/api/portraits/women/1.jpg", dateBirth = "23/05/1999", gender = Gender.FEMALE, address = addressService.getAddressByZipCode("1000")),
-//            RegisterRequestDTO(mail = "cris@example.com", name = "Cristina", lastName = "Palacios", rawPassword = "456123", dni = 12345679, avatar = "https://randomuser.me/api/portraits/women/2.jpg", dateBirth = "20/06/1998", gender = Gender.FEMALE, address = addressService.getAddressByZipCode("1001")),
-//            RegisterRequestDTO(mail = "tomi@example.com", name = "Tomaso", lastName = "Perez", rawPassword = "pass123", dni = 12345671, avatar = "https://randomuser.me/api/portraits/women/3.jpg", dateBirth = "09/08/2000", gender = Gender.FEMALE, address = addressService.getAddressByZipCode("1002")),
-//            RegisterRequestDTO(mail = "customer1@example.com", name = "Juan", lastName = "Contardo", rawPassword = "securepassword", dni = 12345672, avatar = "https://randomuser.me/api/portraits/men/2.jpg", dateBirth = "21/11/1997", gender = Gender.MALE, address = addressService.getAddressByZipCode("1003")),
-//            RegisterRequestDTO(mail = "customer2@example.com", name = "Rodrigo", lastName = "Bueno", rawPassword = "123111", dni = 12345673, avatar = "https://randomuser.me/api/portraits/men/3.jpg", dateBirth = "18/07/1999", gender = Gender.OTHER, address = addressService.getAddressByZipCode("1004")),
-//            RegisterRequestDTO(mail = "customer3@example.com", name = "Fer", lastName = "Dodino", rawPassword = "pass123", dni = 12345674, avatar = "https://randomuser.me/api/portraits/women/4.jpg", dateBirth = "12/04/1995", gender = Gender.FEMALE, address = addressService.getAddressByZipCode("1005"))
-//        )
-//        users.forEach { user ->
-//            try {
-//                registerService.registerUser(user)
-//                println("* * * USUARIO NUEVO REGISTRADO: ${user.mail} * * *")
-//            } catch (ex: BusinessException) {
-//                println(ex.message)
-//            }
-//        }
-//    }
-
     fun initUsers() {
+
         val admin = createRole(Roles.ADMIN.name)
         val readonly = createRole(Roles.READONLY.name)
         val customer = createRole(Roles.CUSTOMER.name)
         val professional = createRole(Roles.PROFESSIONAL.name)
 
         address1 = addressService.getAddressByZipCode("1000")
+
         professional1 = User().apply {
             mail = "valen@example.com"
             name = "Valentina"
@@ -236,9 +212,11 @@ class DataInitializer : InitializingBean {
             verified = true
             professionalInfo = professionalInfo1
         }
+
         createUser(professional1, professional)
 
         address2 = addressService.getAddressByZipCode("1001")
+
         professional2 = User().apply {
             mail = "cris@example.com"
             name = "Cristina"
@@ -252,9 +230,11 @@ class DataInitializer : InitializingBean {
             verified = true
             professionalInfo = professionalInfo2
         }
+
         createUser(professional2, professional)
 
         address3 = addressService.getAddressByZipCode("1002")
+
         professional3 = User().apply {
             mail = "tomi@example.com"
             name = "Tomaso"
@@ -268,9 +248,11 @@ class DataInitializer : InitializingBean {
             verified = true
             professionalInfo = professionalInfo3
         }
+
         createUser(professional3, professional)
 
         address4 = addressService.getAddressByZipCode("1003")
+
         customer1 = User().apply {
             mail = "customer1@example.com"
             name = "Juan"
@@ -283,9 +265,11 @@ class DataInitializer : InitializingBean {
             address = address4
             verified = true
         }
+
         createUser(customer1, customer)
 
         address5 = addressService.getAddressByZipCode("1004")
+
         customer2 = User().apply {
             mail = "customer2@example.com"
             name = "Rodrigo"
@@ -298,9 +282,11 @@ class DataInitializer : InitializingBean {
             address = address5
             verified = true
         }
+
         createUser(customer2, customer)
 
         address6 = addressService.getAddressByZipCode("1005")
+
         customer3 = User().apply {
             mail = "customer3@example.com"
             name = "Fer"
@@ -313,56 +299,26 @@ class DataInitializer : InitializingBean {
             address = address6
             verified = true
         }
+
         createUser(customer3, customer)
-
-//        professional1 = userService.getUserByMail("valen@example.com").apply {
-//            this.verified = true
-//            this.professionalInfo = professionalInfo1
-//        }
-//        updateUser(professional1)
-//
-//        professional2 = userService.getUserByMail("cris@example.com").apply {
-//            this.verified = false
-//            this.professionalInfo = professionalInfo2
-//        }
-//        updateUser(professional2)
-//
-//        professional3 = userService.getUserByMail("tomi@example.com").apply {
-//            this.verified = true
-//            this.professionalInfo = professionalInfo3
-//        }
-//        updateUser(professional3)
-//
-//        customer1 = userService.getUserByMail("customer1@example.com").apply {
-//            this.verified = false
-//        }
-//        updateUser(customer1)
-//
-//        customer2 = userService.getUserByMail("customer2@example.com").apply {
-//            this.verified = false
-//        }
-//        updateUser(customer2)
-//
-//        customer3 = userService.getUserByMail("customer3@example.com").apply {
-//            this.verified = true
-//        }
-//        updateUser(customer3)
-
     }
 
     fun initJobs() {
+
         if (jobRepository.count() == 0L) {
 
             val users = userRepository.findAll().associateBy { it.mail}
 
-            job1 = Job().apply { professional = users["valen@example.com"]!!; customer = users["customer1@example.com"]!!; date = LocalDate.now(); done = true; price = 10000.0 }
-            job2 = Job().apply { professional = users["cris@example.com"]!!; customer = users["customer2@example.com"]!!; date = LocalDate.now().minusDays(1); done = true; price = 20000.0 }
-            job3 = Job().apply { professional = users["tomi@example.com"]!!; customer = users["customer3@example.com"]!!; date = LocalDate.now().minusDays(2); done = true; price = 30000.0 }
+            job1 = Job().apply { professional = users["valen@example.com"]!!; customer = users["customer1@example.com"]!!; date = LocalDate.now(); done = true; price = 10000.0 ; profession = electricista }
+            job2 = Job().apply { professional = users["cris@example.com"]!!; customer = users["customer2@example.com"]!!; date = LocalDate.now().minusDays(1); done = true; price = 20000.0; profession = jardinero  }
+            job3 = Job().apply { professional = users["tomi@example.com"]!!; customer = users["customer3@example.com"]!!; date = LocalDate.now().minusDays(2); done = true; price = 30000.0; profession = gasista  }
+
             jobRepository.saveAll(setOf(job1, job2, job3))
         }
     }
 
     fun initRatings() {
+
         if (ratingRepository.count() == 0L) {
             val users = userRepository.findAll().associateBy { it.mail}
             val jobs = jobRepository.findAll().associateBy { it.professional.mail }
@@ -372,5 +328,6 @@ class DataInitializer : InitializingBean {
             rating3 = Rating().apply { userFrom = users["customer3@example.com"]!!; userTo = users["tomi@example.com"]!!; job =  jobs["tomi@example.com"]!!; score = 5; yearAndMonth = LocalDate.now() ; comment = "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eget suscipit tortor, at sodales sapien." }
             ratingRepository.saveAll(setOf(rating1, rating2, rating3))
         }
+
     }
 }

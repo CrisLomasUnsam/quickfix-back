@@ -102,9 +102,6 @@ class User : Identifier, UserDetails {
     private fun isAdult(): Boolean =
         dateBirth.plusYears(EDAD_REQUERIDA.toLong()).isBefore(LocalDate.now())
 
-//    fun verifyPassword(password : String) : Boolean =
-//        this.password == password
-
     fun updateUserInfo(modifiedInfoDTO: UserModifiedInfoDTO) {
         modifiedInfoDTO.mail?.let {
             val oldMail = this.mail

@@ -2,7 +2,6 @@ package quickfix.services
 
 import org.springframework.stereotype.Service
 import quickfix.dao.ProfessionRepository
-import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.utils.exceptions.BusinessException
 
@@ -10,7 +9,6 @@ import quickfix.utils.exceptions.BusinessException
 class ProfessionService(
     private val professionRepository: ProfessionRepository
 ){
-
     fun assertProfessionExists(professionId: Long) {
         if(!professionRepository.existsById(professionId))
             throw BusinessException("La profesión no existe")
