@@ -16,27 +16,14 @@ import java.sql.SQLException
 
 @Service
 class ProfessionalService(
-    val redisService: RedisService,
     val userService: UserService,
     val professionService: ProfessionService
 )  {
 
-    private fun getProfessionIds(professionalId : Long) : Set<Long> {
+    fun getProfessionIds(professionalId : Long) : Set<Long> {
         val professions = userService.getProfessionsByUserId(professionalId)
         return professions.map { it.id }.toSet()
     }
-
-    fun getJobRequests(professionalId : Long) : Set<JobRequestDTO> {
-        val professionIds : Set<Long> = getProfessionIds(professionalId)
-        return redisService.getJobRequests(professionIds)
-    }
-
-    fun offerJob(jobOffer : CreateJobOfferDTO) {
-        redisService.offerJob(jobOffer)
-    }
-
-    fun cancelJobOffer(cancelOfferJob: CancelJobOfferDTO) =
-        redisService.removeJobOffer(cancelOfferJob.professionId, cancelOfferJob.customerId, cancelOfferJob.professionalId)
 
     fun getFinances(professionalId: Long): FinancesDTO {
         val professional = userService.getUserById(professionalId)
