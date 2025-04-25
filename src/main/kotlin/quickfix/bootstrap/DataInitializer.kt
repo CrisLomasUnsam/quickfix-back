@@ -132,11 +132,11 @@ class DataInitializer : InitializingBean {
     }
 
     fun initCertificates() {
-        certificateElectricista1 = Certificate().apply { profession = electricista; img = "img1"; name= "img1" }
-        certificateGasista2 = Certificate().apply { profession = gasista; img = "img2"; name= "img2" }
-        certificateGasista = Certificate().apply { profession = gasista; img = "img3" ; name= "img3"}
-        certificateJardinero = Certificate().apply { profession = jardinero; img = "img4"; name= "img4" }
-        certificateJardinero2 = Certificate().apply { profession = jardinero; img = "img5" ; name= "img5"}
+        certificateElectricista1 = Certificate().apply { profession = electricista; name = "Capacitación de Electricista" ; img = "img1" }
+        certificateGasista = Certificate().apply { profession = gasista; name = "Matrícula de Gasista" ; img = "img2" }
+        certificateGasista2 = Certificate().apply { profession = gasista; name = "Matrícula de Gasista 2" ; img = "img3" }
+        certificateJardinero = Certificate().apply { profession = jardinero; name = "Curso de Jardinería" ; img = "img4" }
+        certificateJardinero2 = Certificate().apply { profession = jardinero; name = "Curso de Florista" ; img = "img5" }
     }
 
     fun initProfessionalInfos() {
@@ -281,38 +281,6 @@ class DataInitializer : InitializingBean {
             verified = true
         }
         createUser(customer3)
-//        professional1 = userService.getUserByMail("valen@example.com").apply {
-//            this.verified = true
-//            this.professionalInfo = professionalInfo1
-//        }
-//        updateUser(professional1)
-//
-//        professional2 = userService.getUserByMail("cris@example.com").apply {
-//            this.verified = false
-//            this.professionalInfo = professionalInfo2
-//        }
-//        updateUser(professional2)
-//
-//        professional3 = userService.getUserByMail("tomi@example.com").apply {
-//            this.verified = true
-//            this.professionalInfo = professionalInfo3
-//        }
-//        updateUser(professional3)
-//
-//        customer1 = userService.getUserByMail("customer1@example.com").apply {
-//            this.verified = false
-//        }
-//        updateUser(customer1)
-//
-//        customer2 = userService.getUserByMail("customer2@example.com").apply {
-//            this.verified = false
-//        }
-//        updateUser(customer2)
-//
-//        customer3 = userService.getUserByMail("customer3@example.com").apply {
-//            this.verified = true
-//        }
-//        updateUser(customer3)
     }
 
     fun initJobs() {
