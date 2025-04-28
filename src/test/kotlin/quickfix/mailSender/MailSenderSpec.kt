@@ -1,3 +1,4 @@
+package quickfix.mailSender
 /*import quickfix.dto.register.RegisterRequestDTO
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.DescribeSpec

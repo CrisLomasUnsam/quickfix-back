@@ -1,4 +1,4 @@
-package mocks
+package quickfix.mock
 
 import quickfix.models.Address
 import quickfix.models.Gender

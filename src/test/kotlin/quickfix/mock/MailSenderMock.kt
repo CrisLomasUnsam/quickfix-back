@@ -1,5 +1,4 @@
-package mocks
-
+package quickfix.mock
 /*import io.mockk.mockk
 import org.springframework.security.crypto.password.PasswordEncoder
 import quickfix.dao.UserRepository
