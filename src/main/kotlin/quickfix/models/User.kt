@@ -5,7 +5,7 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import quickfix.dto.user.UserModifiedInfoDTO
 import quickfix.utils.DateWithDayFormatter
-import quickfix.utils.datifyString
+import quickfix.utils.datifyStringWithDay
 import quickfix.utils.exceptions.BusinessException
 import java.time.LocalDate
 
@@ -121,7 +121,7 @@ class User : Identifier, UserDetails {
         }
         modifiedInfoDTO.dateBirth?.let {
             val oldDate = this.dateBirth
-            this.dateBirth = datifyString(modifiedInfoDTO.dateBirth!!, DateWithDayFormatter)
+            this.dateBirth = datifyStringWithDay(modifiedInfoDTO.dateBirth!!, DateWithDayFormatter)
             if (!isAdult()) {
                 this.dateBirth = oldDate
                 throw BusinessException("Debe ser mayor de edad")
