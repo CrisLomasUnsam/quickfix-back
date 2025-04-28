@@ -8,6 +8,7 @@ import quickfix.dto.professional.NewCertificateDTO
 import quickfix.models.Certificate
 import quickfix.models.Profession
 import quickfix.models.ProfessionalInfo
+import quickfix.utils.comission
 import quickfix.utils.datifyStringMonthAndYear
 import quickfix.utils.exceptions.BusinessException
 
@@ -89,7 +90,7 @@ class ProfessionalService(
     fun getTotalEarningsByDate(professionalId: Long, dateStr: String): Double {
         val dateStart = datifyStringMonthAndYear(dateStr)
         val dateEnd = dateStart.withDayOfMonth(dateStart.lengthOfMonth())
-        return jobRepository.getEarningsByProfessionalIdAndDateRange(professionalId, dateStart, dateEnd) ?: 0.0
-
+        val netEarnings = jobRepository.getEarningsByProfessionalIdAndDateRange(professionalId, dateStart, dateEnd) ?: 0.0
+        return netEarnings - comission(netEarnings)
     }
 }
