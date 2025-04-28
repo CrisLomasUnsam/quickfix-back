@@ -20,7 +20,12 @@ class ProfessionalController (
     @GetMapping("/finances/{professionalId}")
     @Operation(summary = "Finanzas del profesional (debt y balance)")
     fun getFinances(@PathVariable professionalId : Long) : FinancesDTO =
-        professionalService.getFinances(professionalId)
+        professionalService.getBalanceAndDebt(professionalId)
+
+    @GetMapping("/finances/earnings/{professionalId}")
+    @Operation(summary = "Ganancias totales por fecha")
+    fun getTotalEarnings(@PathVariable professionalId : Long, @RequestParam dateStr: String) : Double =
+        professionalService.getTotalEarningsByDate(professionalId, dateStr)
 
     @GetMapping("/professions/{professionalId}")
     @Operation(summary = "Obtener los servicios brindados")
