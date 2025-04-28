@@ -74,7 +74,7 @@ class ProfessionalService(
 
         val newCertificate = Certificate().apply {
             this.name = newCert.name
-            this.profession = profession;
+            this.profession = profession
             this.img = newCert.img.trim()
         }
         professionalInfo.addCertificate(newCertificate)
