@@ -3,10 +3,11 @@ package quickfix.models
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Id
+import jakarta.persistence.Table
 import quickfix.dto.address.AddressDTO
-import quickfix.dto.user.UserModifiedInfoDTO
 
 @Entity
+@Table(name = "addresses")
 class Address : Identifier {
 
     @Id @GeneratedValue

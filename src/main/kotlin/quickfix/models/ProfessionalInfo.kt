@@ -4,6 +4,7 @@ import jakarta.persistence.*
 import quickfix.utils.exceptions.BusinessException
 
 @Entity
+@Table(name = "professionals")
 class ProfessionalInfo : Identifier {
 
     @Id @GeneratedValue

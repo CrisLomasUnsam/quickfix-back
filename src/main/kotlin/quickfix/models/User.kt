@@ -4,7 +4,6 @@ import jakarta.persistence.*
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import quickfix.dto.user.UserModifiedInfoDTO
-import quickfix.utils.DateWithDayFormatter
 import quickfix.utils.datifyStringWithDay
 import quickfix.utils.exceptions.BusinessException
 import java.time.LocalDate
