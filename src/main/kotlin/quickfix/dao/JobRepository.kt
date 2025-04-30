@@ -17,7 +17,7 @@ interface JobRepository : CrudRepository<Job, Long> {
     @Query(
         value = """
         select *
-           from job j
+           from jobs j
            where j.customer_id = :customerId
             and (
                 :param is null
@@ -31,21 +31,18 @@ interface JobRepository : CrudRepository<Job, Long> {
     )
     fun findJobByFilter(@Param("customerId") customerId: Long, @Param("param") param: String?) : List<Job>
 
-    //TODO: Test
-    @Query(value= """
-        select * from ratings r
-        join users u on u.id = r.user_to_id
-        join jobs j on j.id = r.job_id
-        where r.user_to_id = :userToId and j.customer_id = :userToId
+    @Query(value = """
+        SELECT r.* FROM ratings r
+        JOIN jobs j ON j.id = r.job_id
+        WHERE r.user_to_id = :userToId AND j.customer_id = :userToId
     """, nativeQuery = true)
     fun findRatingsByCustomerId(@Param("userToId") userToId: Long): List<Rating>
 
-    //TODO: Test
-    @Query(value= """
-        select * from ratings r
-        join users u on u.id = r.user_to_id
+    @Query(value = """
+        select r.* from ratings r
         join jobs j on j.id = r.job_id
         where r.user_to_id = :userToId and j.professional_id = :userToId
     """, nativeQuery = true)
     fun findRatingsByProfessionalId(@Param("userToId") userToId: Long): List<Rating>
+
 }

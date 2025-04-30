@@ -2,6 +2,7 @@ package quickfix.models
 import jakarta.persistence.*
 
 @Entity
+@Table(name = "certificates")
 class Certificate : Identifier {
 
     @Id @GeneratedValue

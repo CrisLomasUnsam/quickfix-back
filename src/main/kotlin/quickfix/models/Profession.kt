@@ -3,6 +3,7 @@ package quickfix.models
 import jakarta.persistence.*
 
 @Entity
+@Table(name = "professions")
 class Profession {
 
     @Id @GeneratedValue

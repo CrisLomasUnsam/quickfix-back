@@ -4,6 +4,7 @@ import jakarta.persistence.*
 import quickfix.utils.exceptions.BusinessException
 
 @Entity
+@Table(name = "professionals")
 class ProfessionalInfo : Identifier {
 
     @Id @GeneratedValue
@@ -49,11 +50,11 @@ class ProfessionalInfo : Identifier {
         this.certificates.add(newCertificate)
     }
 
-    fun deleteCertificate(certificateName: String){
+    fun deleteCertificate(certificateName: String) {
         this.certificates.removeIf { certificate -> certificate.name == certificateName }
     }
 
-    private fun addConfirmedJob(): Boolean = TODO("Implement me")
-    private fun removeConfirmedJob(): Boolean = TODO("Implement me")
+//    private fun addConfirmedJob(): Boolean = TODO("Implement me")
+//    private fun removeConfirmedJob(): Boolean = TODO("Implement me")
 
 }

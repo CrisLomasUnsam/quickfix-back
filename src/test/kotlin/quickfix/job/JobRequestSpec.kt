@@ -1,3 +1,4 @@
+package quickfix.job
 /*import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.DescribeSpec

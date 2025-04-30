@@ -2,6 +2,7 @@ package quickfix.utils
 
 import quickfix.utils.exceptions.BusinessException
 import java.time.LocalDate
+import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
@@ -10,11 +11,19 @@ val DateWithDayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM
 
 fun stringifyDate(fecha: LocalDate, format: DateTimeFormatter): String = fecha.format(format)
 
-fun datifyString(fechaStr: String, format: DateTimeFormatter): LocalDate {
+fun datifyStringWithDay(fechaStr: String): LocalDate {
     return try {
-        LocalDate.parse(fechaStr, format)
+        LocalDate.parse(fechaStr, DateWithDayFormatter)
     } catch (e: DateTimeParseException) {
         throw BusinessException("La fecha no tiene el formato esperado dd/MM/yyyy")
     }
 }
 
+fun datifyStringMonthAndYear(fechaStr: String): LocalDate {
+    return try {
+        val date = YearMonth.parse(fechaStr, YearAndMonthformatter)
+        date.atDay(1)
+    } catch (e: DateTimeParseException) {
+        throw BusinessException("La fecha no tiene el formato esperado MM/yyyy")
+    }
+}
