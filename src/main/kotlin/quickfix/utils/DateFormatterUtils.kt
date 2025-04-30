@@ -11,17 +11,17 @@ val DateWithDayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM
 
 fun stringifyDate(fecha: LocalDate, format: DateTimeFormatter): String = fecha.format(format)
 
-fun datifyStringWithDay(fechaStr: String, format: DateTimeFormatter = DateWithDayFormatter): LocalDate {
+fun datifyStringWithDay(fechaStr: String): LocalDate {
     return try {
-        LocalDate.parse(fechaStr, format)
+        LocalDate.parse(fechaStr, DateWithDayFormatter)
     } catch (e: DateTimeParseException) {
         throw BusinessException("La fecha no tiene el formato esperado dd/MM/yyyy")
     }
 }
 
-fun datifyStringMonthAndYear(fechaStr: String, format: DateTimeFormatter = YearAndMonthformatter): LocalDate {
+fun datifyStringMonthAndYear(fechaStr: String): LocalDate {
     return try {
-        val date = YearMonth.parse(fechaStr, format)
+        val date = YearMonth.parse(fechaStr, YearAndMonthformatter)
         date.atDay(1)
     } catch (e: DateTimeParseException) {
         throw BusinessException("La fecha no tiene el formato esperado MM/yyyy")
