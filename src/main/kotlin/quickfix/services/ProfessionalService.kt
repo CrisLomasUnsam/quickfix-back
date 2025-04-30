@@ -2,7 +2,7 @@ package quickfix.services
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import quickfix.dao.JobRepository
+import quickfix.dao.UserRepository
 import quickfix.dto.professional.FinancesDTO
 import quickfix.dto.professional.NewCertificateDTO
 import quickfix.models.Certificate
@@ -16,7 +16,7 @@ import quickfix.utils.exceptions.BusinessException
 class ProfessionalService(
     val userService: UserService,
     val professionService: ProfessionService,
-    private val jobRepository: JobRepository
+    private val userRepository: UserRepository,
 )  {
 
     fun getProfessionIds(professionalId : Long) : Set<Long> {
@@ -90,7 +90,7 @@ class ProfessionalService(
     fun getTotalEarningsByDate(professionalId: Long, dateStr: String): Double {
         val dateStart = datifyStringMonthAndYear(dateStr)
         val dateEnd = dateStart.withDayOfMonth(dateStart.lengthOfMonth())
-        val netEarnings = jobRepository.getEarningsByProfessionalIdAndDateRange(professionalId, dateStart, dateEnd) ?: 0.0
+        val netEarnings = userRepository.getEarningsByProfessionalIdAndDateRange(professionalId, dateStart, dateEnd) ?: 0.0
         return netEarnings - comission(netEarnings)
     }
 }

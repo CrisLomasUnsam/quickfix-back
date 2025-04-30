@@ -1,7 +1,8 @@
 package quickfix.dto.register
 
-import quickfix.models.*
-import quickfix.utils.DateWithDayFormatter
+import quickfix.models.Address
+import quickfix.models.Gender
+import quickfix.models.User
 import quickfix.utils.datifyStringWithDay
 
 class RegisterRequestDTO (
@@ -25,7 +26,7 @@ fun RegisterRequestDTO.toUser() : User {
         password = request.rawPassword.trim()
         dni = request.dni
         avatar = request.avatar.trim()
-        dateBirth = datifyStringWithDay(request.dateBirth, DateWithDayFormatter)
+        dateBirth = datifyStringWithDay(request.dateBirth)
         gender = request.gender
         address = request.address
     }.apply {

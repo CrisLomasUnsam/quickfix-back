@@ -23,11 +23,11 @@ interface UserRepository: CrudRepository<User, Long>{
     fun findByDni(dni: Int): User?
 
     @Query(value = """
-        select sum(j.price)
-        from jobs j
-        where j.professional_id = :professionalId
-        and j.status = 'DONE'
-        and j.date BETWEEN :startDate AND :endDate
+        SELECT sum(j.price)
+        FROM jobs j
+        WHERE j.professional_id = :professionalId
+        AND j.status = 'DONE'
+        AND j.date BETWEEN :startDate AND :endDate
     """, nativeQuery = true)
     fun getEarningsByProfessionalIdAndDateRange(
         @Param("professionalId") professionalId: Long,

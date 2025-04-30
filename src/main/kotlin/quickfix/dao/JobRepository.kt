@@ -6,7 +6,6 @@ import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Component
 import quickfix.models.Job
 import quickfix.models.Rating
-import java.time.LocalDate
 
 @Component
 interface JobRepository : CrudRepository<Job, Long> {
@@ -32,19 +31,15 @@ interface JobRepository : CrudRepository<Job, Long> {
     )
     fun findJobByFilter(@Param("customerId") customerId: Long, @Param("param") param: String?) : List<Job>
 
-    //TODO: Test
-    @Query(value= """
-        select * from ratings r
-        join users u on u.id = r.user_to_id
-        join jobs j on j.id = r.job_id
-        where r.user_to_id = :userToId and j.customer_id = :userToId
+    @Query(value = """
+        SELECT r.* FROM ratings r
+        JOIN jobs j ON j.id = r.job_id
+        WHERE r.user_to_id = :userToId AND j.customer_id = :userToId
     """, nativeQuery = true)
     fun findRatingsByCustomerId(@Param("userToId") userToId: Long): List<Rating>
 
-    //TODO: Test
-    @Query(value= """
-        select * from ratings r
-        join users u on u.id = r.user_to_id
+    @Query(value = """
+        select r.* from ratings r
         join jobs j on j.id = r.job_id
         where r.user_to_id = :userToId and j.professional_id = :userToId
     """, nativeQuery = true)

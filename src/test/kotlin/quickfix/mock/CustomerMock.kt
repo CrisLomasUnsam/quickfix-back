@@ -5,17 +5,17 @@ import quickfix.models.Gender
 import quickfix.models.User
 import java.time.LocalDate
 
-data class CustomerUserMock(
+data class CustomerMock(
     val customerUser: User
 )
 
-fun createCustomerUserMock(): CustomerUserMock {
+fun createCustomerMock(): CustomerMock {
     val mockCustomer = User().apply {
         mail = "test.user@example.com"
-        name = "Test"
-        lastName = "User"
+        name = "Carlos"
+        lastName = "Perez"
         password = "securePassword123"
-        dni = 12345678
+        dni = 12456778
         avatar = "https://example.com/avatar.jpg"
         dateBirth = LocalDate.of(1995, 5, 20)
         gender = Gender.MALE
@@ -24,7 +24,7 @@ fun createCustomerUserMock(): CustomerUserMock {
             city = "Testville"
             zipCode = "1234"
         }
-
+        verified = true
     }
-    return CustomerUserMock(mockCustomer)
+    return CustomerMock(mockCustomer)
 }

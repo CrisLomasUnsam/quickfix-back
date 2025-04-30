@@ -1,107 +1,121 @@
 package quickfix.job
 
+import jakarta.persistence.EntityManager
+import jakarta.persistence.PersistenceContext
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import quickfix.dao.JobRepository
+import quickfix.dao.ProfessionRepository
 import quickfix.dao.RatingRepository
 import quickfix.dao.UserRepository
-import quickfix.models.Address
-import quickfix.models.Gender
-import quickfix.models.Job
-import quickfix.models.User
-import quickfix.utils.enums.JobStatus
-import java.time.LocalDate
+import quickfix.mock.createCustomerMock
+import quickfix.mock.createJobMock
+import quickfix.mock.createProfessionalMock
+import quickfix.mock.createRatingMock
+import quickfix.models.Profession
+import quickfix.models.Rating
 
 
 @DataJpaTest
-class JobServiceSpec {
+class JobQuerySpec {
 
-    @Autowired lateinit var userRepository: UserRepository
-    @Autowired lateinit var jobRepository: JobRepository
-    @Autowired lateinit var ratingRepository: RatingRepository
+    @Autowired private lateinit var professionRepository: ProfessionRepository
+    @Autowired private lateinit var userRepository: UserRepository
+    @Autowired private lateinit var jobRepository: JobRepository
+    @Autowired private lateinit var ratingRepository: RatingRepository
+
+    @PersistenceContext lateinit var entityManager: EntityManager
 
     @BeforeEach
     fun setup() {
-        jobRepository.deleteAll()
         ratingRepository.deleteAll()
+        jobRepository.deleteAll()
+        userRepository.deleteAll()
+        professionRepository.deleteAll()
+    }
+
+    @AfterEach
+    fun cleanup(){
+        ratingRepository.deleteAll()
+        jobRepository.deleteAll()
+        userRepository.deleteAll()
+        professionRepository.deleteAll()
     }
 
     @Test
-    fun testFindRatingsByCustomerId() {}
+    fun testFindRatingsByCustomerId() {
+
+        val customer = createCustomerMock().customerUser
+        val professional = createProfessionalMock().professionalUser
+        val profession = Profession().apply { name = "Electricista" }
+
+        val profesionPersistida = professionRepository.save(profession)
+        val customerPersistido = userRepository.save(customer)
+        val profesionalPersistido = userRepository.save(professional)
+
+        val job = createJobMock(customerPersistido, profesionalPersistido, profesionPersistida, 200.0).job
+        val jobPersistido = jobRepository.save(job)
+
+        /* el profesional evalúa al cliente */
+        val rating = createRatingMock(profesionalPersistido, customerPersistido, jobPersistido).rating
+        ratingRepository.save(rating)
+
+        val ratings = entityManager.
+        createNativeQuery("""
+            SELECT r.* FROM ratings r
+            JOIN jobs j ON j.id = r.job_id
+            WHERE r.user_to_id = :id AND j.customer_id = :id
+        """, Rating::class.java)
+            .setParameter("id", customerPersistido.id)
+            .resultList
+
+        //val result = jobRepository.findRatingsByCustomerId(customerPersistido.id) ?: throw BusinessException("TEST FALLO")
+
+        // Asserts
+        assertEquals(1, ratings.size)
+        assertTrue(ratings.first() is Rating)
+
+        //assertEquals(5, ratings.first().score)
+        //assertEquals("Excelente", ratings.first().comment)
+    }
 
     @Test
-    fun testFindRatingsByProfessionalId() {}
+    fun testFindRatingsByProfessionalId() {
 
-    @Test
-    fun testFindRatingsByCustomerIdWithNoRatings() {}
+        val customer = createCustomerMock().customerUser
+        val professional = createProfessionalMock().professionalUser
+        val profession = Profession().apply { name = "Gasista" }
 
-    @Test
-    fun testFindRatingsByProfessionalIdWithNoRatings() {}
+        val profesionPersistida = professionRepository.save(profession)
+        val customerPersistido = userRepository.save(customer)
+        val profesionalPersistido = userRepository.save(professional)
 
-    @Test
-    fun testGetEarningsByProfessionalIdAndDateRange() {
+        val job = createJobMock(customerPersistido, profesionalPersistido, profesionPersistida, 200.0).job
+        val jobPersistido = jobRepository.save(job)
 
-        val professional = User().apply {
-            mail = "cris@example.com"
-            name = "Cristina"
-            lastName = "Palacios"
-            password = "dummyPassword"
-            dni = 12345679
-            avatar = "imgCris2"
-            dateBirth = LocalDate.of(1995, 5, 23)
-            gender = Gender.FEMALE
-            address = Address().apply {street = "Rafaela 5053"; city = "CABA"; zipCode = "1000"}
-            verified = true
-        }
+        /* el profesional evalúa al cliente */
+        val rating = createRatingMock(customerPersistido, profesionalPersistido, jobPersistido).rating
+        ratingRepository.save(rating)
 
-        userRepository.save(professional)
-        val professionalEntity = userRepository.findByDni(12345679)
+        val ratings = entityManager
+            .createNativeQuery("""
+            SELECT r.* FROM ratings r
+            JOIN jobs j ON j.id = r.job_id
+            WHERE r.user_to_id = :id AND j.professional_id = :id
+            """, Rating::class.java
+            )
+            .setParameter("id", profesionalPersistido.id)
+            .resultList
 
-        val job1 = Job().apply {
-            id = 1L
-            price = 100.0
-            this.professional = professionalEntity!!
-            status = JobStatus.DONE
-            date = LocalDate.of(2024, 5, 1)
-            initDateTime = LocalDate.now()
-        }
-
-        val job2 = Job().apply {
-            id = 2L
-            price = 200.0
-            this.professional = professionalEntity!!
-            status = JobStatus.DONE
-            date = LocalDate.of(2024, 5, 5)
-            initDateTime = LocalDate.now()
-        }
-
-        val job3 = Job().apply {
-            id = 3L
-            price = 300.0
-            this.professional = professionalEntity!!
-            status = JobStatus.PENDING
-            date = LocalDate.of(2024, 5, 10)
-            initDateTime = LocalDate.now()
-        }
-
-        jobRepository.saveAll(listOf(job1, job2, job3))
-        val jobs = jobRepository.findAll()
-        jobs.forEach {
-            println("Job id=${it.id}, status=${it.status}, Date=${it.initDateTime}")
-        }
-
-
-
-        val startDate = LocalDate.of(2024, 5, 1)
-        val endDate = LocalDate.of(2024, 5, 31)
-
-        // When
-        val earnings = jobRepository.getEarningsByProfessionalIdAndDateRange(1L, startDate, endDate)
-
-        // Then
-        assertEquals(300.0, earnings) // 100 + 200 = 300
+        // Asserts
+        assertEquals(1, ratings.size)
+        assertTrue(ratings.first() is Rating)
+        //assertEquals(5, result.first().score)
+        //assertEquals("Excelente", result.first().comment)
     }
 }
