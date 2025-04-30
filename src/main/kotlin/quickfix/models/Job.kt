@@ -6,6 +6,7 @@ import quickfix.utils.exceptions.BusinessException
 import java.time.LocalDate
 
 @Entity
+@Table(name = "jobs")
 class Job : Identifier {
 
     @Id @GeneratedValue

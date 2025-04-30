@@ -121,7 +121,7 @@ class User : Identifier, UserDetails {
         }
         modifiedInfoDTO.dateBirth?.let {
             val oldDate = this.dateBirth
-            this.dateBirth = datifyStringWithDay(modifiedInfoDTO.dateBirth!!, DateWithDayFormatter)
+            this.dateBirth = datifyStringWithDay(modifiedInfoDTO.dateBirth!!)
             if (!isAdult()) {
                 this.dateBirth = oldDate
                 throw BusinessException("Debe ser mayor de edad")
