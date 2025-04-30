@@ -23,16 +23,9 @@ class ProfessionalInfo : Identifier {
 
     var hasVehicle: Boolean = false
     override fun validate() {
-        if (balance < 0) {
-            throw BusinessException("El saldo (balance) no puede ser negativo.")
-        }
-        if (debt < 0) {
-            throw BusinessException("La deuda (debt) no puede ser negativa.")
-        }
-        if(debt > balance){
-            throw BusinessException("la deuda no puede superar el saldo disponible.")
-        }
-
+        if (balance < 0) throw BusinessException("El saldo (balance) no puede ser negativo.")
+        if (debt < 0) throw BusinessException("La deuda (debt) no puede ser negativa.")
+        if(debt > balance)throw BusinessException("la deuda no puede superar el saldo disponible.")
         certificates.forEach { cert ->
             if (!hasProfession(cert.profession.id)) {
                 throw BusinessException("El certificado '${cert.name}' pertenece a una profesión no asignada.")
@@ -75,7 +68,9 @@ class ProfessionalInfo : Identifier {
     fun deleteCertificate(certificateName: String) {
         val cert= certificates.find { it.name == certificateName }
             ?: throw  BusinessException("no existe un certificado con ese nombre.")
-
+        if (!hasProfession(cert.profession.id)) {
+            throw BusinessException("No se puede eliminar un certificado de una profesión no asignada.")
+        }
         this.certificates.removeIf { it.name == certificateName }
     }
 
