@@ -10,8 +10,8 @@ class ProfessionalInfo : Identifier {
     @Id @GeneratedValue
     override var id: Long = -1
 
-    @ManyToMany(cascade = [(CascadeType.ALL)])
-    var professions: MutableSet<Profession> = mutableSetOf()
+    @OneToMany(cascade = [(CascadeType.ALL)], orphanRemoval = true)
+    var professionalProfessions: MutableSet<ProfessionalProfession> = mutableSetOf()
 
     @OneToMany(cascade = [(CascadeType.ALL)], orphanRemoval = true)
     var certificates: MutableSet<Certificate> = mutableSetOf()
@@ -22,18 +22,34 @@ class ProfessionalInfo : Identifier {
     var hasVehicle: Boolean = false
     override fun validate() {}
 
-    fun addProfession(profession: Profession) {
-        this.professions.add(profession)
+    fun addProfession(profession: Profession, active: Boolean = true) {
+        this.professionalProfessions.add(
+            ProfessionalProfession().apply {
+                this.professionalInfo = this@ProfessionalInfo
+                this.profession = profession
+                this.active = active
+            }
+        )
     }
 
-    fun hasProfession(professionId: Long): Boolean =
-        this.professions.any { profession -> profession.id == professionId }
+    fun hasActiveProfession(professionId: Long) =
+        professionalProfessions.any { it.profession.id == professionId && it.active }
+
+    fun disableProfession(professionId: Long) {
+        val relation = professionalProfessions.find { it.profession.id == professionId }
+            ?: throw BusinessException("No existe la profesión con id $professionId para deshabilitar.")
+    }
+
+    fun enableProfession(professionId: Long) {
+        val relation = professionalProfessions.find { it.profession.id == professionId }
+            ?: throw BusinessException("No existe la profesión con id $professionId para habilitar.")
+    }
 
     fun hasProfessionByName(professionName: String): Boolean =
-        this.professions.any { profession -> profession.name == professionName }
+        professionalProfessions.any { it.profession.name == professionName && it.active }
 
     fun removeProfession(professionId: Long) {
-        this.professions.removeIf{profession -> profession.id == professionId}
+        this.professionalProfessions.removeIf{ profession -> profession.id == professionId}
         this.deleteAllCertificates(professionId)
     }
 

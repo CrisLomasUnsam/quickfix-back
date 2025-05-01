@@ -160,19 +160,22 @@ class DataInitializer : InitializingBean {
 
     fun initProfessionalInfos() {
         professionalInfo1 = ProfessionalInfo().apply {
-            professions = mutableSetOf(electricista, gasista)
+            addProfession(electricista, true)
+            addProfession(gasista, true)
             certificates = mutableSetOf(certificateElectricista1, certificateGasista)
             balance = 0.0
             debt = 200.0
         }
         professionalInfo2 = ProfessionalInfo().apply {
-            professions = mutableSetOf(electricista, jardinero)
+            addProfession(electricista, true)
+            addProfession(jardinero, true)
             certificates = mutableSetOf(certificateJardinero)
             balance = 500.0
             debt = 50.0
         }
         professionalInfo3 = ProfessionalInfo().apply {
-            professions = mutableSetOf(jardinero, gasista)
+            addProfession(jardinero, true)
+            addProfession(gasista, true)
             certificates = mutableSetOf(certificateJardinero2, certificateGasista2)
             balance = 750.0
             debt = 100.0
