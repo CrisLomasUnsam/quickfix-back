@@ -82,9 +82,9 @@ class ProfessionalService(
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun deleteCertificate(professionalId: Long, certificateName: String) {
+    fun deleteCertificate(professionalId: Long, stringParam: String) {
         val professionalInfo = userService.getProfessionalInfo(professionalId)
-        professionalInfo.deleteCertificate(certificateName)
+        professionalInfo.deleteCertificate(stringParam)
     }
 
     fun getTotalEarningsByDate(professionalId: Long, dateStr: String): Double {
