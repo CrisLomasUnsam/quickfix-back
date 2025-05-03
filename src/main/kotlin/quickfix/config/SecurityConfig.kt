@@ -15,9 +15,9 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import quickfix.security.JwtAuthFilter
 import quickfix.utils.FRONTEND_URL
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository
-import quickfix.security.CsrfTokenRequestHandler
 import quickfix.security.Roles
+//import org.springframework.security.web.csrf.CookieCsrfTokenRepository
+//import quickfix.security.CsrfTokenRequestHandler
 
 @Configuration
 class SecurityConfig {
