@@ -19,11 +19,11 @@ class RatingService(
 ) {
 
     fun findRatingsReceivedByUser(userId: Long, pageable: Pageable): Page<Rating> {
-        return ratingRepository.findByUserToId(userId, pageable)
+        return ratingRepository.findAllByUserToId(userId, pageable)
     }
 
-    fun findRatingsMadeByUser(userId: Long, pageable: Pageable): Page<Rating> {
-        return ratingRepository.findByUserFromId(userId, pageable)
+    fun findRatingsMadeByUser(userId: Long): List<Rating> {
+        return ratingRepository.findAllByUserFromId(userId)
     }
 
     @Transactional(rollbackFor = [Exception::class])
