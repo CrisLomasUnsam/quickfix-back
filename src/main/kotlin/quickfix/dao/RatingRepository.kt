@@ -1,16 +1,15 @@
 package quickfix.dao
 
-import org.springframework.data.repository.CrudRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Component
 import quickfix.models.Rating
-import java.util.*
 
 @Component
-interface RatingRepository : CrudRepository<Rating, Long> {
+interface RatingRepository : JpaRepository<Rating, Long> {
 
-    fun findByUserToId(userId: Long): Optional<List<Rating>>
+    fun findAllByUserToId(userId: Long, pageable: Pageable): Page<Rating>
 
-    fun findByUserFromId(userId: Long): Optional<List<Rating>>
-
-
+    fun findAllByUserFromId(userId: Long): List<Rating>
 }

@@ -19,6 +19,7 @@ import quickfix.mock.createProfessionalMock
 import quickfix.mock.createRatingMock
 import quickfix.models.Profession
 import quickfix.models.Rating
+import java.time.LocalDate
 
 
 @DataJpaTest
@@ -62,7 +63,7 @@ class JobQuerySpec {
         val jobPersistido = jobRepository.save(job)
 
         /* el profesional evalúa al cliente */
-        val rating = createRatingMock(profesionalPersistido, customerPersistido, jobPersistido).rating
+        val rating = createRatingMock(profesionalPersistido, customerPersistido, jobPersistido, 5, LocalDate.now()).rating
         ratingRepository.save(rating)
 
         val ratings = entityManager.
@@ -98,8 +99,8 @@ class JobQuerySpec {
         val job = createJobMock(customerPersistido, profesionalPersistido, profesionPersistida, 200.0).job
         val jobPersistido = jobRepository.save(job)
 
-        /* el profesional evalúa al cliente */
-        val rating = createRatingMock(customerPersistido, profesionalPersistido, jobPersistido).rating
+        /* el cliente evalúa al profesional */
+        val rating = createRatingMock(customerPersistido, profesionalPersistido, jobPersistido, 5, LocalDate.now()).rating
         ratingRepository.save(rating)
 
         val ratings = entityManager

@@ -66,8 +66,8 @@ class ProfessionalInfo : Identifier {
         this.certificates.add(newCertificate)
     }
 
-    fun deleteCertificate(certificateName: String) {
-        this.certificates.removeIf { certificate -> certificate.name == certificateName }
+    fun deleteCertificate(stringParam: String) {
+        this.certificates.removeIf { certificate -> certificate.img == stringParam || certificate.name == stringParam }
     }
 
 //    private fun addConfirmedJob(): Boolean = TODO("Implement me")

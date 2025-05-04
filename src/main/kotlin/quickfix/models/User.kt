@@ -102,35 +102,49 @@ class User : Identifier, UserDetails {
         dateBirth.plusYears(EDAD_REQUERIDA.toLong()).isBefore(LocalDate.now())
 
     fun updateUserInfo(modifiedInfoDTO: UserModifiedInfoDTO) {
-        modifiedInfoDTO.mail?.let {
-            val oldMail = this.mail
-            this.mail = it
-            if (!validMail()) {
-                this.mail = oldMail
-                throw BusinessException("Email inválido")
+        modifiedInfoDTO.mail
+            ?.takeIf { it.isNotBlank() }
+            ?.let {
+                val oldMail = this.mail
+                this.mail = it
+                if (!validMail()) {
+                    this.mail = oldMail
+                    throw BusinessException("Email inválido")
+                }
             }
-        }
-        modifiedInfoDTO.name?.let {
-            if (!validName(it)) throw BusinessException("Nombre sólo puede contener letras")
-            this.name = it
-        }
-        modifiedInfoDTO.lastName?.let {
+
+        modifiedInfoDTO.name
+            ?.takeIf { it.isNotBlank() }
+            ?.let {
+                if (!validName(it)) throw BusinessException("Nombre sólo puede contener letras")
+                this.name = it
+            }
+
+        modifiedInfoDTO.lastName?.takeIf { it.isNotBlank() }?.let {
             if (!validName(it)) throw BusinessException("Apellido sólo puede contener letras")
             this.lastName = it
         }
-        modifiedInfoDTO.dateBirth?.let {
-            val oldDate = this.dateBirth
-            this.dateBirth = datifyStringWithDay(modifiedInfoDTO.dateBirth!!)
-            if (!isAdult()) {
-                this.dateBirth = oldDate
-                throw BusinessException("Debe ser mayor de edad")
+
+        modifiedInfoDTO.dateBirth
+            ?.takeIf { it.isNotBlank() }
+            ?.let {
+                val oldDate = this.dateBirth
+                this.dateBirth = datifyStringWithDay(modifiedInfoDTO.dateBirth!!)
+                if (!isAdult()) {
+                    this.dateBirth = oldDate
+                    throw BusinessException("Debe ser mayor de edad")
+                }
+        }
+
+        modifiedInfoDTO.gender
+            ?.takeIf { it.isNotBlank() }
+            ?.let { Gender.fromNombre(it) }
+            ?.let { this.gender = it }
+
+        modifiedInfoDTO.address
+            ?.takeIf { it.street?.isNotBlank() == true || it.city?.isNotBlank() == true || it.zipCode?.isNotBlank() == true }
+            ?.let { addressDTO ->
+                this.address.updateAddressInfo(addressDTO)
             }
-        }
-        modifiedInfoDTO.gender?.let {
-            this.gender = it
-        }
-        modifiedInfoDTO.address?.let { addressDTO ->
-            this.address.updateAddressInfo(addressDTO)
-        }
     }
 }
