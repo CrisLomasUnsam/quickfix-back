@@ -78,6 +78,7 @@ class SecurityConfig {
                 it.requestMatchers(HttpMethod.PATCH, "/client/**","/pro/**","/rating/**","/job/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.DELETE, "/client/**","/pro/**","/job/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.GET, "/client/**","/pro/**","/rating/**","/job/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.PUT, "/client/**","/pro/**","/rating/**","/job/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
                 }
             .httpBasic(
                 Customizer.withDefaults())
