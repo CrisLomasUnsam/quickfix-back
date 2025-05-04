@@ -2,7 +2,6 @@ package quickfix.dto.user
 
 import io.swagger.v3.oas.annotations.media.Schema
 import quickfix.dto.address.AddressDTO
-import quickfix.models.Gender
 
 @Schema(description = "actualiza datos del User")
 data class UserModifiedInfoDTO(
