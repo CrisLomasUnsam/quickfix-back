@@ -3,8 +3,8 @@ package quickfix.controllers
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
-import quickfix.dto.job.jobOffer.AcceptedJobOfferDTO
 import quickfix.dto.job.JobDTO
+import quickfix.dto.job.jobOffer.AcceptedJobOfferDTO
 import quickfix.dto.job.jobOffer.CancelJobOfferDTO
 import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.job.jobOffer.JobOfferDTO
