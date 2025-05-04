@@ -8,8 +8,8 @@ import quickfix.dao.TokenRepository
 import quickfix.dao.UserRepository
 import quickfix.dto.register.RegisterRequestDTO
 import quickfix.dto.register.toUser
-import quickfix.models.User
 import quickfix.models.RegisterToken
+import quickfix.models.User
 import quickfix.utils.CONFIRM_FRONTEND_URL
 import quickfix.utils.FRONTEND_URL
 import quickfix.utils.events.OnRegistrationCompletedEvent

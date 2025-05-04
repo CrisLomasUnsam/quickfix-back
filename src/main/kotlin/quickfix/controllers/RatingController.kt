@@ -2,6 +2,9 @@ package quickfix.controllers
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.web.bind.annotation.*
 import quickfix.dto.rating.EditRatingDTO
 import quickfix.dto.rating.RatingDTO
@@ -20,12 +23,26 @@ class RatingController(val ratingService: RatingService) {
         ratingService.rateUser(rating)
 
     @GetMapping("/received/{id}")
-    @Operation(summary = "Obtener calificaciones recibidas por un usuario")
-    fun findRatingsReceivedByUser(@PathVariable id: Long): List<RatingDTO> = ratingService.findRatingsReceivedByUser(id).map { it.toDTO() }
+    @Operation(summary = "Obtener calificaciones paginadas recibidas por un usuario")
+    fun findRatingsReceivedByUser(
+        @PathVariable id: Long,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "5") size: Int
+    ): Page<RatingDTO> = ratingService.findRatingsReceivedByUser(
+        id,
+        PageRequest.of(page, size, Sort.Direction.ASC, "yearAndMonth"))
+        .map { it.toDTO() }
 
     @GetMapping("madeBy/{id}")
     @Operation(summary = "Obtener calificaciones hechas por un usuario")
-    fun findRatingsMadeByUser(@PathVariable id: Long): List<RatingDTO> = ratingService.findRatingsMadeByUser(id).map { it.toDTO() }
+    fun findRatingsMadeByUser(
+        @PathVariable id: Long,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "5") size: Int
+    ): Page<RatingDTO> = ratingService.findRatingsMadeByUser(
+        id,
+        PageRequest.of(page, size, Sort.Direction.ASC, "yearAndMonth"))
+        .map { it.toDTO() }
 
     @PatchMapping("/edit/{id}")
     @Operation(summary = "Editar una calificación")

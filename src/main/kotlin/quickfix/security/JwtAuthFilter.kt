@@ -9,7 +9,6 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import quickfix.services.LoginService
-import quickfix.services.UserService
 import quickfix.utils.exceptions.ExpiredTokenException
 
 @Component
@@ -43,7 +42,6 @@ class JwtAuthFilter : OncePerRequestFilter() {
 
             logger.warn(e.message)
             response.sendError(HttpStatus.UNAUTHORIZED.value(), e.message)
-
         }
     }
 }

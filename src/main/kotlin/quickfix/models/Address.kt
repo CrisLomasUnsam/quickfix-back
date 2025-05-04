@@ -22,13 +22,13 @@ class Address : Identifier {
     }
 
     fun updateAddressInfo(modifiedAddressDTO: AddressDTO) {
-        modifiedAddressDTO.street?.let {
+        modifiedAddressDTO.street?.takeIf { it.isNotBlank() }?.let {
             this.street = it
         }
-        modifiedAddressDTO.city?.let {
+        modifiedAddressDTO.city?.takeIf { it.isNotBlank() }?.let {
             this.city = it
         }
-        modifiedAddressDTO.zipCode?.let {
+        modifiedAddressDTO.zipCode?.takeIf { it.isNotBlank() }?.let {
             this.zipCode = it
         }
 

@@ -12,15 +12,15 @@ data class RatingMock (
     val toUser: User
 )
 
-fun createRatingMock(userFrom: User, userTo: User, job: Job): RatingMock {
+fun createRatingMock(userFrom: User, userTo: User, job: Job, score: Int, date: LocalDate): RatingMock {
 
     val rating = Rating().apply {
         this.userFrom = userFrom
         this.userTo = userTo
         this.job = job
-        this.score = 5
-        this.comment = "Excelente"
-        this.yearAndMonth = LocalDate.now()
+        this.score = score
+        this.comment = "Esto es una rating"
+        this.yearAndMonth = date
     }
 
     return RatingMock(rating,job,userFrom,userTo)

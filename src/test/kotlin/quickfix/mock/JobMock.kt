@@ -24,7 +24,7 @@ fun createJobMock (
         this.customer = customer
         this.professional = professional
         this.price = price
-        this.date = LocalDate.now().minusDays(2)
+        this.date = LocalDate.now().minusDays(1)
         this.initDateTime = LocalDate.now()
         this.status = JobStatus.DONE
         this.done = true
