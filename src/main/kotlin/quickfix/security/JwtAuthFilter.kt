@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import quickfix.services.LoginService
 import quickfix.utils.exceptions.ExpiredTokenException
-import quickfix.utils.exceptions.InvalidCredentialsException
 
 @Component
 class JwtAuthFilter : OncePerRequestFilter() {
@@ -32,30 +31,17 @@ class JwtAuthFilter : OncePerRequestFilter() {
             if (bearerOfToken != null && bearerOfToken.startsWith("Bearer ")) {
                 val token = bearerOfToken.substringAfter("Bearer ")
                 val usernamePAT = jwtTokenUtils.getAuthentication(token)
-                try {
-                    loginService.validUser(usernamePAT.name)
-                    SecurityContextHolder.getContext().authentication = usernamePAT
-                    logger.info("USUARIO AUTENTICADO: $usernamePAT")
-
-                } catch (ex: InvalidCredentialsException) {
-                    logger.warn("Usuario inválido: ${usernamePAT.name}")
-                    response.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized")
-                    return
-                }
+                loginService.validUser(usernamePAT.name)
+                SecurityContextHolder.getContext().authentication = usernamePAT
+                logger.info("usernamePostAuthToken: $usernamePAT")
             }
 
-            try {
-                filterChain.doFilter(request, response)
-            } catch (ex: Exception) {
-                logger.warn("OCURRIO UN ERROR EN EL FILTRO")
-                response.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized")
-                return
-            }
+            filterChain.doFilter(request, response)
 
         } catch (e : ExpiredTokenException) {
+
             logger.warn(e.message)
             response.sendError(HttpStatus.UNAUTHORIZED.value(), e.message)
-
         }
     }
 }
