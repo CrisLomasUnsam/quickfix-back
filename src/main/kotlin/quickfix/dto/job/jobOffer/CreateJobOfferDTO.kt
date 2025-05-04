@@ -6,25 +6,25 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class CreateJobOfferDTO @JsonCreator constructor (
 
-    @JsonProperty
+    @JsonProperty("customerId")
     var customerId : Long,
 
-    @JsonProperty
+    @JsonProperty("professionId")
     var professionId : Long,
 
-    @JsonProperty
+    @JsonProperty("professionalId")
     var professionalId: Long,
 
-    @JsonProperty
+    @JsonProperty("price")
     var price: Double,
 
-    @JsonProperty
+    @JsonProperty("distance")
     var distance: Double,
 
-    @JsonProperty
+    @JsonProperty("estimatedArriveTime")
     var estimatedArriveTime: Int,
 
-    @JsonProperty
+    @JsonProperty("availability")
     var availability: Int
 
     )

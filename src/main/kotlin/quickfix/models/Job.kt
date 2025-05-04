@@ -23,7 +23,8 @@ class Job : Identifier {
 
     var done: Boolean = false
 
-    @OneToOne(cascade = [(CascadeType.ALL)],  optional = true)
+    @ManyToOne(cascade = [(CascadeType.ALL)])
+    @JoinColumn(name = "profession_id", nullable = false)
     lateinit var profession : Profession
 
     @Enumerated(EnumType.STRING)

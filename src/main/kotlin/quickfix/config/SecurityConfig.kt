@@ -45,20 +45,20 @@ class SecurityConfig {
     fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
         return httpSecurity
             .cors { it.disable() }
-            .csrf {
-                it.ignoringRequestMatchers(
-                    "/quickfix-api/v1/**",
-                    "/quickfix-api/swagger-config/**",
-                    "/swagger",
-                    "/swagger-ui/**",
-                    "/v3/api-docs/**",
-                    "/swagger-resources/**",
-                    "/registration",
-                    "registration/confirm",
-                    "/login"
-                    )
-                it.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                it.csrfTokenRequestHandler(CsrfTokenRequestHandler())
+            .csrf { it.disable()
+//                it.ignoringRequestMatchers(
+//                    "/quickfix-api/v1/**",
+//                    "/quickfix-api/swagger-config/**",
+//                    "/swagger",
+//                    "/swagger-ui/**",
+//                    "/v3/api-docs/**",
+//                    "/swagger-resources/**",
+//                    "/registration",
+//                    "registration/confirm",
+//                    "/login"
+//                    )
+//                it.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+//                it.csrfTokenRequestHandler(CsrfTokenRequestHandler())
                 }
             .authorizeHttpRequests {
                 it.requestMatchers(
@@ -73,9 +73,11 @@ class SecurityConfig {
                     "/login",
                     ).permitAll()
                 it.requestMatchers(HttpMethod.OPTIONS).permitAll()
-                it.requestMatchers(HttpMethod.POST, "/user/**","/professional/**","/rating/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
-                it.requestMatchers(HttpMethod.PATCH, "/user/**","/rating/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
-                it.requestMatchers(HttpMethod.DELETE, "/user/**","/professional/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.POST, "/user/**","/professional/**","/rating/**", "/job/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.PATCH, "/user/**","/professional/**","/rating/**","/job/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.DELETE, "/user/**","/professional/**", "/job/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.GET, "/user/**","/professional/**", "rating/**", "/job/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
+
                 it.anyRequest().authenticated()
                 }
             .httpBasic(
