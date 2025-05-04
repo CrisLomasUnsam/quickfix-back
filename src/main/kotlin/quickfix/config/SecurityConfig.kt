@@ -74,10 +74,10 @@ class SecurityConfig {
                     "/login",
                     ).permitAll()
                 it.requestMatchers(HttpMethod.OPTIONS).permitAll()
-                it.requestMatchers(HttpMethod.POST, "/user/**","/professional/**","/rating/**","/job/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
-                it.requestMatchers(HttpMethod.PATCH, "/user/**","/professional/**","/rating/**","/job/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
-                it.requestMatchers(HttpMethod.DELETE, "/user/**","/professional/**","/job/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
-                it.requestMatchers(HttpMethod.GET, "/user/**","/professional/**","/rating/**","/job/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.POST, "/client/**","/pro/**","/rating/**","/job/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.PATCH, "/client/**","/pro/**","/rating/**","/job/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.DELETE, "/client/**","/pro/**","/job/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.GET, "/client/**","/pro/**","/rating/**","/job/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
                 }
             .httpBasic(
                 Customizer.withDefaults())
