@@ -22,8 +22,10 @@ class ProfessionalInfo : Identifier {
     var hasVehicle: Boolean = false
     override fun validate() {}
 
-    fun payDebt(debt: Double) {
-        if (this.debt < debt) throw BusinessException("No tiene suficiente deuda para pagar.")
+    fun payDebt(amount: Double) {
+        if (amount <= 0.0) throw BusinessException("El monto a pagar debe ser mayor a cero.")
+        if(this.debt < 1) throw BusinessException("No tiene deudas pendientes")
+        if (this.debt < amount) throw BusinessException("No tiene suficiente plata para pagar.")
         this.debt -= debt
     }
     fun addProfession(profession: Profession) {
