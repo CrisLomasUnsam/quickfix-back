@@ -15,6 +15,7 @@ import quickfix.dto.professional.ProfessionalDTO
 import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.models.User
+import quickfix.utils.MAX_DEBT_ALLOWED
 import quickfix.utils.enums.JobStatus
 import quickfix.utils.exceptions.BusinessException
 import java.time.LocalDate
@@ -98,6 +99,9 @@ class JobService(
     }
 
     fun offerJob(jobOffer : CreateJobOfferDTO) {
+        val professional = userService.getUserById(jobOffer.professionalId)
+
+        professional.validateCanBid(MAX_DEBT_ALLOWED)
         redisService.offerJob(jobOffer)
     }
 

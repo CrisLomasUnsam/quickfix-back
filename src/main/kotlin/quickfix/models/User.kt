@@ -44,6 +44,22 @@ class User : Identifier, UserDetails {
         const val EDAD_REQUERIDA = 18
     }
 
+    fun payDebt(amount: Double) {
+        var debt = professionalInfo.debt
+        if (amount <= 0.0) throw BusinessException("El monto a pagar debe ser mayor a cero.")
+        if(debt < 1) throw BusinessException("No tiene deudas pendientes")
+        if (debt < amount) throw BusinessException("No tiene suficiente plata para pagar.")
+        debt -= debt
+    }
+    fun validateCanBid(maxAllowedDebt: Double) {
+        val debt = professionalInfo.debt
+        if (debt > maxAllowedDebt) {
+            throw BusinessException(
+                "No puede ofertar: su deuda (${debt}) supera el máximo permitido ($maxAllowedDebt)."
+            )
+        }
+    }
+
     fun setPassword(password: String) {
         this._password = password
     }
