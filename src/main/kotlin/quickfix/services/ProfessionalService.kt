@@ -93,4 +93,15 @@ class ProfessionalService(
         val netEarnings = userRepository.getEarningsByProfessionalIdAndDateRange(professionalId, dateStart, dateEnd) ?: 0.0
         return netEarnings - comission(netEarnings)
     }
+
+    fun payDebt(professionalId: Long, amount: Double) {
+        val professional = userService.getUserById(professionalId)
+        val debt = professional.professionalInfo.debt
+        if (debt > 0) {
+            professional.professionalInfo.payDebt(amount)
+        }
+        else {
+            throw BusinessException("No tiene deudas pendientes")
+        }
+    }
 }

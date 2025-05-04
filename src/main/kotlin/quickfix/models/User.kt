@@ -84,6 +84,7 @@ class User : Identifier, UserDetails {
             throw BusinessException("La fecha de nacimiento no es válida.")
     }
 
+
     private fun validDNI(): Boolean {
         val dniToString = dni.toString()
         return ( dniToString.length == 8 || dniToString.length == 7 ) && dniToString.all { it.isDigit() }
