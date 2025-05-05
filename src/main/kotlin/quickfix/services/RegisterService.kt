@@ -1,7 +1,6 @@
 package quickfix.services
 
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.TokenRepository
@@ -23,16 +22,21 @@ import java.util.*
 class RegisterService(
     private val userRepository: UserRepository,
     private val eventPublisher: ApplicationEventPublisher,
-    private val tokenRepository: TokenRepository,
-    private val passwordEncoder: PasswordEncoder
+    private val tokenRepository: TokenRepository
 ) {
     @Transactional(rollbackFor = [SQLException::class, Exception::class])
-    fun registerUser(registerData: RegisterRequestDTO) = userExists(registerData.mail) ?: registerNewUser(registerData)
+    fun registerUser(registerData: RegisterRequestDTO){
+        validateUserAlreadyExists(registerData.mail)
+        registerNewUser(registerData)
+    }
 
-    private fun userExists(mail: String) = userRepository.findByMail(mail)?.let { throw BusinessException("El usuario con mail ${it.mail} ya existe") }
+    private fun validateUserAlreadyExists(mail: String) {
+        val user = userRepository.findByMail(mail)
+        if(user.isPresent) throw BusinessException("El usuario con mail ${mail} ya existe")
+    }
 
     private fun registerNewUser(registerData: RegisterRequestDTO) {
-        val user = registerData.toUser().apply { this.password = encodePassword(this.password) }
+        val user : User = registerData.toUser().apply { setNewPassword(registerData.rawPassword) }
         val savedUser = userRepository.save(user) /*Se persiste un usuario sin verificar aun pero cuyo mail no esta en la bbdd*/
         val token = UUID.randomUUID().toString()
         this.createVerificationTokenEntity(savedUser, token)
@@ -41,8 +45,6 @@ class RegisterService(
     }
 
     private fun createConfirmationLink(token: String) = "$FRONTEND_URL+$CONFIRM_FRONTEND_URL?token=$token"
-
-    private fun encodePassword(password: String) = passwordEncoder.encode(password)
 
     private fun createVerificationTokenEntity(user: User, token: String) {
         val newToken = RegisterToken().apply { this.user = user; this.token = token }
@@ -56,7 +58,7 @@ class RegisterService(
         if (token.isBlank()) { throw BusinessException("Token invalido") }
         val verificationToken = getVerificationToken(token) ?: throw InvalidCredentialsException()
         val user = verificationToken.user
-        val savedUser = userRepository.findByMail(user.mail) ?: throw BusinessException("El usuario asociado al token no existe")
+        val savedUser = userRepository.findByMail(user.mail).orElseThrow{ BusinessException("El usuario asociado al token no existe") }
         if (verificationToken.expiryDate.isBefore(LocalDateTime.now())) {
             tokenRepository.delete(verificationToken)
             throw BusinessException("Token expirado")
