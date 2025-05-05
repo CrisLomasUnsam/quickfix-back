@@ -18,7 +18,7 @@ interface UserRepository: CrudRepository<User, Long>{
     @EntityGraph(attributePaths = ["professionalInfo", "professionalInfo.professionalProfessions", "professionalInfo.certificates"])
     fun findUserWithProfessionalInfoById(id: Long): Optional<User>
 
-    fun findByMail(mail: String): User?
+    fun findByMail(mail: String): Optional<User>
   
     fun findByDni(dni: Int): User?
 
