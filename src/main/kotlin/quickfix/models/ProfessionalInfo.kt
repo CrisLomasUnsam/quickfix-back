@@ -24,6 +24,7 @@ class ProfessionalInfo : Identifier {
 
     override fun validate() {}
 
+
     fun addProfession(profession: Profession) {
         this.professionalProfessions.add(
             ProfessionalProfession().apply {
@@ -70,6 +71,21 @@ class ProfessionalInfo : Identifier {
 
     fun deleteCertificate(stringParam: String) {
         this.certificates.removeIf { certificate -> certificate.img == stringParam || certificate.name == stringParam }
+    }
+
+    fun payDebt(amount: Double) {
+        if (amount <= 0.0) throw BusinessException("El monto a pagar debe ser mayor a cero.")
+        if(debt < 1) throw BusinessException("No tiene deudas pendientes")
+        if (debt < amount) throw BusinessException("No tiene suficiente plata para pagar.")
+        debt -= debt
+    }
+
+    fun validateCanBid(maxAllowedDebt: Double) {
+        if (debt > maxAllowedDebt) {
+            throw BusinessException(
+                "No puede ofertar: su deuda (${debt}) supera el máximo permitido ($maxAllowedDebt)."
+            )
+        }
     }
 
 }

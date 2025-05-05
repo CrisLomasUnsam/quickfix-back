@@ -93,4 +93,10 @@ class ProfessionalService(
         val netEarnings = userRepository.getEarningsByProfessionalIdAndDateRange(professionalId, dateStart, dateEnd) ?: 0.0
         return netEarnings - comission(netEarnings)
     }
+
+    @Transactional
+    fun payDebt(professionalId: Long, amount: Double) {
+        val professional = userService.getUserById(professionalId).professionalInfo
+        professional.payDebt(amount)
+    }
 }
