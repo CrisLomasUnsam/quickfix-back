@@ -23,12 +23,12 @@ fun RegisterRequestDTO.toUser() : User {
         mail = request.mail.trim()
         name = request.name.trim()
         lastName = request.lastName.trim()
-        password = request.rawPassword.trim()
         dni = request.dni
         avatar = request.avatar.trim()
         dateBirth = datifyStringWithDay(request.dateBirth)
         gender = request.gender
         address = request.address
+        setNewPassword(request.rawPassword.trim())
     }.apply {
         validate()
     }
