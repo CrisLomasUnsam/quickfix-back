@@ -65,6 +65,7 @@ class JobService(
     }
 
     fun requestJob(jobRequest : JobRequestDTO) {
+
         userService.assertUserExists(jobRequest.customerId)
         professionService.assertProfessionExists(jobRequest.professionId)
         redisService.requestJob(jobRequest, jobRequest.professionId)
@@ -83,9 +84,11 @@ class JobService(
 
     fun getJobOffers(customerId : Long): List<JobOfferDTO> {
         val createdJobOffers = redisService.getJobOffers(customerId)
+
         return createdJobOffers.map { createdJobOffer ->
             val professional = userService.getUserById(createdJobOffer.professionalId)
             val professionalRating = jobRepository.findRatingsByProfessionalId(createdJobOffer.professionalId).map { it.score }.average()
+
             JobOfferDTO(
                 customerId = createdJobOffer.customerId,
                 professionId = createdJobOffer.professionId,
@@ -99,8 +102,7 @@ class JobService(
     }
 
     fun offerJob(jobOffer : CreateJobOfferDTO) {
-        val professional = userService.getUserById(jobOffer.professionalId)
-
+        val professional = userService.getUserById(jobOffer.professionalId).professionalInfo
         professional.validateCanBid(MAX_DEBT_ALLOWED)
         redisService.offerJob(jobOffer)
     }

@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
-import quickfix.services.LoginService
 import quickfix.services.UserService
 import quickfix.utils.exceptions.ExpiredTokenException
 
@@ -19,7 +18,7 @@ class JwtAuthFilter : OncePerRequestFilter() {
     lateinit var jwtTokenUtils : JwtTokenUtils
 
     @Autowired
-    lateinit var loginService : LoginService
+    lateinit var userService: UserService
 
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -32,7 +31,7 @@ class JwtAuthFilter : OncePerRequestFilter() {
             if (bearerOfToken != null && bearerOfToken.startsWith("Bearer ")) {
                 val token = bearerOfToken.substringAfter("Bearer ")
                 val usernamePAT = jwtTokenUtils.getAuthentication(token)
-                loginService.validUser(usernamePAT.name)
+                userService.getUserById(usernamePAT.principal.toString().toLong())
                 SecurityContextHolder.getContext().authentication = usernamePAT
                 logger.info("usernamePostAuthToken: $usernamePAT")
             }
@@ -40,10 +39,8 @@ class JwtAuthFilter : OncePerRequestFilter() {
             filterChain.doFilter(request, response)
 
         } catch (e : ExpiredTokenException) {
-
             logger.warn(e.message)
-            response.sendError(HttpStatus.UNAUTHORIZED.value(), e.message)
-
+            response.sendError(HttpStatus.valueOf(498).value(), e.message)
         }
     }
 }

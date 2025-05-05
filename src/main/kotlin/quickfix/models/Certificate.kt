@@ -15,7 +15,5 @@ class Certificate : Identifier {
 
     lateinit var img : String
 
-    override fun validate() {
-        TODO("Not yet implemented")
-    }
+    override fun validate() {}
 }

@@ -1,5 +1,7 @@
 package quickfix.services
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.RatingRepository
@@ -16,12 +18,12 @@ class RatingService(
     val jobService: JobService
 ) {
 
-    fun findRatingsReceivedByUser(userId: Long): List<Rating> {
-        return ratingRepository.findByUserToId(userId).orElseThrow{ BusinessException("Usuario no existe") }
+    fun findRatingsReceivedByUser(userId: Long, pageable: Pageable): Page<Rating> {
+        return ratingRepository.findAllByUserToId(userId, pageable)
     }
 
     fun findRatingsMadeByUser(userId: Long): List<Rating> {
-        return ratingRepository.findByUserFromId(userId).orElseThrow { BusinessException("Usuario no existe") }
+        return ratingRepository.findAllByUserFromId(userId)
     }
 
     @Transactional(rollbackFor = [Exception::class])

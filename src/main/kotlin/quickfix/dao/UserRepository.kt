@@ -12,13 +12,13 @@ import java.util.*
 @Component
 interface UserRepository: CrudRepository<User, Long>{
 
-    @EntityGraph(attributePaths = ["professionalInfo.professions"])
+    @EntityGraph(attributePaths = ["professionalInfo.professionalProfessions"])
     fun findUserProfessionsById(id: Long): Optional<User>
 
-    @EntityGraph(attributePaths = ["professionalInfo", "professionalInfo.professions", "professionalInfo.certificates"])
+    @EntityGraph(attributePaths = ["professionalInfo", "professionalInfo.professionalProfessions", "professionalInfo.certificates"])
     fun findUserWithProfessionalInfoById(id: Long): Optional<User>
 
-    fun findByMail(mail: String): User?
+    fun findByMail(mail: String): Optional<User>
   
     fun findByDni(dni: Int): User?
 

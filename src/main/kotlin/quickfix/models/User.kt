@@ -1,22 +1,23 @@
 package quickfix.models
 
 import jakarta.persistence.*
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import quickfix.dto.user.UserModifiedInfoDTO
 import quickfix.utils.datifyStringWithDay
 import quickfix.utils.exceptions.BusinessException
+import quickfix.utils.exceptions.InvalidCredentialsException
 import java.time.LocalDate
 
 @Entity
 @Table(name = "users")
-class User : Identifier, UserDetails {
+class User : Identifier {
 
     @Id @GeneratedValue
     override var id: Long = -1
 
-    @Column(length = 60)
-    private lateinit var _password : String
+    @Column(length = 97)
+    private lateinit var password : String
 
     @Column(unique = true)
     var dni : Int = 0
@@ -30,9 +31,6 @@ class User : Identifier, UserDetails {
     @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true)
     var professionalInfo: ProfessionalInfo = ProfessionalInfo()
 
-    @ManyToMany
-    val roles: MutableSet<Rol> = mutableSetOf()
-
     lateinit var mail: String
     lateinit var name : String
     lateinit var lastName : String
@@ -44,34 +42,68 @@ class User : Identifier, UserDetails {
         const val EDAD_REQUERIDA = 18
     }
 
-    fun payDebt(amount: Double) {
-        var debt = professionalInfo.debt
-        if (amount <= 0.0) throw BusinessException("El monto a pagar debe ser mayor a cero.")
-        if(debt < 1) throw BusinessException("No tiene deudas pendientes")
-        if (debt < amount) throw BusinessException("No tiene suficiente plata para pagar.")
-        debt -= debt
-    }
-    fun validateCanBid(maxAllowedDebt: Double) {
-        val debt = professionalInfo.debt
-        if (debt > maxAllowedDebt) {
-            throw BusinessException(
-                "No puede ofertar: su deuda (${debt}) supera el máximo permitido ($maxAllowedDebt)."
-            )
+    fun updateUserInfo(modifiedInfoDTO: UserModifiedInfoDTO) {
+        modifiedInfoDTO.mail
+            ?.takeIf { it.isNotBlank() }
+            ?.let {
+                val oldMail = this.mail
+                this.mail = it
+                if (!validMail()) {
+                    this.mail = oldMail
+                    throw BusinessException("Email inválido")
+                }
+            }
+
+        modifiedInfoDTO.name
+            ?.takeIf { it.isNotBlank() }
+            ?.let {
+                if (!validName(it)) throw BusinessException("Nombre sólo puede contener letras")
+                this.name = it
+            }
+
+        modifiedInfoDTO.lastName?.takeIf { it.isNotBlank() }?.let {
+            if (!validName(it)) throw BusinessException("Apellido sólo puede contener letras")
+            this.lastName = it
         }
+
+        modifiedInfoDTO.dateBirth
+            ?.takeIf { it.isNotBlank() }
+            ?.let {
+                val oldDate = this.dateBirth
+                this.dateBirth = datifyStringWithDay(modifiedInfoDTO.dateBirth!!)
+                if (!isAdult()) {
+                    this.dateBirth = oldDate
+                    throw BusinessException("Debe ser mayor de edad")
+                }
+            }
+
+        modifiedInfoDTO.gender
+            ?.takeIf { it.isNotBlank() }
+            ?.let { Gender.fromName(it) }
+            ?.let { this.gender = it }
+
+        modifiedInfoDTO.address
+            ?.takeIf { it.street?.isNotBlank() == true || it.city?.isNotBlank() == true || it.zipCode?.isNotBlank() == true }
+            ?.let { addressDTO ->
+                this.address.updateAddressInfo(addressDTO)
+            }
     }
 
-    fun setPassword(password: String) {
-        this._password = password
+    private fun getDefaultEncoder(): PasswordEncoder =
+        Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8()!!
+
+    fun setNewPassword(rawPassword: String) {
+        validateRawPassword(rawPassword)
+        password = getDefaultEncoder().encode(rawPassword)
     }
 
-    override fun getUsername(): String = mail
+    fun verifyPassword(rawPassword: String) : Boolean =
+        getDefaultEncoder().matches(rawPassword, password)
 
-    override fun getAuthorities(): Collection<GrantedAuthority> = listOf() /*Esto es para roles*/
-
-    override fun getPassword(): String = _password
-
-    fun addRole(role: Rol) {
-        if (!roles.contains(role)) roles.add(role)
+    private fun validateRawPassword(rawPassword: String) {
+        val validPassword = rawPassword.trim().length >= 6 && !(rawPassword.trim().contains(" "))
+        if(!validPassword)
+            throw InvalidCredentialsException()
     }
 
     override fun validate() = validateCommonFields()
@@ -86,9 +118,6 @@ class User : Identifier, UserDetails {
 
         if (!this.validName(lastName))
             throw BusinessException("El apellido no puede estar vacío ni contener caracteres especiales o numéricos.")
-
-        if (!this.validPassword())
-            throw BusinessException("La contraseña debe tener al menos 6 caracteres y no debe contener espacios en blanco.")
 
         if (!this.validDNI())
             throw BusinessException("El DNI es incorrecto.")
@@ -112,42 +141,7 @@ class User : Identifier, UserDetails {
     private fun validName(name : String) : Boolean =
         name.trim().isNotBlank() && !name.trim().contains(" ") && !name.any { it.isDigit() }
 
-    private fun validPassword() : Boolean =
-        password.trim().length >= 6 && !(password.trim().contains(" "))
-
     private fun isAdult(): Boolean =
         dateBirth.plusYears(EDAD_REQUERIDA.toLong()).isBefore(LocalDate.now())
 
-    fun updateUserInfo(modifiedInfoDTO: UserModifiedInfoDTO) {
-        modifiedInfoDTO.mail?.let {
-            val oldMail = this.mail
-            this.mail = it
-            if (!validMail()) {
-                this.mail = oldMail
-                throw BusinessException("Email inválido")
-            }
-        }
-        modifiedInfoDTO.name?.let {
-            if (!validName(it)) throw BusinessException("Nombre sólo puede contener letras")
-            this.name = it
-        }
-        modifiedInfoDTO.lastName?.let {
-            if (!validName(it)) throw BusinessException("Apellido sólo puede contener letras")
-            this.lastName = it
-        }
-        modifiedInfoDTO.dateBirth?.let {
-            val oldDate = this.dateBirth
-            this.dateBirth = datifyStringWithDay(modifiedInfoDTO.dateBirth!!)
-            if (!isAdult()) {
-                this.dateBirth = oldDate
-                throw BusinessException("Debe ser mayor de edad")
-            }
-        }
-        modifiedInfoDTO.gender?.let {
-            this.gender = it
-        }
-        modifiedInfoDTO.address?.let { addressDTO ->
-            this.address.updateAddressInfo(addressDTO)
-        }
-    }
 }

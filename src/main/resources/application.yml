@@ -12,8 +12,6 @@ springdoc:
     path: /quickfix-api
 
 spring:
-  profiles:
-    active: dev
   datasource:
     url: jdbc:postgresql://localhost:5432/quickfix
     username: postgres
@@ -47,3 +45,7 @@ spring:
 logging:
   level:
     root: INFO
+
+security:
+  secret-key: d14a028c2a3a2bc9476102bb288234c415a2b01f828ea62ac5b3e42f
+  access-token-minutes: 300

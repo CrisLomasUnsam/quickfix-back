@@ -60,8 +60,6 @@ class ProfessionalController (
 
     @DeleteMapping("/certificates/{professionalId}")
     @Operation(summary = "Borrar un certificado")
-    fun deleteCertificate(@PathVariable professionalId : Long, @Parameter(description = "Path de la imagen") @RequestBody imgPath: String) =
-        professionalService.deleteCertificate(professionalId, imgPath.trim())
-
-
+    fun deleteCertificate(@PathVariable professionalId : Long, @Parameter(description = "Imagen o nombre del cert") @RequestBody certificateNameOrImg: String) =
+        professionalService.deleteCertificate(professionalId, certificateNameOrImg.trim())
 }

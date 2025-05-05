@@ -10,8 +10,9 @@ class ProfessionalInfo : Identifier {
     @Id @GeneratedValue
     override var id: Long = -1
 
-    @ManyToMany(cascade = [(CascadeType.ALL)])
-    var professions: MutableSet<Profession> = mutableSetOf()
+    @OneToMany(cascade = [(CascadeType.ALL)], orphanRemoval = true)
+    @JoinColumn(name = "professional_id")
+    var professionalProfessions: MutableSet<ProfessionalProfession> = mutableSetOf()
 
     @OneToMany(cascade = [(CascadeType.ALL)], orphanRemoval = true)
     var certificates: MutableSet<Certificate> = mutableSetOf()
@@ -20,21 +21,38 @@ class ProfessionalInfo : Identifier {
     var debt: Double = 0.0
 
     var hasVehicle: Boolean = false
+
     override fun validate() {}
 
 
     fun addProfession(profession: Profession) {
-        this.professions.add(profession)
+        this.professionalProfessions.add(
+            ProfessionalProfession().apply {
+                this.profession = profession
+            }
+        )
     }
 
-    fun hasProfession(professionId: Long): Boolean =
-        this.professions.any { profession -> profession.id == professionId }
+    fun hasActiveProfession(professionId: Long) =
+        professionalProfessions.any { it.profession.id == professionId && it.active }
+
+    fun disableProfession(professionId: Long) {
+        val profession = professionalProfessions.find { it.profession.id == professionId }
+            ?: throw BusinessException("No existe la profesión con id $professionId para deshabilitar.")
+        profession.disable()
+    }
+
+    fun enableProfession(professionId: Long) {
+        val profession = professionalProfessions.find { it.profession.id == professionId }
+            ?: throw BusinessException("No existe la profesión con id $professionId para habilitar.")
+        profession.enable()
+    }
 
     fun hasProfessionByName(professionName: String): Boolean =
-        this.professions.any { profession -> profession.name == professionName }
+        professionalProfessions.any { it.profession.name == professionName && it.active }
 
     fun removeProfession(professionId: Long) {
-        this.professions.removeIf{profession -> profession.id == professionId}
+        this.professionalProfessions.removeIf{ profession -> profession.id == professionId}
         this.deleteAllCertificates(professionId)
     }
 
@@ -51,11 +69,23 @@ class ProfessionalInfo : Identifier {
         this.certificates.add(newCertificate)
     }
 
-    fun deleteCertificate(certificateName: String) {
-        this.certificates.removeIf { certificate -> certificate.name == certificateName }
+    fun deleteCertificate(stringParam: String) {
+        this.certificates.removeIf { certificate -> certificate.img == stringParam || certificate.name == stringParam }
     }
 
-//    private fun addConfirmedJob(): Boolean = TODO("Implement me")
-//    private fun removeConfirmedJob(): Boolean = TODO("Implement me")
+    fun payDebt(amount: Double) {
+        if (amount <= 0.0) throw BusinessException("El monto a pagar debe ser mayor a cero.")
+        if(debt < 1) throw BusinessException("No tiene deudas pendientes")
+        if (debt < amount) throw BusinessException("No tiene suficiente plata para pagar.")
+        debt -= debt
+    }
+
+    fun validateCanBid(maxAllowedDebt: Double) {
+        if (debt > maxAllowedDebt) {
+            throw BusinessException(
+                "No puede ofertar: su deuda (${debt}) supera el máximo permitido ($maxAllowedDebt)."
+            )
+        }
+    }
 
 }
