@@ -11,6 +11,7 @@ class ProfessionalInfo : Identifier {
     override var id: Long = -1
 
     @OneToMany(cascade = [(CascadeType.ALL)], orphanRemoval = true)
+    @JoinColumn(name = "professional_id")
     var professionalProfessions: MutableSet<ProfessionalProfession> = mutableSetOf()
 
     @OneToMany(cascade = [(CascadeType.ALL)], orphanRemoval = true)
@@ -20,14 +21,13 @@ class ProfessionalInfo : Identifier {
     var debt: Double = 0.0
 
     var hasVehicle: Boolean = false
+
     override fun validate() {}
 
-    fun addProfession(profession: Profession, active: Boolean = true) {
+    fun addProfession(profession: Profession) {
         this.professionalProfessions.add(
             ProfessionalProfession().apply {
-                this.professionalInfo = this@ProfessionalInfo
                 this.profession = profession
-                this.active = active
             }
         )
     }
@@ -36,13 +36,15 @@ class ProfessionalInfo : Identifier {
         professionalProfessions.any { it.profession.id == professionId && it.active }
 
     fun disableProfession(professionId: Long) {
-        val relation = professionalProfessions.find { it.profession.id == professionId }
+        val profession = professionalProfessions.find { it.profession.id == professionId }
             ?: throw BusinessException("No existe la profesión con id $professionId para deshabilitar.")
+        profession.disable()
     }
 
     fun enableProfession(professionId: Long) {
-        val relation = professionalProfessions.find { it.profession.id == professionId }
+        val profession = professionalProfessions.find { it.profession.id == professionId }
             ?: throw BusinessException("No existe la profesión con id $professionId para habilitar.")
+        profession.enable()
     }
 
     fun hasProfessionByName(professionName: String): Boolean =
@@ -69,8 +71,5 @@ class ProfessionalInfo : Identifier {
     fun deleteCertificate(stringParam: String) {
         this.certificates.removeIf { certificate -> certificate.img == stringParam || certificate.name == stringParam }
     }
-
-//    private fun addConfirmedJob(): Boolean = TODO("Implement me")
-//    private fun removeConfirmedJob(): Boolean = TODO("Implement me")
 
 }
