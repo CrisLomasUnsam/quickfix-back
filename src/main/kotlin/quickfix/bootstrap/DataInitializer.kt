@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import quickfix.dao.*
 import quickfix.models.*
-import quickfix.security.Roles
 import quickfix.services.AddressService
 import quickfix.services.ProfessionService
 import quickfix.utils.dataInitializer.Professions
@@ -15,9 +14,6 @@ import java.time.LocalDate
 
 @Service
 class DataInitializer : InitializingBean {
-
-    @Autowired
-    private lateinit var roleRepository: RoleRepository
 
     @Autowired
     private lateinit var addressService: AddressService
@@ -39,8 +35,6 @@ class DataInitializer : InitializingBean {
 
     @Autowired
     private lateinit var addressRepository: AddressRepository
-
-    val logger: Logger = LoggerFactory.getLogger(DataInitializer::class.java)
 
     private lateinit var address1: Address
     private lateinit var address2: Address
@@ -101,19 +95,6 @@ class DataInitializer : InitializingBean {
             initRatings()
         }
         println("************** Data Initialization Complete **************")
-    }
-
-    private fun createRole(roleName: String): Rol {
-        val rol = roleRepository.findByName(roleName)
-        if (rol.isEmpty) {
-            logger.info("Creando rol $roleName")
-            return roleRepository.save(Rol().apply {
-                name = roleName
-            })
-        } else {
-            logger.info("Rol $roleName ya existe")
-            return rol.get()
-        }
     }
 
     fun loadAddresses() {
@@ -177,21 +158,15 @@ class DataInitializer : InitializingBean {
         }
     }
 
-    private fun createUser(user: User, rol: Rol) {
+    private fun createUser(user: User) {
         val exists = userRepository.findByDni(user.dni)
         if (exists != null) {
             user.id = exists.id
         }
-        userRepository.save(user.apply {
-            addRole(rol)
-        })
+        userRepository.save(user)
     }
 
     fun initUsers() {
-
-        val admin = createRole(Roles.ADMIN.name)
-        val customer = createRole(Roles.CUSTOMER.name)
-        val professional = createRole(Roles.PROFESSIONAL.name)
 
         address1 = addressService.getAddressByZipCode("1000")
 
@@ -209,7 +184,7 @@ class DataInitializer : InitializingBean {
             setNewPassword("password")
         }
 
-        createUser(professional1, professional)
+        createUser(professional1)
 
         address2 = addressService.getAddressByZipCode("1001")
 
@@ -227,7 +202,7 @@ class DataInitializer : InitializingBean {
             setNewPassword("password")
         }
 
-        createUser(professional2, professional)
+        createUser(professional2)
 
         address3 = addressService.getAddressByZipCode("1002")
 
@@ -245,7 +220,7 @@ class DataInitializer : InitializingBean {
             setNewPassword("password")
         }
 
-        createUser(professional3, professional)
+        createUser(professional3)
 
         address4 = addressService.getAddressByZipCode("1003")
 
@@ -262,7 +237,7 @@ class DataInitializer : InitializingBean {
             setNewPassword("password")
         }
 
-        createUser(customer1, customer)
+        createUser(customer1)
 
         address5 = addressService.getAddressByZipCode("1004")
 
@@ -279,7 +254,7 @@ class DataInitializer : InitializingBean {
             setNewPassword("password")
         }
 
-        createUser(customer2, customer)
+        createUser(customer2)
 
         address6 = addressService.getAddressByZipCode("1005")
 
@@ -296,7 +271,7 @@ class DataInitializer : InitializingBean {
             setNewPassword("password")
         }
 
-        createUser(customer3, customer)
+        createUser(customer3)
     }
 
     fun initJobs() {
