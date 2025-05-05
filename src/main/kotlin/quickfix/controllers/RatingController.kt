@@ -35,16 +35,11 @@ class RatingController(val ratingService: RatingService) {
 
     @GetMapping("madeBy/{id}")
     @Operation(summary = "Obtener calificaciones hechas por un usuario")
-    fun findRatingsMadeByUser(
-        @PathVariable id: Long,
-        @RequestParam(defaultValue = "0") page: Int,
-        @RequestParam(defaultValue = "5") size: Int
-    ): Page<RatingDTO> = ratingService.findRatingsMadeByUser(
-        id,
-        PageRequest.of(page, size, Sort.Direction.ASC, "yearAndMonth"))
-        .map { it.toDTO() }
+    fun findRatingsMadeByUser(@PathVariable id: Long): List<RatingDTO> =
+        ratingService.findRatingsMadeByUser(id).map { it.toDTO() }
 
     @PatchMapping("/edit/{id}")
     @Operation(summary = "Editar una calificación")
-    fun updateRating(@PathVariable id: Long, @RequestBody data: EditRatingDTO) = ratingService.updateRating(id, data.fromDTO())
+    fun updateRating(@PathVariable id: Long, @RequestBody data: EditRatingDTO) =
+        ratingService.updateRating(id, data.fromDTO())
 }

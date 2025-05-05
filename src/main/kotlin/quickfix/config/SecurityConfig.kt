@@ -13,8 +13,8 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+import quickfix.models.Role
 import quickfix.security.JwtAuthFilter
-import quickfix.security.Roles
 import quickfix.utils.FRONTEND_URL
 
 //import org.springframework.security.web.csrf.CookieCsrfTokenRepository
@@ -36,7 +36,7 @@ class SecurityConfig {
                 registry.addMapping("/**")
                     .allowedOrigins(FRONTEND_URL)
                     .allowedHeaders("*")
-                    .allowedMethods("POST", "GET","PATCH", "DELETE")
+                    .allowedMethods("POST", "GET","PATCH", "DELETE", "PUT")
                     .allowCredentials(true)
             }
         }
@@ -47,19 +47,8 @@ class SecurityConfig {
         return httpSecurity
             .cors { it.disable() }
             .csrf { it.disable()
-//                it.ignoringRequestMatchers(
-//                    "/quickfix-api/v1/**",
-//                    "/quickfix-api/swagger-config/**",
-//                    "/swagger",
-//                    "/swagger-ui/**",
-//                    "/v3/api-docs/**",
-//                    "/swagger-resources/**",
-//                    "/registration",
-//                    "registration/confirm",
-//                    "/login"
-//                    )
-//                it.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-//                it.csrfTokenRequestHandler(CsrfTokenRequestHandler())
+                //it.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                //it.csrfTokenRequestHandler(CsrfTokenRequestHandler())
                 }
             .authorizeHttpRequests {
                 it.requestMatchers(
@@ -71,15 +60,17 @@ class SecurityConfig {
                     "/swagger-resources/**",
                     "/registration",
                     "/registration/confirm",
-                    "/login",
+                    "/login/**",
                     ).permitAll()
+
                 it.requestMatchers(HttpMethod.OPTIONS).permitAll()
-                it.requestMatchers(HttpMethod.POST, "/client/**","/pro/**","/rating/**","/job/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
-                it.requestMatchers(HttpMethod.PATCH, "/client/**","/pro/**","/rating/**","/job/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
-                it.requestMatchers(HttpMethod.DELETE, "/client/**","/pro/**","/job/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
-                it.requestMatchers(HttpMethod.GET, "/client/**","/pro/**","/rating/**","/job/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
-                it.requestMatchers(HttpMethod.PUT, "/client/**","/pro/**","/rating/**","/job/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
-                }
+                it.requestMatchers(HttpMethod.POST, "/client/**","/pro/**","/rating/**","/job/**").hasAnyAuthority(Role.ADMIN.name,Role.CUSTOMER.name,Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.PATCH, "/client/**","/pro/**","/rating/**","/job/**").hasAnyAuthority(Role.ADMIN.name,Role.CUSTOMER.name,Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.DELETE, "/client/**","/pro/**","/job/**").hasAnyAuthority(Role.ADMIN.name,Role.CUSTOMER.name,Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.GET, "/client/**","/pro/**","/rating/**","/job/**").hasAnyAuthority(Role.ADMIN.name,Role.CUSTOMER.name,Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.PUT, "/client/**","/pro/**","/rating/**","/job/**").hasAnyAuthority(Role.ADMIN.name,Role.CUSTOMER.name,Role.PROFESSIONAL.name)
+                it.anyRequest().authenticated()
+            }
             .httpBasic(
                 Customizer.withDefaults())
             .sessionManagement {

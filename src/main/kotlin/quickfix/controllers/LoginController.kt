@@ -14,7 +14,11 @@ import quickfix.services.LoginService
 class LoginController (
     private val loginService: LoginService,
 ) {
-    @PostMapping
-    fun login(@RequestBody loginDTO: LoginDTO) =
-        loginService.login(loginDTO)
+    @PostMapping("/customer")
+    fun loginAsCustomer(@RequestBody loginDTO: LoginDTO) =
+        loginService.loginAsCustomer(loginDTO)
+
+    @PostMapping("/professional")
+    fun loginAsProfessional(@RequestBody loginDTO: LoginDTO) =
+        loginService.loginAsProfessional(loginDTO)
 }

@@ -20,7 +20,7 @@ class ProfessionalService(
 )  {
 
     fun getProfessionIds(professionalId : Long) : Set<Long> {
-        val professions = userService.getProfessionsByUserId(professionalId)
+        val professions = userService.getActiveProfessionsByUserId(professionalId)
         return professions.map { it.id }.toSet()
     }
 
@@ -44,7 +44,7 @@ class ProfessionalService(
         val professional = userService.getUserById(professionalId)
         val profession = professionService.getByNameIgnoreCase(professionName)
 
-        if (professional.professionalInfo.hasProfession(profession.id))
+        if (professional.professionalInfo.hasActiveProfession(profession.id))
             throw BusinessException("La profesión ya forma parte de sus servicios")
 
         professional.professionalInfo.addProfession(profession)
@@ -55,7 +55,7 @@ class ProfessionalService(
         val professional = userService.getUserById(professionalId)
         val professionId = professionService.getByNameIgnoreCase(professionName).id
 
-        if (!professional.professionalInfo.hasProfession(professionId))
+        if (!professional.professionalInfo.hasActiveProfession(professionId))
             throw BusinessException("La profesión no forma parte de sus servicios")
 
         professional.professionalInfo.removeProfession(professionId)

@@ -4,12 +4,14 @@ import jakarta.persistence.*
 
 @Entity
 @Table(name = "professions")
-class Profession {
+class Profession : Identifier {
 
     @Id @GeneratedValue
-    var id: Long = -1
+    override var id: Long = -1
 
     @Column(unique = true, nullable = false)
     lateinit var name: String
+
+    override fun validate() {}
 }
 
