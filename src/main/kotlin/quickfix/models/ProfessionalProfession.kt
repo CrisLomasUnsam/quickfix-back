@@ -4,20 +4,25 @@ import jakarta.persistence.*
 
 @Entity
 @Table(name = "professional_professions")
-class ProfessionalProfession{
+class ProfessionalProfession : Identifier{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0
+    override var id: Long = -1
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "professional_info_id")
-    lateinit var professionalInfo: ProfessionalInfo
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "profession_id")
+    @ManyToOne(cascade = [CascadeType.ALL])
     lateinit var profession: Profession
 
     var active: Boolean = true
+
+    fun disable() {
+        this.active = false
+    }
+
+    fun enable() {
+        this.active = true
+    }
+
+    override fun validate() {}
 
 }
