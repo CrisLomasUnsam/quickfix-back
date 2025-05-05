@@ -17,6 +17,9 @@ class UserService(
     fun getUserById(id: Long): User =
         userRepository.findById(id).orElseThrow{ BusinessException("Usuario no encontrado $id") }
 
+    fun getUserByMail(mail: String): User =
+        userRepository.findByMail(mail).orElseThrow{ BusinessException("Usuario no encontrado $mail") }
+
     fun assertUserExists(id: Long) {
         if (!userRepository.existsById(id))
             throw BusinessException("Usuario no encontrado: $id")
