@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.RatingRepository
-import quickfix.dto.rating.EditRating
+import quickfix.dto.rating.EditRatingDTO
 import quickfix.dto.rating.RatingDTO
 import quickfix.models.Rating
 import quickfix.utils.exceptions.BusinessException
@@ -45,8 +45,9 @@ class RatingService(
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun updateRating(id: Long, data: EditRating) {
-        val rating = ratingRepository.findById(id).orElseThrow { BusinessException("Rating no existe") }
+    fun updateRating(userId: Long, data: EditRatingDTO) {
+        val rating = ratingRepository.findById(data.ratingId).orElseThrow { BusinessException("Rating no existe") }
+        //TODO: Validar que el usuario pueda editar este rating
         rating.apply {
             data.score?.let { this.score = it }
             data.comment?.let { rating.comment = it }
