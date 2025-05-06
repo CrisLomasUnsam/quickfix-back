@@ -33,7 +33,7 @@ class ProfessionalController (
         professionalService.payDebt(professionalId, amount)
 
     @GetMapping("/professions/{professionalId}")
-    @Operation(summary = "Obtener los servicios brindados")
+    @Operation(summary = "Obtener los servicios que puede brindar el profesional")
     fun getProfessions(@PathVariable professionalId : Long) : List<Profession> =
         professionalService.getProfessions(professionalId)
 
