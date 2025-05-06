@@ -22,10 +22,16 @@ class ProfessionalInfo : Identifier {
 
     var hasVehicle: Boolean = false
 
-    override fun validate() {}
+    override fun validate() {
+        if (balance < 0) throw BusinessException("El saldo (balance) no puede ser negativo.")
+        if (debt < 0) throw BusinessException("La deuda (debt) no puede ser negativa.")
+    }
 
 
     fun addProfession(profession: Profession) {
+        if (professionalProfessions.any { it.profession.id == profession.id }) {
+            throw BusinessException("Ya existe la profesión con id ${profession.id}.")
+        }
         this.professionalProfessions.add(
             ProfessionalProfession().apply {
                 this.profession = profession
@@ -66,6 +72,12 @@ class ProfessionalInfo : Identifier {
     }
 
     fun addCertificate(newCertificate: Certificate) {
+        //Falta q el nombre no sea el mismo para la misma profesion
+        if (certificates.any {
+            it.name.equals(newCertificate.name, ignoreCase = true) }) {
+            throw BusinessException("Ya existe un certificado con el mismo nombre.")
+        }
+
         this.certificates.add(newCertificate)
     }
 
@@ -73,13 +85,12 @@ class ProfessionalInfo : Identifier {
         this.certificates.removeIf { certificate -> certificate.img == stringParam || certificate.name == stringParam }
     }
 
-    fun payDebt(amount: Double) {
-        if (amount <= 0.0) throw BusinessException("El monto a pagar debe ser mayor a cero.")
-        if(debt < 1) throw BusinessException("No tiene deudas pendientes")
-        if (debt < amount) throw BusinessException("No tiene suficiente plata para pagar.")
-        debt -= debt
+    fun payDebt() {
+        if (debt <= 0)  throw BusinessException("No tiene deudas pendientes.")
+        if (debt > balance) throw BusinessException("Saldo insuficiente para pagar la deuda.")
+        balance -= debt
+        debt = 0.0
     }
-
     fun validateCanBid(maxAllowedDebt: Double) {
         if (debt > maxAllowedDebt) {
             throw BusinessException(
