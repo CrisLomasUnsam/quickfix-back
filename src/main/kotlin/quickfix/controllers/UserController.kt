@@ -25,11 +25,15 @@ class UserController(
         UserDTO.toDTO(userService.getUserById(currentUserId))
 
     @GetMapping("/img")
-    fun userImg(@ModelAttribute("currentUserId") currentUserId : Long) : String =
+    fun userImg(@ModelAttribute("currentUserId") currentUserId : Long) : ByteArray =
         userService.getUserById(currentUserId).avatar
 
     @PatchMapping("/data/edit")
     fun updateUserInfo(@ModelAttribute("currentUserId") currentUserId : Long, @RequestBody modifiedInfo: UserModifiedInfoDTO) =
         userService.changeUserInfo(currentUserId, modifiedInfo)
+
+    @PatchMapping("/avatar")
+    fun updateAvatar(@ModelAttribute("currentUserId") currentUserId: Long, @RequestBody avatar: String) =
+        userService.updateAvatar(currentUserId, avatar)
 
 }
