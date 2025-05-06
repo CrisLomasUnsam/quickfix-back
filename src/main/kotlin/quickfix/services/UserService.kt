@@ -2,12 +2,14 @@ package quickfix.services
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
 import quickfix.dao.UserRepository
 import quickfix.dto.user.UserModifiedInfoDTO
 import quickfix.models.Profession
 import quickfix.models.ProfessionalInfo
 import quickfix.models.User
 import quickfix.utils.exceptions.BusinessException
+import java.util.Base64
 
 @Service
 class UserService(
@@ -39,6 +41,12 @@ class UserService(
     fun changeUserInfo(id: Long, modifiedInfo: UserModifiedInfoDTO) {
         val user = this.getUserById(id)
         user.updateUserInfo(modifiedInfo)
+    }
+    @Transactional(rollbackFor = [Exception::class])
+    fun updateAvatar(currentUserId: Long, avatarBase64: String) {
+        val user = this.getUserById(currentUserId)
+        user.avatar = Base64.getDecoder().decode(avatarBase64.trim())
+        userRepository.save(user)
     }
 
 }
