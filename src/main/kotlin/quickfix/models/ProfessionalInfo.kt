@@ -1,7 +1,9 @@
 package quickfix.models
 
 import jakarta.persistence.*
+import quickfix.utils.MAXIMUM_DEBT
 import quickfix.utils.exceptions.BusinessException
+
 
 @Entity
 @Table(name = "professionals")
@@ -22,8 +24,15 @@ class ProfessionalInfo : Identifier {
 
     var hasVehicle: Boolean = false
 
-    override fun validate() {}
-
+    override fun validate() {
+        if (balance < 0) throw BusinessException("El saldo (balance) no puede ser negativo.")
+        if (debt < 0) throw BusinessException("La deuda (debt) no puede ser negativa.")
+        certificates.forEach { cert ->
+            if (!hasProfession(cert.profession.id)) {
+                throw BusinessException("El certificado '${cert.name}' pertenece a una profesión no asignada.")
+            }
+        }
+    }
 
     fun addProfession(profession: Profession) {
         this.professionalProfessions.add(
@@ -48,8 +57,11 @@ class ProfessionalInfo : Identifier {
         profession.enable()
     }
 
+    fun hasProfession(professionId: Long): Boolean =
+        professionalProfessions.any { it.profession.id == professionId }
+
     fun hasProfessionByName(professionName: String): Boolean =
-        professionalProfessions.any { it.profession.name == professionName && it.active }
+        professionalProfessions.any { it.profession.name == professionName }
 
     fun removeProfession(professionId: Long) {
         this.professionalProfessions.removeIf{ profession -> profession.id == professionId}
@@ -57,35 +69,47 @@ class ProfessionalInfo : Identifier {
     }
 
     private fun deleteAllCertificates(professionId: Long) {
-        this.certificates.removeIf { cert -> cert.profession.id == professionId }
+        this.certificates.removeIf { it.profession.id == professionId }
     }
 
     fun validateCertificateAlreadyExists(newCertificateName: String) {
-        if(certificates.any { certificate -> certificate.name == newCertificateName })
+        if(certificates.any { it.name == newCertificateName })
             throw BusinessException("Ya tiene un certificado con el mismo nombre.")
     }
 
     fun addCertificate(newCertificate: Certificate) {
+        if (!hasProfession(newCertificate.profession.id)) {
+            throw BusinessException("No se puede agregar un certificado para una profesión no asignada.")
+        }
+        validateCertificateAlreadyExists(newCertificate.name)
         this.certificates.add(newCertificate)
     }
 
-    fun deleteCertificate(stringParam: String) {
-        this.certificates.removeIf { certificate -> certificate.img == stringParam || certificate.name == stringParam }
+    fun deleteCertificate(certificateName: String) {
+        val cert= certificates.find { it.name == certificateName }
+            ?: throw  BusinessException("no existe un certificado con ese nombre.")
+        if (!hasProfession(cert.profession.id)) {
+            throw BusinessException("No se puede eliminar un certificado de una profesión no asignada.")
+        }
+        this.certificates.removeIf { it.name == certificateName }
     }
 
-    fun payDebt(amount: Double) {
-        if (amount <= 0.0) throw BusinessException("El monto a pagar debe ser mayor a cero.")
-        if(debt < 1) throw BusinessException("No tiene deudas pendientes")
-        if (debt < amount) throw BusinessException("No tiene suficiente plata para pagar.")
-        debt -= debt
-    }
-
-    fun validateCanBid(maxAllowedDebt: Double) {
-        if (debt > maxAllowedDebt) {
-            throw BusinessException(
-                "No puede ofertar: su deuda (${debt}) supera el máximo permitido ($maxAllowedDebt)."
-            )
+    fun canOfferJob() {
+        if (this.debt >= MAXIMUM_DEBT) {
+            throw BusinessException("No puede ofertar trabajos con una deuda igual o superior a $MAXIMUM_DEBT.")
         }
     }
 
+    fun validateCanBid(maxAllowedDebt: Double) {
+        if (debt > maxAllowedDebt)
+            throw BusinessException("No puede ofertar: su deuda (${debt}) supera el máximo permitido ($maxAllowedDebt).")
+    }
+
+    fun payDebt() {
+        if (balance < debt)
+            throw BusinessException("No es posible pagar la deuda de $debt con el saldo disponible de $balance.")
+
+        balance -= debt
+        debt = 0.0
+    }
 }
