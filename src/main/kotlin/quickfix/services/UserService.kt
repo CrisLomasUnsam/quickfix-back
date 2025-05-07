@@ -17,6 +17,9 @@ class UserService(
     fun getUserById(id: Long): User =
         userRepository.findById(id).orElseThrow{ BusinessException("Usuario no encontrado $id") }
 
+    fun getUserByMail(mail: String): User =
+        userRepository.findByMail(mail).orElseThrow{ BusinessException("Usuario no encontrado $mail") }
+
     fun assertUserExists(id: Long) {
         if (!userRepository.existsById(id))
             throw BusinessException("Usuario no encontrado: $id")
@@ -25,8 +28,12 @@ class UserService(
     fun getProfessionalInfo(userId: Long) : ProfessionalInfo =
         userRepository.findUserWithProfessionalInfoById(userId).orElseThrow{ BusinessException() }.professionalInfo
 
-    fun getProfessionsByUserId(id: Long): Set<Profession> =
-        userRepository.findUserProfessionsById(id).orElseThrow { BusinessException() }.professionalInfo.professions
+    fun getActiveProfessionsByUserId(id: Long): Set<Profession> =
+        getProfessionalInfo(id)
+            .professionalProfessions
+            .filter { it.active }
+            .map { it.profession }
+            .toSet()
 
     @Transactional(rollbackFor = [Exception::class])
     fun changeUserInfo(id: Long, modifiedInfo: UserModifiedInfoDTO) {

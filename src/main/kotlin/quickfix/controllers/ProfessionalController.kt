@@ -27,8 +27,13 @@ class ProfessionalController (
     fun getTotalEarnings(@PathVariable professionalId : Long, @RequestParam dateStr: String) : Double =
         professionalService.getTotalEarningsByDate(professionalId, dateStr)
 
+    @PatchMapping("/finances/payDebt/{professionalId}")
+    @Operation(summary = "Pagar deuda")
+    fun payDebt(@PathVariable professionalId : Long, @RequestBody amount: Double) =
+        professionalService.payDebt(professionalId, amount)
+
     @GetMapping("/professions/{professionalId}")
-    @Operation(summary = "Obtener los servicios brindados")
+    @Operation(summary = "Obtener los servicios que puede brindar el profesional")
     fun getProfessions(@PathVariable professionalId : Long) : List<Profession> =
         professionalService.getProfessions(professionalId)
 
@@ -55,6 +60,6 @@ class ProfessionalController (
 
     @DeleteMapping("/certificates/{professionalId}")
     @Operation(summary = "Borrar un certificado")
-    fun deleteCertificate(@PathVariable professionalId : Long, @Parameter(description = "Path de la imagen") @RequestBody imgPath: String) =
-        professionalService.deleteCertificate(professionalId, imgPath.trim())
+    fun deleteCertificate(@PathVariable professionalId : Long, @Parameter(description = "Imagen o nombre del cert") @RequestBody certificateNameOrImg: String) =
+        professionalService.deleteCertificate(professionalId, certificateNameOrImg.trim())
 }

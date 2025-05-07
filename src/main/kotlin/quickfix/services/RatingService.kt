@@ -1,9 +1,11 @@
 package quickfix.services
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.RatingRepository
-import quickfix.dto.rating.EditRating
+import quickfix.dto.rating.EditRatingDTO
 import quickfix.dto.rating.RatingDTO
 import quickfix.models.Rating
 import quickfix.utils.exceptions.BusinessException
@@ -16,12 +18,12 @@ class RatingService(
     val jobService: JobService
 ) {
 
-    fun findRatingsReceivedByUser(userId: Long): List<Rating> {
-        return ratingRepository.findByUserToId(userId).orElseThrow{ BusinessException("Usuario no existe") }
+    fun findRatingsReceivedByUser(userId: Long, pageable: Pageable): Page<Rating> {
+        return ratingRepository.findAllByUserToId(userId, pageable)
     }
 
     fun findRatingsMadeByUser(userId: Long): List<Rating> {
-        return ratingRepository.findByUserFromId(userId).orElseThrow { BusinessException("Usuario no existe") }
+        return ratingRepository.findAllByUserFromId(userId)
     }
 
     @Transactional(rollbackFor = [Exception::class])
@@ -43,8 +45,9 @@ class RatingService(
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun updateRating(id: Long, data: EditRating) {
-        val rating = ratingRepository.findById(id).orElseThrow { BusinessException("Rating no existe") }
+    fun updateRating(userId: Long, data: EditRatingDTO) {
+        val rating = ratingRepository.findById(data.ratingId).orElseThrow { BusinessException("Rating no existe") }
+        //TODO: Validar que el usuario pueda editar este rating
         rating.apply {
             data.score?.let { this.score = it }
             data.comment?.let { rating.comment = it }

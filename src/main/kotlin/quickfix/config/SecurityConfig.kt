@@ -13,11 +13,12 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+import quickfix.models.Role
 import quickfix.security.JwtAuthFilter
 import quickfix.utils.FRONTEND_URL
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository
-import quickfix.security.CsrfTokenRequestHandler
-import quickfix.security.Roles
+
+//import org.springframework.security.web.csrf.CookieCsrfTokenRepository
+//import quickfix.security.CsrfTokenRequestHandler
 
 @Configuration
 class SecurityConfig {
@@ -35,7 +36,7 @@ class SecurityConfig {
                 registry.addMapping("/**")
                     .allowedOrigins(FRONTEND_URL)
                     .allowedHeaders("*")
-                    .allowedMethods("POST", "GET","PATCH", "DELETE")
+                    .allowedMethods("POST", "GET","PATCH", "DELETE", "PUT")
                     .allowCredentials(true)
             }
         }
@@ -45,39 +46,49 @@ class SecurityConfig {
     fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
         return httpSecurity
             .cors { it.disable() }
-            .csrf {
-                it.ignoringRequestMatchers(
-                    "/quickfix-api/v1/**",
-                    "/quickfix-api/swagger-config/**",
-                    "/swagger",
-                    "/swagger-ui/**",
-                    "/v3/api-docs/**",
-                    "/swagger-resources/**",
-                    "/registration",
-                    "registration/confirm",
-                    "/login"
-                    )
-                it.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                it.csrfTokenRequestHandler(CsrfTokenRequestHandler())
-                }
+            .csrf { it.disable() }
             .authorizeHttpRequests {
                 it.requestMatchers(
-                    "/quickfix-api/v1/**",
-                    "/quickfix-api/swagger-config/**",
+                    "/quickfix-api/**",
                     "/swagger",
                     "/swagger-ui/**",
-                    "/v3/api-docs/**",
-                    "/swagger-resources/**",
                     "/registration",
                     "/registration/confirm",
-                    "/login",
+                    "/login/**",
                     ).permitAll()
+
                 it.requestMatchers(HttpMethod.OPTIONS).permitAll()
-                it.requestMatchers(HttpMethod.POST, "/user/**","/professional/**","/rating/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
-                it.requestMatchers(HttpMethod.PATCH, "/user/**","/rating/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
-                it.requestMatchers(HttpMethod.DELETE, "/user/**","/professional/**").hasAnyAuthority(Roles.ADMIN.name,Roles.CUSTOMER.name,Roles.PROFESSIONAL.name)
+
+                it.requestMatchers(HttpMethod.POST, "/chat").hasAnyAuthority(Role.CUSTOMER.name,Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.GET, "/chat/**").hasAnyAuthority(Role.CUSTOMER.name,Role.PROFESSIONAL.name)
+
+                it.requestMatchers(HttpMethod.GET, "/job/customer").hasAuthority(Role.CUSTOMER.name)
+                it.requestMatchers(HttpMethod.GET, "/job/professional").hasAuthority(Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.PATCH, "/job/complete/**", "/job/cancel/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.GET, "/job/requestedJobs").hasAuthority(Role.CUSTOMER.name)
+                it.requestMatchers(HttpMethod.GET, "/job/offeredJobs").hasAuthority(Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.GET, "/job/jobOffers").hasAuthority(Role.CUSTOMER.name)
+                it.requestMatchers(HttpMethod.POST, "/job/jobOffers").hasAuthority(Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.DELETE, "/job/jobOffers").hasAuthority(Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.POST, "/job/acceptJobOffer").hasAuthority(Role.CUSTOMER.name)
+                it.requestMatchers(HttpMethod.GET, "/job/jobRequests").hasAuthority(Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.POST, "/job/requestJob").hasAuthority(Role.CUSTOMER.name)
+                it.requestMatchers(HttpMethod.DELETE, "/job/requestJob").hasAuthority(Role.CUSTOMER.name)
+
+                it.requestMatchers(HttpMethod.GET, "/professional/**").hasAuthority(Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.POST, "/professional/**").hasAuthority(Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.PATCH, "/professional/**").hasAuthority(Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.DELETE, "/professional/**").hasAuthority(Role.PROFESSIONAL.name)
+
+                it.requestMatchers(HttpMethod.GET, "/rating/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.POST, "/rating/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.PATCH, "/rating/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
+
+                it.requestMatchers(HttpMethod.GET, "/user/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.PATCH, "/user/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
+
                 it.anyRequest().authenticated()
-                }
+            }
             .httpBasic(
                 Customizer.withDefaults())
             .sessionManagement {

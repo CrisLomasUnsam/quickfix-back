@@ -1,5 +1,6 @@
 package quickfix.dao
 
+import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param
@@ -8,7 +9,7 @@ import quickfix.models.Job
 import quickfix.models.Rating
 
 @Component
-interface JobRepository : CrudRepository<Job, Long> {
+interface JobRepository : JpaRepository<Job, Long> {
 
     fun findAllByCustomerId(customerId: Long): List<Job>
 
@@ -39,10 +40,11 @@ interface JobRepository : CrudRepository<Job, Long> {
     fun findRatingsByCustomerId(@Param("userToId") userToId: Long): List<Rating>
 
     @Query(value = """
-        select r.* from ratings r
-        join jobs j on j.id = r.job_id
-        where r.user_to_id = :userToId and j.professional_id = :userToId
+        SELECT r.score as score FROM ratings r
+        JOIN jobs j ON j.id = r.job_id
+        WHERE r.user_to_id = :userToId AND j.professional_id = :userToId
     """, nativeQuery = true)
     fun findRatingsByProfessionalId(@Param("userToId") userToId: Long): List<Rating>
 
 }
+

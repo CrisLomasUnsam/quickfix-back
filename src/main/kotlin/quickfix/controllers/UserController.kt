@@ -1,6 +1,7 @@
 package quickfix.controllers
 
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import quickfix.dto.user.UserDTO
 import quickfix.dto.user.UserModifiedInfoDTO
@@ -13,16 +14,22 @@ class UserController(
     val userService: UserService
 ) {
 
-    @GetMapping("/data/{id}")
-    fun userInfo(@PathVariable id: Long) : UserDTO =
-        UserDTO.toDTO(userService.getUserById(id))
+    @ModelAttribute("currentUserId")
+    fun getCurrentUserId(): Long {
+        val usernamePAT = SecurityContextHolder.getContext().authentication
+        return usernamePAT.principal.toString().toLong()
+    }
 
-    @GetMapping("/img/{id}")
-    fun userImg(@PathVariable id: Long) : String =
-        userService.getUserById(id).avatar
+    @GetMapping("/data")
+    fun userInfo(@ModelAttribute("currentUserId") currentUserId : Long) : UserDTO =
+        UserDTO.toDTO(userService.getUserById(currentUserId))
 
-    @PatchMapping("/data/edit/{id}")
-    fun updateUserInfo(@PathVariable id: Long, @RequestBody modifiedInfo: UserModifiedInfoDTO) =
-        userService.changeUserInfo(id,modifiedInfo)
+    @GetMapping("/img")
+    fun userImg(@ModelAttribute("currentUserId") currentUserId : Long) : String =
+        userService.getUserById(currentUserId).avatar
+
+    @PatchMapping("/data/edit")
+    fun updateUserInfo(@ModelAttribute("currentUserId") currentUserId : Long, @RequestBody modifiedInfo: UserModifiedInfoDTO) =
+        userService.changeUserInfo(currentUserId, modifiedInfo)
 
 }

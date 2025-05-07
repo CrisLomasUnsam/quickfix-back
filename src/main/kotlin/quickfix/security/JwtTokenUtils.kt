@@ -25,17 +25,17 @@ class JwtTokenUtils {
 
     val logger: Logger = LoggerFactory.getLogger(JwtTokenUtils::class.java)
 
-    fun createToken(mail: String, roles: List<String>): String? {
+    fun createToken(id: Long, rol: String): String? {
         val longExpirationTime = accessTokenMinutes.minutes.inWholeMilliseconds
 
         val now = Date()
 
         return Jwts
             .builder()
-            .subject(mail)
+            .subject(id.toString())
             .issuedAt(now)
             .expiration(Date(now.time + longExpirationTime))
-            .claim("roles", roles)
+            .claim("rol", rol)
             .signWith(Keys.hmacShaKeyFor(secretKey.toByteArray()))
             .compact()
     }
@@ -54,15 +54,13 @@ class JwtTokenUtils {
                 throw InvalidCredentialsException()
             }
 
-            logger.info("Token decoded, user: " + claims.subject + " - roles: " + claims["roles"])
+            logger.info("Token decoded, user: " + claims.subject + " - rol: " + claims["rol"])
 
-            val roles = (claims["roles"] as List<*>).map { SimpleGrantedAuthority(it.toString()) }
-            return UsernamePasswordAuthenticationToken(claims.subject, null, roles)
+            val rol = SimpleGrantedAuthority(claims["rol"] as String)
+            return UsernamePasswordAuthenticationToken(claims.subject, null, setOf(rol))
 
         } catch (expiredJwtException: ExpiredJwtException) {
-
             throw ExpiredTokenException("Sesión vencida")
-
         }
     }
 }

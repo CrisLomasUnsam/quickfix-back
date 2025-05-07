@@ -1,14 +1,10 @@
 package quickfix.bootstrap
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import quickfix.dao.*
 import quickfix.models.*
-import quickfix.security.Roles
 import quickfix.services.AddressService
 import quickfix.services.ProfessionService
 import quickfix.utils.dataInitializer.Professions
@@ -16,12 +12,6 @@ import java.time.LocalDate
 
 @Service
 class DataInitializer : InitializingBean {
-
-    @Autowired
-    private lateinit var passwordEncoder: PasswordEncoder
-
-    @Autowired
-    private lateinit var roleRepository: RoleRepository
 
     @Autowired
     private lateinit var addressService: AddressService
@@ -43,8 +33,6 @@ class DataInitializer : InitializingBean {
 
     @Autowired
     private lateinit var addressRepository: AddressRepository
-
-    val logger: Logger = LoggerFactory.getLogger(DataInitializer::class.java)
 
     private lateinit var address1: Address
     private lateinit var address2: Address
@@ -94,7 +82,6 @@ class DataInitializer : InitializingBean {
         if (userRepository.count() != 0L) {
             println("DIRTY REPO !!!!!!!")
             userRepository.deleteAll()
-            //registerUsers()
             initUsers()
             initJobs()
             initRatings()
@@ -106,19 +93,6 @@ class DataInitializer : InitializingBean {
             initRatings()
         }
         println("************** Data Initialization Complete **************")
-    }
-
-    private fun createRole(roleName: String): Rol {
-        val rol = roleRepository.findByName(roleName)
-        if (rol.isEmpty) {
-            logger.info("Creando rol $roleName")
-            return roleRepository.save(Rol().apply {
-                name = roleName
-            })
-        } else {
-            logger.info("Rol $roleName ya existe")
-            return rol.get()
-        }
     }
 
     fun loadAddresses() {
@@ -160,42 +134,37 @@ class DataInitializer : InitializingBean {
 
     fun initProfessionalInfos() {
         professionalInfo1 = ProfessionalInfo().apply {
-            professions = mutableSetOf(electricista, gasista)
+            addProfession(electricista)
+            addProfession(gasista)
             certificates = mutableSetOf(certificateElectricista1, certificateGasista)
             balance = 0.0
             debt = 200.0
         }
         professionalInfo2 = ProfessionalInfo().apply {
-            professions = mutableSetOf(electricista, jardinero)
+            addProfession(electricista)
+            addProfession(jardinero)
             certificates = mutableSetOf(certificateJardinero)
             balance = 500.0
             debt = 50.0
         }
         professionalInfo3 = ProfessionalInfo().apply {
-            professions = mutableSetOf(jardinero, gasista)
+            addProfession(jardinero)
+            addProfession(gasista)
             certificates = mutableSetOf(certificateJardinero2, certificateGasista2)
             balance = 750.0
             debt = 100.0
         }
     }
 
-    private fun createUser(user: User, rol: Rol) {
+    private fun createUser(user: User) {
         val exists = userRepository.findByDni(user.dni)
         if (exists != null) {
             user.id = exists.id
         }
-        userRepository.save(user.apply {
-            this.password = passwordEncoder.encode(user.password)
-            addRole(rol)
-        })
+        userRepository.save(user)
     }
 
     fun initUsers() {
-
-        val admin = createRole(Roles.ADMIN.name)
-        val readonly = createRole(Roles.READONLY.name)
-        val customer = createRole(Roles.CUSTOMER.name)
-        val professional = createRole(Roles.PROFESSIONAL.name)
 
         address1 = addressService.getAddressByZipCode("1000")
 
@@ -203,7 +172,6 @@ class DataInitializer : InitializingBean {
             mail = "valen@example.com"
             name = "Valentina"
             lastName = "Gomez"
-            password = "dummyPassword"
             dni = 12345678
             avatar = "imgValen1"
             dateBirth = LocalDate.of(1995, 5, 23)
@@ -211,9 +179,10 @@ class DataInitializer : InitializingBean {
             address = address1
             verified = true
             professionalInfo = professionalInfo1
+            setNewPassword("password")
         }
 
-        createUser(professional1, professional)
+        createUser(professional1)
 
         address2 = addressService.getAddressByZipCode("1001")
 
@@ -221,7 +190,6 @@ class DataInitializer : InitializingBean {
             mail = "cris@example.com"
             name = "Cristina"
             lastName = "Palacios"
-            password = "dummyPassword"
             dni = 12345679
             avatar = "imgCris2"
             dateBirth = LocalDate.of(1995, 5, 23)
@@ -229,9 +197,10 @@ class DataInitializer : InitializingBean {
             address = address2
             verified = true
             professionalInfo = professionalInfo2
+            setNewPassword("password")
         }
 
-        createUser(professional2, professional)
+        createUser(professional2)
 
         address3 = addressService.getAddressByZipCode("1002")
 
@@ -239,7 +208,6 @@ class DataInitializer : InitializingBean {
             mail = "tomi@example.com"
             name = "Tomaso"
             lastName = "Perez"
-            password = "dummyPassword"
             dni = 12345671
             avatar = "imgTomi3"
             dateBirth = LocalDate.of(1995, 5, 23)
@@ -247,9 +215,10 @@ class DataInitializer : InitializingBean {
             address = address3
             verified = true
             professionalInfo = professionalInfo3
+            setNewPassword("password")
         }
 
-        createUser(professional3, professional)
+        createUser(professional3)
 
         address4 = addressService.getAddressByZipCode("1003")
 
@@ -257,16 +226,16 @@ class DataInitializer : InitializingBean {
             mail = "customer1@example.com"
             name = "Juan"
             lastName = "Contardo"
-            password = "dummyPassword"
             dni = 12345672
             avatar = "imgJuan4"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.MALE
             address = address4
             verified = true
+            setNewPassword("password")
         }
 
-        createUser(customer1, customer)
+        createUser(customer1)
 
         address5 = addressService.getAddressByZipCode("1004")
 
@@ -274,16 +243,16 @@ class DataInitializer : InitializingBean {
             mail = "customer2@example.com"
             name = "Rodrigo"
             lastName = "Bueno"
-            password = "dummyPassword"
             dni = 12345673
             avatar = "imgRodri5"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.OTHER
             address = address5
             verified = true
+            setNewPassword("password")
         }
 
-        createUser(customer2, customer)
+        createUser(customer2)
 
         address6 = addressService.getAddressByZipCode("1005")
 
@@ -291,16 +260,16 @@ class DataInitializer : InitializingBean {
             mail = "customer3@example.com"
             name = "Fer"
             lastName = "Dodino"
-            password = "dummyPassword"
             dni = 12345674
             avatar = "imgFer6"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.FEMALE
             address = address6
             verified = true
+            setNewPassword("password")
         }
 
-        createUser(customer3, customer)
+        createUser(customer3)
     }
 
     fun initJobs() {
