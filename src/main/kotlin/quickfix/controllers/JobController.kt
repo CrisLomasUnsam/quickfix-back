@@ -2,6 +2,9 @@ package quickfix.controllers
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import quickfix.dto.job.JobDTO
@@ -37,13 +40,17 @@ class JobController(
 
     @GetMapping("/customer")
     @Operation(summary = "Obtiene todos los servicios pedidos por un usuario")
-    fun findJobsByCustomerId(@ModelAttribute("currentCustomerId") currentCustomerId : Long) : List<Job> =
-        jobService.findJobsByCustomerId(currentCustomerId)
+    fun findJobsByCustomerId(@ModelAttribute("currentCustomerId") currentCustomerId : Long,
+                             @RequestParam("q", required = false) filter: String?,
+                             @PageableDefault(page = 0, size = 10) pageable: Pageable
+    ) : Page<JobDTO> = jobService.findJobsByCustomerId(currentCustomerId, pageable).map{ job -> toDto(job)  }
 
     @GetMapping("/professional")
     @Operation(summary = "Obtiene todos los servicios realizados por un profesional")
-    fun findJobsByProfessionalId(@ModelAttribute("currentProfessionalId") currentProfessionalId : Long) : List<Job> =
-        jobService.findJobsByProfessionalId(currentProfessionalId)
+    fun findJobsByProfessionalId(@ModelAttribute("currentProfessionalId") currentProfessionalId : Long,
+                                 @RequestParam("q", required = false) filter: String?,
+                                 @PageableDefault(page = 0, size = 10) pageable: Pageable
+    ): Page<JobDTO> = jobService.findJobsByProfessionalId(currentProfessionalId, pageable).map{ job -> toDto(job)  }
 
     @PatchMapping("/complete/{id}")
     fun setJobAsDone(@PathVariable id: Long) = jobService.setJobAsDone(id)
