@@ -7,6 +7,7 @@ data class PageDTO<T>(
     var first: Boolean,
     var last: Boolean,
     var empty: Boolean,
+    var currentPage: Int,
     var totalPages: Int
 ) {
     companion object{
@@ -16,6 +17,7 @@ data class PageDTO<T>(
                 first = page.isFirst,
                 last = page.isLast,
                 empty = page.isEmpty,
+                currentPage = page.number,
                 totalPages = page.totalPages
             )
         }
