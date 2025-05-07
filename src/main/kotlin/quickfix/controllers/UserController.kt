@@ -36,7 +36,9 @@ class UserController(
     @PatchMapping("/avatar")
     fun updateAvatar(@ModelAttribute("currentUserId") currentUserId: Long, @RequestParam("file") file: MultipartFile) =
         userService.updateAvatar(currentUserId, file)
+        
     @GetMapping("/avatar")
-    fun getAvatar(@ModelAttribute("currentUserId") currentUserId: Long) = userService.getAvatar(currentUserId)
+    fun getAvatar(@ModelAttribute("currentUserId") currentUserId: Long) = 
+        userService.getAvatar(currentUserId)
 
 }
