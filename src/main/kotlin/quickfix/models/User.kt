@@ -34,6 +34,8 @@ class User : Identifier {
     lateinit var mail: String
     lateinit var name : String
     lateinit var lastName : String
+
+    @Lob
     lateinit var avatar: ByteArray
     lateinit var dateBirth : LocalDate
     var verified : Boolean = false
