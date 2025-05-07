@@ -2,6 +2,7 @@ package quickfix.dto.professional
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import quickfix.models.User
 
 data class ProfessionalDTO @JsonCreator constructor(
     @JsonProperty("id")             var id: Long,
@@ -13,7 +14,7 @@ data class ProfessionalDTO @JsonCreator constructor(
 ){
     companion object {
 
-        fun fromUser(user: quickfix.models.User, averageRating: Double): ProfessionalDTO {
+        fun fromUser(user: User, averageRating: Double): ProfessionalDTO {
            return ProfessionalDTO(
                 id = user.id,
                 name = user.name,
