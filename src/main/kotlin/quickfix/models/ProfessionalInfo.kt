@@ -25,8 +25,10 @@ class ProfessionalInfo : Identifier {
     var hasVehicle: Boolean = false
 
     override fun validate() {
-        if (balance < 0) throw BusinessException("El saldo (balance) no puede ser negativo.")
+
+    if (balance < 0) throw BusinessException("El saldo (balance) no puede ser negativo.")
         if (debt < 0) throw BusinessException("La deuda (debt) no puede ser negativa.")
+
         certificates.forEach { cert ->
             if (!hasProfession(cert.profession.id)) {
                 throw BusinessException("El certificado '${cert.name}' pertenece a una profesión no asignada.")
@@ -35,6 +37,9 @@ class ProfessionalInfo : Identifier {
     }
 
     fun addProfession(profession: Profession) {
+        if (professionalProfessions.any { it.profession.id == profession.id }) {
+            throw BusinessException("Ya existe la profesión con id ${profession.id}.")
+        }
         this.professionalProfessions.add(
             ProfessionalProfession().apply {
                 this.profession = profession
@@ -57,7 +62,7 @@ class ProfessionalInfo : Identifier {
         profession.enable()
     }
 
-    fun hasProfession(professionId: Long): Boolean =
+    private fun hasProfession(professionId: Long): Boolean =
         professionalProfessions.any { it.profession.id == professionId }
 
     fun hasProfessionByName(professionName: String): Boolean =
@@ -78,6 +83,12 @@ class ProfessionalInfo : Identifier {
     }
 
     fun addCertificate(newCertificate: Certificate) {
+        //Falta q el nombre no sea el mismo para la misma profesion
+        if (certificates.any {
+            it.name.equals(newCertificate.name, ignoreCase = true) }) {
+            throw BusinessException("Ya existe un certificado con el mismo nombre.")
+        }
+
         if (!hasProfession(newCertificate.profession.id)) {
             throw BusinessException("No se puede agregar un certificado para una profesión no asignada.")
         }
@@ -88,28 +99,25 @@ class ProfessionalInfo : Identifier {
     fun deleteCertificate(certificateName: String) {
         val cert= certificates.find { it.name == certificateName }
             ?: throw  BusinessException("no existe un certificado con ese nombre.")
-        if (!hasProfession(cert.profession.id)) {
+
+        if (!hasProfession(cert.profession.id))
             throw BusinessException("No se puede eliminar un certificado de una profesión no asignada.")
-        }
+
         this.certificates.removeIf { it.name == certificateName }
     }
 
-    fun canOfferJob() {
+    fun payDebt() {
+        if (debt <= 0)  throw BusinessException("No tiene deudas pendientes.")
+        if (debt > balance) throw BusinessException("Saldo insuficiente para pagar la deuda.")
+        balance -= debt
+        debt = 0.0
+    }
+
+
+    fun validateCanOfferJob() {
         if (this.debt >= MAXIMUM_DEBT) {
             throw BusinessException("No puede ofertar trabajos con una deuda igual o superior a $MAXIMUM_DEBT.")
         }
     }
 
-    fun validateCanBid(maxAllowedDebt: Double) {
-        if (debt > maxAllowedDebt)
-            throw BusinessException("No puede ofertar: su deuda (${debt}) supera el máximo permitido ($maxAllowedDebt).")
-    }
-
-    fun payDebt() {
-        if (balance < debt)
-            throw BusinessException("No es posible pagar la deuda de $debt con el saldo disponible de $balance.")
-
-        balance -= debt
-        debt = 0.0
-    }
 }
