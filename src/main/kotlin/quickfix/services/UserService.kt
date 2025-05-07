@@ -43,10 +43,9 @@ class UserService(
         user.updateUserInfo(modifiedInfo)
     }
     @Transactional(rollbackFor = [Exception::class])
-    fun updateAvatar(currentUserId: Long, avatarBase64: String) {
+    fun updateAvatar(currentUserId: Long, file: MultipartFile) {
         val user = this.getUserById(currentUserId)
-        user.avatar = Base64.getDecoder().decode(avatarBase64.trim())
-        userRepository.save(user)
+        user.avatar = file.bytes
     }
-
+    fun getAvatar(userId: Long): ByteArray = this.getUserById(userId).avatar
 }
