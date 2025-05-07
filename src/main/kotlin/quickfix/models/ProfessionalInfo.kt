@@ -57,6 +57,9 @@ class ProfessionalInfo : Identifier {
         profession.enable()
     }
 
+    fun hasProfession(professionId: Long): Boolean =
+        professionalProfessions.any { it.profession.id == professionId }
+
     fun hasProfessionByName(professionName: String): Boolean =
         professionalProfessions.any { it.profession.name == professionName }
 
@@ -91,22 +94,21 @@ class ProfessionalInfo : Identifier {
         this.certificates.removeIf { it.name == certificateName }
     }
 
-    fun canOfferJob(){
+    fun canOfferJob() {
         if (this.debt >= MAXIMUM_DEBT) {
             throw BusinessException("No puede ofertar trabajos con una deuda igual o superior a $MAXIMUM_DEBT.")
-
-    fun validateCanBid(maxAllowedDebt: Double) {
-        if (debt > maxAllowedDebt) {
-            throw BusinessException(
-                "No puede ofertar: su deuda (${debt}) supera el máximo permitido ($maxAllowedDebt)."
-            )
         }
     }
 
-    fun payDebt(){
-        if (balance < debt) {
+    fun validateCanBid(maxAllowedDebt: Double) {
+        if (debt > maxAllowedDebt)
+            throw BusinessException("No puede ofertar: su deuda (${debt}) supera el máximo permitido ($maxAllowedDebt).")
+    }
+
+    fun payDebt() {
+        if (balance < debt)
             throw BusinessException("No es posible pagar la deuda de $debt con el saldo disponible de $balance.")
-        }
+
         balance -= debt
         debt = 0.0
     }
