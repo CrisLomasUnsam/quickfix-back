@@ -1,5 +1,7 @@
 package quickfix.services
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.JobRepository
@@ -32,11 +34,12 @@ class JobService(
     fun getJobById(id: Long): Job =
         jobRepository.findById(id).orElseThrow { throw BusinessException() }
 
-    fun findJobsByCustomerId(id: Long): List<Job> =
-        jobRepository.findAllByCustomerId(id)
+    fun findJobsByCustomerId(id: Long, pageable: Pageable): Page<Job> =
+        jobRepository.findAllByCustomerId(id, pageable)
 
-    fun findJobsByProfessionalId(id: Long): List<Job> =
-        jobRepository.findAllByProfessionalId(id)
+
+    fun findJobsByProfessionalId(id: Long, pageable: Pageable): Page<Job> =
+        jobRepository.findAllByProfessionalId(id, pageable)
 
     @Transactional(rollbackFor = [Exception::class])
     fun setJobAsDone(id: Long) =
