@@ -81,12 +81,18 @@ class User : Identifier {
             ?.takeIf { it.isNotBlank() }
             ?.let { Gender.fromName(it) }
             ?.let { this.gender = it }
-
         modifiedInfoDTO.address
-            ?.takeIf { it.street?.isNotBlank() == true || it.city?.isNotBlank() == true || it.zipCode?.isNotBlank() == true }
+            ?.takeIf {
+                it.street?.isNotBlank() == true ||
+                it.optional?.isNotBlank() == true ||
+                it.zipCode?.isNotBlank() == true ||
+                it.state?.isNotBlank() == true ||
+                it.city?.isNotBlank() == true
+            }
             ?.let { addressDTO ->
                 this.address.updateAddressInfo(addressDTO)
             }
+
     }
 
     private fun getDefaultEncoder(): PasswordEncoder =
