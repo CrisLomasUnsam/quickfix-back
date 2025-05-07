@@ -25,7 +25,6 @@ class ProfessionalInfo : Identifier {
     override fun validate() {
         if (balance < 0) throw BusinessException("El saldo (balance) no puede ser negativo.")
         if (debt < 0) throw BusinessException("La deuda (debt) no puede ser negativa.")
-        if(debt > balance)throw BusinessException("la deuda no puede superar el saldo disponible.")
         certificates.forEach { cert ->
             if (!hasProfession(cert.profession.id)) {
                 throw BusinessException("El certificado '${cert.name}' pertenece a una profesión no asignada.")
