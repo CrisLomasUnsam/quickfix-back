@@ -12,7 +12,6 @@ class RegisterRequestDTO (
     var lastName: String,
     var rawPassword: String,
     var dni: Int,
-    var avatar: String,
     var dateBirth: String,
     var gender: Gender,
     var address: Address,
@@ -27,7 +26,6 @@ fun RegisterRequestDTO.toUser() : User {
         name = request.name.trim()
         lastName = request.lastName.trim()
         dni = request.dni
-        avatar =  Base64.getDecoder().decode(request.avatar.trim())
         dateBirth = datifyStringWithDay(request.dateBirth)
         gender = request.gender
         address = request.address
