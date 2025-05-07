@@ -95,8 +95,8 @@ class ProfessionalService(
     }
 
     @Transactional
-    fun payDebt(professionalId: Long, amount: Double) {
+    fun payDebt(professionalId: Long) {
         val professional = userService.getUserById(professionalId).professionalInfo
-        professional.payDebt(amount)
+        professional.payDebt()
     }
 }

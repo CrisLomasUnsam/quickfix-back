@@ -103,7 +103,7 @@ class JobService(
 
     fun offerJob(jobOffer : CreateJobOfferDTO) {
         val professional = userService.getUserById(jobOffer.professionalId).professionalInfo
-        professional.validateCanBid(MAX_DEBT_ALLOWED)
+        professional.validateCanOfferJob()
         redisService.offerJob(jobOffer)
     }
 
