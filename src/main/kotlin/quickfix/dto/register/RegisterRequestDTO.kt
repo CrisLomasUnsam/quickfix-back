@@ -1,5 +1,6 @@
 package quickfix.dto.register
 
+import quickfix.dto.address.AddressDTO
 import quickfix.models.Address
 import quickfix.models.Gender
 import quickfix.models.User
@@ -14,7 +15,7 @@ class RegisterRequestDTO (
     var avatar: String,
     var dateBirth: String,
     var gender: Gender,
-    var address: Address,
+    var address: AddressDTO,
 )
 
 fun RegisterRequestDTO.toUser() : User {
@@ -27,7 +28,13 @@ fun RegisterRequestDTO.toUser() : User {
         avatar = request.avatar.trim()
         dateBirth = datifyStringWithDay(request.dateBirth)
         gender = request.gender
-        address = request.address
+        address = Address().apply {
+            street = request.address.street!!
+            optional = request.address.optional!!
+            zipCode = request.address.zipCode!!
+            state = request.address.state!!
+            city = request.address.city!!
+        }
         setNewPassword(request.rawPassword.trim())
     }.apply {
         validate()
