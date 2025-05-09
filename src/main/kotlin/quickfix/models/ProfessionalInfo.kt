@@ -60,9 +60,9 @@ class ProfessionalInfo : Identifier {
         this.certificates.removeIf { cert -> cert.profession.id == professionId }
     }
 
-    fun validateCertificateAlreadyExists(newCertificateName: String) {
-        if(certificates.any { certificate -> certificate.name == newCertificateName })
-            throw BusinessException("Ya tiene un certificado con el mismo nombre.")
+    fun validateCertificateAlreadyExists(newCertificateName: String, profession: Profession) {
+        if (certificates.any { certificate -> certificate.name.lowercase().replace(" ","") == newCertificateName.lowercase().replace(" ","") && certificate.profession == profession })
+            throw BusinessException("Ya tiene un certificado con el mismo nombre en la profesión ${profession.name}.")
     }
 
     fun addCertificate(newCertificate: Certificate) {
