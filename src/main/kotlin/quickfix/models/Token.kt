@@ -15,7 +15,9 @@ class Token: Identifier {
     @JoinColumn(nullable = false)
     lateinit var user: User
 
-    private lateinit var token: String
+    @Column(name = "token")
+    lateinit var value: String
+
     var expiryDate: LocalDateTime = LocalDateTime.now().plusMinutes(60)
 
     override fun validate() {}
@@ -24,6 +26,6 @@ class Token: Identifier {
         fun createTokenEntity(user: User) =
             Token().apply {
                 this.user = user
-                this.token = UUID.randomUUID().toString() }
+                this.value = UUID.randomUUID().toString() }
     }
 }

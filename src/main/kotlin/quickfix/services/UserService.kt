@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.TokenRepository
 import quickfix.dao.UserRepository
+import quickfix.dto.user.NewCredentialRequestDTO
 import quickfix.dto.user.UserModifiedInfoDTO
 import quickfix.models.Profession
 import quickfix.models.ProfessionalInfo
@@ -30,7 +31,7 @@ class UserService(
     fun getUserByMail(mail: String): User =
         userRepository.findByMail(mail).orElseThrow{ BusinessException("Usuario no encontrado $mail") }
 
-    fun getVerificationToken(token: String) = tokenRepository.findByToken(token)
+    fun getVerificationToken(token: String) = tokenRepository.findByValue(token)
         ?: throw InvalidCredentialsException()
 
 
@@ -59,22 +60,23 @@ class UserService(
     fun changeUserPassword(mail: String) {
         val user = getUserByMail(mail)
         val token = tokenRepository.save(Token.createTokenEntity(user))
-        val recoveryURL = createRecoveryURL(token.toString())
+        val recoveryURL = createRecoveryURL(token.value)
         eventPublisher.publishEvent(OnChangePasswordRequestEvent(user, recoveryURL))
 
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun validateUserByToken(token: String) {
+    fun validateUserByToken(newCredential: NewCredentialRequestDTO) {
+        val token = newCredential.token
         if (token.isBlank()) { throw BusinessException("Token invalido") }
         val verificationToken = getVerificationToken(token)
         val user = verificationToken.user
-        val updatedUser = getUserByMail(user.mail)
+        val userToUpdate = getUserByMail(user.mail)
         if (verificationToken.expiryDate.isBefore(LocalDateTime.now())) {
             tokenRepository.delete(verificationToken)
             throw BusinessException("Token expirado")
         }
-        userRepository.save(updatedUser)
+        userRepository.save(userToUpdate.apply { setNewPassword(newCredential.newRawPassword) })
         tokenRepository.delete(verificationToken)
     }
 

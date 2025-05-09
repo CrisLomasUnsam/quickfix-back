@@ -23,8 +23,11 @@ class RegisterService(
     private val eventPublisher: ApplicationEventPublisher,
     private val tokenRepository: TokenRepository
 ) {
-    fun getVerificationToken(token: String) = tokenRepository.findByToken(token)
+    fun getVerificationToken(token: String) = tokenRepository.findByValue(token)
         ?: throw InvalidCredentialsException()
+
+    fun getUserByMail(mail: String): User =
+        userRepository.findByMail(mail).orElseThrow{ BusinessException("Usuario no encontrado $mail") }
 
     @Transactional(rollbackFor = [SQLException::class, Exception::class])
     fun registerUser(registerData: RegisterRequestDTO){
@@ -41,18 +44,16 @@ class RegisterService(
         val user : User = registerData.toUser().apply { setNewPassword(registerData.rawPassword) }
         val savedUser = userRepository.save(user) /*Se persiste un usuario sin verificar aun pero cuyo mail no esta en la bbdd*/
         val token = tokenRepository.save(Token.createTokenEntity(savedUser))
-        val confirmationURL = createConfirmationLink(token.toString())
+        val confirmationURL = createConfirmationLink(token.value)
         eventPublisher.publishEvent(OnRegistrationCompletedEvent(savedUser, confirmationURL))
     }
-
-    private fun createConfirmationLink(token: String) = "$FRONTEND_URL+$CONFIRM_FRONTEND_URL?token=$token"
 
     @Transactional(rollbackFor = [SQLException::class, Exception::class])
     fun validateUserByToken(token: String) {
         if (token.isBlank()) { throw BusinessException("Token invalido") }
         val verificationToken = getVerificationToken(token)
         val user = verificationToken.user
-        val savedUser = userRepository.findByMail(user.mail).orElseThrow{ BusinessException("El usuario asociado al token no existe") }
+        val savedUser = getUserByMail(user.mail)
         if (verificationToken.expiryDate.isBefore(LocalDateTime.now())) {
             tokenRepository.delete(verificationToken)
             throw BusinessException("Token expirado")
@@ -60,4 +61,6 @@ class RegisterService(
         savedUser.verified = true
         tokenRepository.delete(verificationToken)
     }
+
+    private fun createConfirmationLink(token: String) = "$FRONTEND_URL+$CONFIRM_FRONTEND_URL?token=$token"
 }
