@@ -143,7 +143,7 @@ class User : Identifier {
     }
 
     private fun validMail() : Boolean =
-        mail.trim().isNotBlank() && mail.trim().contains("@") && !mail.trim().contains(" ")
+        mail.trim().isNotBlank() && mail.trim().contains("@") && !mail.trim().contains(" ") && !mail.trim().contains(",")
 
     private fun validName(name : String) : Boolean =
         name.trim().isNotBlank() && !name.trim().contains(" ") && !name.any { it.isDigit() }
