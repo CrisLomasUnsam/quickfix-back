@@ -3,6 +3,7 @@ package quickfix.services
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
 import quickfix.dao.TokenRepository
 import quickfix.dao.UserRepository
 import quickfix.dto.user.NewCredentialRequestDTO
@@ -82,4 +83,10 @@ class UserService(
 
     private fun createRecoveryURL(token: String): String = "$FRONTEND_URL+$RECOVERY_FRONTEND_URL?token=$token"
 
+    @Transactional(rollbackFor = [Exception::class])
+    fun updateAvatar(currentUserId: Long, file: MultipartFile) {
+        val user = this.getUserById(currentUserId)
+        user.avatar = file.bytes
+    }
+    fun getAvatar(userId: Long): ByteArray = this.getUserById(userId).avatar
 }
