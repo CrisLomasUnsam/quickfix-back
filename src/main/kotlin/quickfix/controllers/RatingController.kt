@@ -25,8 +25,8 @@ class RatingController(val ratingService: RatingService) {
 
     @PostMapping("/rateUser")
     @Operation(summary = "Calificar un usuario al concluir el job")
-    fun rateUser(@RequestBody rating: RatingDTO) =
-        ratingService.rateUser(rating)
+    fun rateUser(@ModelAttribute("currentUserId") currentUserId : Long, @RequestBody rating: RatingDTO) =
+        ratingService.rateUser(currentUserId, rating)
 
     @GetMapping("/received")
     @Operation(summary = "Obtener calificaciones paginadas recibidas por un usuario")
