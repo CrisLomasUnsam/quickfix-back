@@ -92,7 +92,7 @@ class ProfessionalInfo : Identifier {
         if (!hasProfession(newCertificate.profession.id)) {
             throw BusinessException("No se puede agregar un certificado para una profesión no asignada.")
         }
-        validateCertificateAlreadyExists(newCertificate.name)
+        validateCertificateAlreadyExists(newCertificate.name, newCertificate.profession)
         this.certificates.add(newCertificate)
     }
 
