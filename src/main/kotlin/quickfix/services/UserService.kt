@@ -15,7 +15,6 @@ import quickfix.utils.RECOVERY_FRONTEND_URL
 import quickfix.utils.events.OnChangePasswordRequestEvent
 import quickfix.utils.exceptions.BusinessException
 import quickfix.utils.exceptions.InvalidCredentialsException
-import java.sql.SQLException
 import java.time.LocalDateTime
 
 @Service
