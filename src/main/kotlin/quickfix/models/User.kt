@@ -4,6 +4,8 @@ import jakarta.persistence.*
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import quickfix.dto.user.UserModifiedInfoDTO
+import quickfix.utils.CONFIRM_FRONTEND_URL
+import quickfix.utils.FRONTEND_URL
 import quickfix.utils.datifyStringWithDay
 import quickfix.utils.exceptions.BusinessException
 import quickfix.utils.exceptions.InvalidCredentialsException
@@ -81,6 +83,7 @@ class User : Identifier {
             ?.takeIf { it.isNotBlank() }
             ?.let { Gender.fromName(it) }
             ?.let { this.gender = it }
+
         modifiedInfoDTO.address
             ?.takeIf {
                 it.street?.isNotBlank() == true ||

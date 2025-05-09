@@ -1,8 +1,8 @@
 package quickfix.dao
 
 import org.springframework.data.repository.CrudRepository
-import quickfix.models.RegisterToken
+import quickfix.models.Token
 
-interface TokenRepository: CrudRepository<RegisterToken, Long> {
-    fun findByToken(token: String): RegisterToken?
+interface TokenRepository: CrudRepository<Token, Long> {
+    fun findByToken(token: String): Token?
 }
