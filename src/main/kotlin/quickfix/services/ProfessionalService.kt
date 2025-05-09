@@ -71,7 +71,7 @@ class ProfessionalService(
     fun addCertificate(professionalId: Long, newCert: NewCertificateDTO) {
         val professionalInfo : ProfessionalInfo = userService.getProfessionalInfo(professionalId)
         val profession = professionService.getProfessionById(newCert.professionId)
-        professionalInfo.validateCertificateAlreadyExists(newCert.name)
+        professionalInfo.validateCertificateAlreadyExists(newCert.name, profession)
 
         val newCertificate = Certificate().apply {
             this.name = newCert.name
