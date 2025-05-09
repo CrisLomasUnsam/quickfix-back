@@ -3,11 +3,12 @@ package quickfix.controllers
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
+import quickfix.dto.user.NewCredentialRequestDTO
 import quickfix.services.UserService
 
 @RestController
 @RequestMapping("/recovery")
-@Tag(name = "Cambiar la contraseña")
+@Tag(name = "Contraseña")
 class RecoveryController(
     private val userService: UserService
 ) {
@@ -17,9 +18,9 @@ class RecoveryController(
     fun requestUpdateUserPassword(@RequestBody mail : String) =
         userService.changeUserPassword(mail)
 
-    @GetMapping("/confirm")
+    @PatchMapping("/confirm")
     @Operation(summary = "Confirmar cambio de contraseña")
-    fun confirmPasswordChange(@RequestParam token: String) {
-        userService.validateUserByToken(token)
+    fun confirmPasswordChange(@RequestBody newCredentials: NewCredentialRequestDTO) {
+        userService.validateUserByToken(newCredentials)
     }
 }
