@@ -57,6 +57,8 @@ class SecurityConfig {
                     "/registration",
                     "/registration/confirm",
                     "/login/**",
+                    "/recovery",
+                    "/recovery/confirm",
                     "/error"
                     ).permitAll()
 
