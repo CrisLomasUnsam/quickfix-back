@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
@@ -21,6 +22,7 @@ import quickfix.utils.FRONTEND_URL
 //import quickfix.security.CsrfTokenRequestHandler
 
 @Configuration
+@EnableWebSecurity
 class SecurityConfig {
 
     @Autowired
@@ -55,6 +57,7 @@ class SecurityConfig {
                     "/registration",
                     "/registration/confirm",
                     "/login/**",
+                    "/error"
                     ).permitAll()
 
                 it.requestMatchers(HttpMethod.OPTIONS).permitAll()
