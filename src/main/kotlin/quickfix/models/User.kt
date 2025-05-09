@@ -83,6 +83,7 @@ class User : Identifier {
             ?.takeIf { it.isNotBlank() }
             ?.let { Gender.fromName(it) }
             ?.let { this.gender = it }
+
         modifiedInfoDTO.address
             ?.takeIf {
                 it.street?.isNotBlank() == true ||
@@ -144,7 +145,7 @@ class User : Identifier {
     }
 
     private fun validMail() : Boolean =
-        mail.trim().isNotBlank() && mail.trim().contains("@") && !mail.trim().contains(" ")
+        mail.trim().isNotBlank() && mail.trim().contains("@") && !mail.trim().contains(" ") && !mail.trim().contains(",")
 
     private fun validName(name : String) : Boolean =
         name.trim().isNotBlank() && !name.trim().contains(" ") && !name.any { it.isDigit() }

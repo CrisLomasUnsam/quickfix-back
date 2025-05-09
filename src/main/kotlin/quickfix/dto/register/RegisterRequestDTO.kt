@@ -1,10 +1,10 @@
 package quickfix.dto.register
 
+import quickfix.dto.address.AddressDTO
 import quickfix.models.Address
 import quickfix.models.Gender
 import quickfix.models.User
 import quickfix.utils.datifyStringWithDay
-import java.util.Base64
 
 class RegisterRequestDTO (
     var mail: String,
@@ -14,7 +14,7 @@ class RegisterRequestDTO (
     var dni: Int,
     var dateBirth: String,
     var gender: Gender,
-    var address: Address,
+    var address: AddressDTO,
 )
 
 fun RegisterRequestDTO.toUser() : User {
@@ -28,7 +28,13 @@ fun RegisterRequestDTO.toUser() : User {
         dni = request.dni
         dateBirth = datifyStringWithDay(request.dateBirth)
         gender = request.gender
-        address = request.address
+        address = Address().apply {
+            street = request.address.street!!
+            optional = request.address.optional!!
+            zipCode = request.address.zipCode!!
+            state = request.address.state!!
+            city = request.address.city!!
+        }
         setNewPassword(request.rawPassword.trim())
     }.apply {
         validate()
