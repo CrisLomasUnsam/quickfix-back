@@ -55,6 +55,8 @@ class SecurityConfig {
                     "/registration",
                     "/registration/confirm",
                     "/login/**",
+                    "/recovery",
+                    "/recovery/confirm"
                     ).permitAll()
 
                 it.requestMatchers(HttpMethod.OPTIONS).permitAll()
