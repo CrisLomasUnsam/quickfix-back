@@ -9,6 +9,7 @@ import quickfix.dto.rating.EditRatingDTO
 import quickfix.dto.rating.RatingDTO
 import quickfix.models.Rating
 import quickfix.utils.exceptions.BusinessException
+import quickfix.utils.exceptions.RatingException
 import java.time.LocalDate
 
 @Service
@@ -27,10 +28,16 @@ class RatingService(
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun rateUser(ratingDTO: RatingDTO) {
+    fun rateUser(currentUserId: Long, ratingDTO: RatingDTO) {
+        if(currentUserId != ratingDTO.userFromId)
+            throw RatingException("Usted no puede calificar a este usuario")
+
         val userFrom = userService.getUserById(ratingDTO.userFromId)
         val userTo = userService.getUserById(ratingDTO.userToId)
         val job = jobService.getJobById(ratingDTO.jobId)
+
+        if(job.customer.id != currentUserId && job.professional.id != currentUserId)
+            throw RatingException("Usted no puede calificar a este usuario")
 
         val rating = Rating().apply {
             this.userFrom = userFrom
