@@ -2,9 +2,13 @@ package quickfix.controllers
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import quickfix.dto.job.JobDTO
+import quickfix.dto.job.PageDTO
 import quickfix.dto.job.jobOffer.AcceptedJobOfferDTO
 import quickfix.dto.job.jobOffer.CancelJobOfferDTO
 import quickfix.dto.job.jobOffer.CreateJobOfferDTO
@@ -37,13 +41,14 @@ class JobController(
 
     @GetMapping("/customer")
     @Operation(summary = "Obtiene todos los servicios pedidos por un usuario")
-    fun findJobsByCustomerId(@ModelAttribute("currentCustomerId") currentCustomerId : Long) : List<Job> =
-        jobService.findJobsByCustomerId(currentCustomerId)
+    fun findJobsByCustomerId(
+        @ModelAttribute("currentCustomerId") currentCustomerId : Long, @RequestParam pageNumber: Int) : PageDTO<JobDTO> =
+        PageDTO.toDTO(jobService.findJobsByCustomerId(currentCustomerId, pageNumber).map{ job -> toDto(job)  })
 
     @GetMapping("/professional")
     @Operation(summary = "Obtiene todos los servicios realizados por un profesional")
-    fun findJobsByProfessionalId(@ModelAttribute("currentProfessionalId") currentProfessionalId : Long) : List<Job> =
-        jobService.findJobsByProfessionalId(currentProfessionalId)
+    fun findJobsByProfessionalId(@ModelAttribute("currentProfessionalId") currentProfessionalId : Long, @RequestParam pageNumber: Int) : PageDTO<JobDTO> =
+        PageDTO.toDTO(jobService.findJobsByProfessionalId(currentProfessionalId, pageNumber).map{ job -> toDto(job)  })
 
     @PatchMapping("/complete/{id}")
     fun setJobAsDone(@PathVariable id: Long) = jobService.setJobAsDone(id)

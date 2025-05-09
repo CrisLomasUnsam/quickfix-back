@@ -97,12 +97,12 @@ class DataInitializer : InitializingBean {
 
     fun loadAddresses() {
         if (addressRepository.count() == 0L) {
-            address1 = Address().apply { street = "Rafaela 5053"; city = "CABA"; zipCode = "1000" }
-            address2 = Address().apply { street = "Av. Corrientes 3247"; city = "CABA"; zipCode = "1001" }
-            address3 = Address().apply { street = "San Martín 850" ; city = "San Miguel de Tucumán"; zipCode = "1002" }
-            address4 = Address().apply { street = "Boulevard Oroño 1265"; city = "Rosario" ;zipCode = "1003" }
-            address5 = Address().apply { street = "Av. Colón 1654"; city = "Córdoba"; zipCode = "1004" }
-            address6 = Address().apply { street = "Av. Mondongo 1000"; city = "Córdoba"; zipCode = "1005"}
+            address1 = Address().apply { street = "Rafaela 5053";  zipCode = "1000"; state = "CABA"; city = "CABA"; }
+            address2 = Address().apply { street = "Av. Corrientes 3247"; zipCode = "1001"; state = "CABA"; city = "CABA"; }
+            address3 = Address().apply { street = "San Martín 850" ; zipCode = "1002"; state = "Buenos Aires"; city = "Garín"; }
+            address4 = Address().apply { street = "Boulevard Oroño 1265"; zipCode = "1003"; state = "Buenos Aires"; city = "Rosario" ; }
+            address5 = Address().apply { street = "Av. Colón 1654"; zipCode = "1004"; state = "Buenos Aires"; city = "Escobar"; }
+            address6 = Address().apply { street = "Av. Mondongo 1000"; zipCode = "1005"; state = "Buenos Aires"; city = "San Andrés";}
             addressRepository.saveAll(listOf(address1, address2, address3, address4, address5, address6))
             println("************** DIRECCIONES CARGADAS ****************")
         }

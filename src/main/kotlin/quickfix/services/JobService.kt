@@ -1,5 +1,8 @@
 package quickfix.services
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.JobRepository
@@ -15,7 +18,7 @@ import quickfix.dto.professional.ProfessionalDTO
 import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.models.User
-import quickfix.utils.MAX_DEBT_ALLOWED
+import quickfix.utils.PAGE_SIZE
 import quickfix.utils.enums.JobStatus
 import quickfix.utils.exceptions.BusinessException
 import java.time.LocalDate
@@ -32,11 +35,16 @@ class JobService(
     fun getJobById(id: Long): Job =
         jobRepository.findById(id).orElseThrow { throw BusinessException() }
 
-    fun findJobsByCustomerId(id: Long): List<Job> =
-        jobRepository.findAllByCustomerId(id)
+    fun findJobsByCustomerId(id: Long, pageNumber: Int): Page<Job>  =
+         jobRepository.findAllByCustomerId(id, sortPage(pageNumber))
 
-    fun findJobsByProfessionalId(id: Long): List<Job> =
-        jobRepository.findAllByProfessionalId(id)
+    fun findJobsByProfessionalId(id: Long, pageNumber: Int): Page<Job> =
+         jobRepository.findAllByProfessionalId(id, sortPage(pageNumber))
+
+    private fun sortPage(pageNumber: Int) : PageRequest {
+        val sort: Sort = Sort.by("date").ascending()
+        return PageRequest.of(pageNumber, PAGE_SIZE, sort)
+    }
 
     @Transactional(rollbackFor = [Exception::class])
     fun setJobAsDone(id: Long) =
@@ -103,7 +111,7 @@ class JobService(
 
     fun offerJob(jobOffer : CreateJobOfferDTO) {
         val professional = userService.getUserById(jobOffer.professionalId).professionalInfo
-        professional.validateCanBid(MAX_DEBT_ALLOWED)
+        professional.validateCanOfferJob()
         redisService.offerJob(jobOffer)
     }
 

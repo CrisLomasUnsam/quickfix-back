@@ -29,8 +29,8 @@ class ProfessionalController (
 
     @PatchMapping("/finances/payDebt/{professionalId}")
     @Operation(summary = "Pagar deuda")
-    fun payDebt(@PathVariable professionalId : Long, @RequestBody amount: Double) =
-        professionalService.payDebt(professionalId, amount)
+    fun payDebt(@PathVariable professionalId : Long) =
+        professionalService.payDebt(professionalId)
 
     @GetMapping("/professions/{professionalId}")
     @Operation(summary = "Obtener los servicios que puede brindar el profesional")
