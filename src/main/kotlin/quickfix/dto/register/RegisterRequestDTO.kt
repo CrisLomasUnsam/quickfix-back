@@ -4,6 +4,7 @@ import quickfix.models.Address
 import quickfix.models.Gender
 import quickfix.models.User
 import quickfix.utils.datifyStringWithDay
+import java.util.Base64
 
 class RegisterRequestDTO (
     var mail: String,
@@ -11,7 +12,6 @@ class RegisterRequestDTO (
     var lastName: String,
     var rawPassword: String,
     var dni: Int,
-    var avatar: String,
     var dateBirth: String,
     var gender: Gender,
     var address: Address,
@@ -19,12 +19,13 @@ class RegisterRequestDTO (
 
 fun RegisterRequestDTO.toUser() : User {
     val request : RegisterRequestDTO = this
+
     return User().apply {
+
         mail = request.mail.trim()
         name = request.name.trim()
         lastName = request.lastName.trim()
         dni = request.dni
-        avatar = request.avatar.trim()
         dateBirth = datifyStringWithDay(request.dateBirth)
         gender = request.gender
         address = request.address

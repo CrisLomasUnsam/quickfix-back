@@ -173,7 +173,6 @@ class DataInitializer : InitializingBean {
             name = "Valentina"
             lastName = "Gomez"
             dni = 12345678
-            avatar = "imgValen1"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.FEMALE
             address = address1
@@ -191,7 +190,6 @@ class DataInitializer : InitializingBean {
             name = "Cristina"
             lastName = "Palacios"
             dni = 12345679
-            avatar = "imgCris2"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.FEMALE
             address = address2
@@ -209,7 +207,6 @@ class DataInitializer : InitializingBean {
             name = "Tomaso"
             lastName = "Perez"
             dni = 12345671
-            avatar = "imgTomi3"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.FEMALE
             address = address3
@@ -227,7 +224,6 @@ class DataInitializer : InitializingBean {
             name = "Juan"
             lastName = "Contardo"
             dni = 12345672
-            avatar = "imgJuan4"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.MALE
             address = address4
@@ -244,7 +240,6 @@ class DataInitializer : InitializingBean {
             name = "Rodrigo"
             lastName = "Bueno"
             dni = 12345673
-            avatar = "imgRodri5"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.OTHER
             address = address5
@@ -261,7 +256,6 @@ class DataInitializer : InitializingBean {
             name = "Fer"
             lastName = "Dodino"
             dni = 12345674
-            avatar = "imgFer6"
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.FEMALE
             address = address6
