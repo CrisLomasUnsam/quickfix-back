@@ -5,7 +5,13 @@ import quickfix.utils.exceptions.BusinessException
 import java.time.LocalDate
 
 @Entity
-@Table(name = "ratings")
+@Table(name = "ratings",
+    uniqueConstraints = [
+        UniqueConstraint(
+            name = "uq_ratings_job_userfrom",
+            columnNames = ["job_id", "user_from_id"]
+        )
+    ])
 class Rating : Identifier {
 
     @Id @GeneratedValue
@@ -17,7 +23,7 @@ class Rating : Identifier {
     @ManyToOne
     lateinit var userTo: User
 
-    @OneToOne
+    @ManyToOne
     lateinit var job: Job
     
     lateinit var yearAndMonth: LocalDate
