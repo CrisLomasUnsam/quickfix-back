@@ -19,6 +19,7 @@ class RatingService(
     val jobService: JobService
 ) {
 
+
     fun findRatingsReceivedByUser(userId: Long, pageable: Pageable): Page<Rating> {
         return ratingRepository.findAllByUserToId(userId, pageable)
     }
@@ -29,15 +30,21 @@ class RatingService(
 
     @Transactional(rollbackFor = [Exception::class])
     fun rateUser(currentUserId: Long, ratingDTO: RatingDTO) {
-        if(currentUserId != ratingDTO.userFromId)
-            throw RatingException("Usted no puede calificar a este usuario")
 
-        val userFrom = userService.getUserById(ratingDTO.userFromId)
-        val userTo = userService.getUserById(ratingDTO.userToId)
+        val userFrom = userService.getUserById(currentUserId)
         val job = jobService.getJobById(ratingDTO.jobId)
 
-        if(job.customer.id != currentUserId && job.professional.id != currentUserId)
-            throw RatingException("Usted no puede calificar a este usuario")
+        if (currentUserId != job.customer.id && currentUserId != job.professional.id) {
+            throw BusinessException("Usted no participó en ese job y no puede calificar.")
+        }
+
+        val alreadyRated = ratingRepository
+            .existsByJobIdAndUserFromId(job.id, userFrom.id)
+        if (alreadyRated) {
+            throw BusinessException("Ya ha calificado este job anteriormente.")
+        }
+
+        val userTo = if (currentUserId == job.customer.id) job.professional else job.customer
 
         val rating = Rating().apply {
             this.userFrom = userFrom
