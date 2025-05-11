@@ -1,15 +1,20 @@
 package quickfix.utils
 
 import quickfix.utils.exceptions.BusinessException
-import java.time.LocalDate
-import java.time.YearMonth
+import java.time.*
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
 val YearAndMonthformatter: DateTimeFormatter = DateTimeFormatter.ofPattern("MM/yyyy")
 val DateWithDayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+val CustomDateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
 
-fun stringifyDate(fecha: LocalDate, format: DateTimeFormatter): String = fecha.format(format)
+fun stringifyDate(date: LocalDate, format: DateTimeFormatter): String = date.format(format)
+
+fun stringifyDateTime(dateTime: LocalDateTime, format: DateTimeFormatter): String = dateTime.format(format)
+
+fun dateTimeFromTimestamp(timestamp : Long) : LocalDateTime =
+    Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDateTime()
 
 fun datifyStringWithDay(fechaStr: String): LocalDate {
     return try {
