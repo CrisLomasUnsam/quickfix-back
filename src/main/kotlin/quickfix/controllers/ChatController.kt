@@ -1,9 +1,10 @@
 package quickfix.controllers
 
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
-import quickfix.dto.message.ChatMessageDTO
-import quickfix.dto.message.RedisMessageDTO
+import quickfix.dto.message.MessageDTO
+import quickfix.dto.message.MessageResponseDTO
 import quickfix.services.JobService
 
 @RestController
@@ -12,12 +13,20 @@ import quickfix.services.JobService
 class ChatController (
     private val jobService: JobService
 ) {
-    @GetMapping("/{customerId}/{professionalId}/{jobId}")
-    fun getMessages(@PathVariable customerId: Long, @PathVariable professionalId: Long, @PathVariable jobId: Long) : List<RedisMessageDTO> =
-        jobService.getChatMessages(customerId, professionalId, jobId)
+
+    @ModelAttribute("currentUserId")
+    fun getCurrentUserId(): Long {
+        val usernamePAT = SecurityContextHolder.getContext().authentication
+        return usernamePAT.principal.toString().toLong()
+    }
+
+    @GetMapping("/{jobId}")
+    fun getMessages(@ModelAttribute("currentUserId") currentUserId: Long, @PathVariable jobId: Long) : List<MessageResponseDTO> =
+        jobService.getChatMessages(currentUserId, jobId)
 
     @PostMapping
-    fun postMessage(@RequestBody message: ChatMessageDTO) {
-        jobService.postChatMessage(message)
+    fun postMessage(@ModelAttribute("currentUserId") currentUserId: Long, @RequestBody message: MessageDTO) {
+        jobService.postChatMessage(currentUserId, message)
     }
+
 }
