@@ -10,13 +10,13 @@ import quickfix.utils.exceptions.BusinessException
 class ProfessionalInfo : Identifier {
 
     @Id @GeneratedValue
-    override var id: Long = -1
+    override var id: Long = 0
 
-    @OneToMany(cascade = [(CascadeType.ALL)], orphanRemoval = true)
-    @JoinColumn(name = "professional_id")
+    @OneToMany(cascade = [(CascadeType.ALL)], fetch = FetchType.EAGER)
+    @JoinColumn(name = "professional_id", nullable = false)
     var professionalProfessions: MutableSet<ProfessionalProfession> = mutableSetOf()
 
-    @OneToMany(cascade = [(CascadeType.ALL)], orphanRemoval = true)
+    @OneToMany(cascade = [(CascadeType.REMOVE)], orphanRemoval = true)
     var certificates: MutableSet<Certificate> = mutableSetOf()
 
     var balance: Double = 0.0

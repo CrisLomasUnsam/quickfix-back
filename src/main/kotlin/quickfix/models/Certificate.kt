@@ -7,7 +7,7 @@ import quickfix.utils.exceptions.BusinessException
 class Certificate : Identifier {
 
     @Id @GeneratedValue
-    override var id: Long = -1
+    override var id: Long = 0
 
     lateinit var name: String
 

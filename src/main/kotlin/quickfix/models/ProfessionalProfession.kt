@@ -8,10 +8,10 @@ import quickfix.utils.exceptions.BusinessException
 class ProfessionalProfession : Identifier{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    override var id: Long = -1
+    @GeneratedValue
+    override var id: Long = 0
 
-    @ManyToOne(cascade = [CascadeType.ALL])
+    @ManyToOne(cascade = [CascadeType.MERGE])
     lateinit var profession: Profession
 
     var active: Boolean = true

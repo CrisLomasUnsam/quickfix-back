@@ -12,7 +12,7 @@ import quickfix.utils.exceptions.BusinessException
 class Address : Identifier {
 
     @Id @GeneratedValue
-    override var id: Long = -1
+    override var id: Long = 0
 
     lateinit var street: String
     var optional: String = ""

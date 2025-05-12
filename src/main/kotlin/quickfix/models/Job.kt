@@ -10,7 +10,7 @@ import java.time.LocalDate
 class Job : Identifier {
 
     @Id @GeneratedValue
-    override var id: Long = -1
+    override var id: Long = 0
 
     @ManyToOne
     lateinit var professional: User
@@ -23,7 +23,7 @@ class Job : Identifier {
 
     var done: Boolean = false
 
-    @ManyToOne(cascade = [(CascadeType.ALL)])
+    @ManyToOne(cascade = [(CascadeType.MERGE)])
     @JoinColumn(name = "profession_id", nullable = false)
     lateinit var profession : Profession
 

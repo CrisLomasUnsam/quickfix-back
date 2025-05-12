@@ -15,7 +15,7 @@ import java.time.LocalDate
 class Rating : Identifier {
 
     @Id @GeneratedValue
-    override var id: Long = -1
+    override var id: Long = 0
 
     @ManyToOne
     lateinit var userFrom: User
