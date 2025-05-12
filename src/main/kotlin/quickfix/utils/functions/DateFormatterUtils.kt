@@ -1,4 +1,4 @@
-package quickfix.utils
+package quickfix.utils.functions
 
 import quickfix.utils.exceptions.BusinessException
 import java.time.*
