@@ -2,11 +2,11 @@ package quickfix.dto.message
 
 data class MessageDTO(
     val jobId: Long,
-    val msg: String,
+    val message: String,
 )
 
 fun MessageDTO.toRedisMessage(senderIsCustomer : Boolean) = RedisMessageDTO(
-    msg = this.msg,
+    message = this.message,
     senderIsCustomer = senderIsCustomer,
     timestamp = System.currentTimeMillis()
 )
