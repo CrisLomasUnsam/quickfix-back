@@ -12,7 +12,7 @@ import quickfix.services.UserService
 import quickfix.utils.exceptions.ExpiredTokenException
 
 @Component
-class JwtAuthFilter : OncePerRequestFilter() {
+class   JwtAuthFilter : OncePerRequestFilter() {
 
     @Autowired
     lateinit var jwtTokenUtils : JwtTokenUtils
