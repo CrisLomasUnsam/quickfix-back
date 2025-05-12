@@ -6,18 +6,15 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import quickfix.dao.TokenRepository
 import quickfix.dao.UserRepository
-import quickfix.dto.user.NewCredentialRequestDTO
 import quickfix.dto.user.UserModifiedInfoDTO
 import quickfix.models.Profession
 import quickfix.models.ProfessionalInfo
 import quickfix.models.Token
 import quickfix.models.User
 import quickfix.utils.FRONTEND_URL
-import quickfix.utils.RECOVERY_FRONTEND_URL
 import quickfix.utils.events.OnChangePasswordRequestEvent
 import quickfix.utils.exceptions.BusinessException
-import quickfix.utils.exceptions.InvalidCredentialsException
-import java.time.LocalDateTime
+import java.util.*
 
 @Service
 class UserService(
@@ -26,15 +23,18 @@ class UserService(
     private val tokenRepository: TokenRepository
 ) {
 
-    fun getUserById(id: Long): User =
+    fun getById(id: Long): User =
         userRepository.findById(id).orElseThrow{ BusinessException("Usuario no encontrado $id") }
 
-    fun getUserByMail(mail: String): User =
+    fun findByMail(mail : String) : Optional<User> =
+        userRepository.findByMail(mail)
+
+    fun getByMail(mail: String): User =
         userRepository.findByMail(mail).orElseThrow{ BusinessException("Usuario no encontrado $mail") }
 
-    fun getVerificationToken(token: String) = tokenRepository.findByValue(token)
-        ?: throw InvalidCredentialsException()
+    fun save(user : User) = userRepository.save(user)
 
+    private fun createRecoveryURL(token: String) = "$FRONTEND_URL/confirm?token=$token"
 
     fun assertUserExists(id: Long) {
         if (!userRepository.existsById(id))
@@ -53,13 +53,13 @@ class UserService(
 
     @Transactional(rollbackFor = [Exception::class])
     fun changeUserInfo(id: Long, modifiedInfo: UserModifiedInfoDTO) {
-        val user = this.getUserById(id)
+        val user = this.getById(id)
         user.updateUserInfo(modifiedInfo)
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun changeUserPassword(mail: String) {
-        val user = getUserByMail(mail)
+    fun requestChangePassword(mail: String) {
+        val user = getByMail(mail)
         val token = tokenRepository.save(Token.createTokenEntity(user))
         val recoveryURL = createRecoveryURL(token.value)
         eventPublisher.publishEvent(OnChangePasswordRequestEvent(user, recoveryURL))
@@ -67,26 +67,9 @@ class UserService(
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun validateUserByToken(newCredential: NewCredentialRequestDTO) {
-        val token = newCredential.token
-        if (token.isBlank()) { throw BusinessException("Token invalido") }
-        val verificationToken = getVerificationToken(token)
-        val user = verificationToken.user
-        val userToUpdate = getUserByMail(user.mail)
-        if (verificationToken.expiryDate.isBefore(LocalDateTime.now())) {
-            tokenRepository.delete(verificationToken)
-            throw BusinessException("Token expirado")
-        }
-        userRepository.save(userToUpdate.apply { setNewPassword(newCredential.newRawPassword) })
-        tokenRepository.delete(verificationToken)
-    }
-
-    private fun createRecoveryURL(token: String): String = "$FRONTEND_URL+$RECOVERY_FRONTEND_URL?token=$token"
-
-    @Transactional(rollbackFor = [Exception::class])
     fun updateAvatar(currentUserId: Long, file: MultipartFile) {
-        val user = this.getUserById(currentUserId)
+        val user = this.getById(currentUserId)
         user.avatar = file.bytes
     }
-    fun getAvatar(userId: Long): ByteArray = this.getUserById(userId).avatar
+    fun getAvatar(userId: Long): ByteArray = this.getById(userId).avatar
 }

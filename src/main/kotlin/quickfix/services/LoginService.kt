@@ -27,7 +27,7 @@ class LoginService (
     }
 
     private fun getUser(loginDTO: LoginDTO): User {
-        val user = userService.getUserByMail(loginDTO.mail)
+        val user = userService.getByMail(loginDTO.mail)
 
         if (!user.verifyPassword(loginDTO.password))
             throw InvalidCredentialsException()
