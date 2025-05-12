@@ -95,7 +95,7 @@ class JobService(
         val createdJobOffers = redisService.getJobOffers(customerId)
 
         return createdJobOffers.map { createdJobOffer ->
-            val professional = userService.getUserById(createdJobOffer.professionalId)
+            val professional = userService.getById(createdJobOffer.professionalId)
             val professionalRating = jobRepository.findRatingsByProfessionalId(createdJobOffer.professionalId).map { it.score }.average()
 
             JobOfferDTO(
@@ -111,7 +111,7 @@ class JobService(
     }
 
     fun offerJob(jobOffer : CreateJobOfferDTO) {
-        val professional = userService.getUserById(jobOffer.professionalId).professionalInfo
+        val professional = userService.getById(jobOffer.professionalId).professionalInfo
         professional.validateCanOfferJob()
         redisService.offerJob(jobOffer)
     }
@@ -122,8 +122,8 @@ class JobService(
     @Transactional(rollbackFor = [Exception::class])
     fun acceptJobOffer(acceptedJob: AcceptedJobOfferDTO) {
 
-        val customer: User = userService.getUserById(acceptedJob.customerId)
-        val professional : User = userService.getUserById(acceptedJob.professionalId)
+        val customer: User = userService.getById(acceptedJob.customerId)
+        val professional : User = userService.getById(acceptedJob.professionalId)
         val profession: Profession = professionService.getProfessionById(acceptedJob.professionId)
 
         val jobOffers : Set<CreateJobOfferDTO> = redisService.getJobOffers(acceptedJob.customerId)
