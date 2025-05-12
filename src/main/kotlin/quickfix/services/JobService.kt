@@ -12,8 +12,9 @@ import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobRequest.CancelJobRequestDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
-import quickfix.dto.message.ChatMessageDTO
-import quickfix.dto.message.RedisMessageDTO
+import quickfix.dto.message.MessageDTO
+import quickfix.dto.message.MessageResponseDTO
+import quickfix.dto.message.toMessageResponseDTO
 import quickfix.dto.professional.ProfessionalDTO
 import quickfix.models.Job
 import quickfix.models.Profession
@@ -148,22 +149,29 @@ class JobService(
 
     private fun deleteChatMessages(jobId: Long){
         val job = getJobById(jobId)
-        redisService.deleteChatMessages(job.customer.id, job.professional.id, job.id)
+        redisService.deleteChatMessages(job.id)
     }
 
-    fun getChatMessages(customerId : Long, professionalId : Long, jobId : Long) : List<RedisMessageDTO> {
-        validateChatMessageIds(customerId, professionalId, jobId)
-        return redisService.getChatMessages(customerId, professionalId, jobId)
-    }
-
-    fun postChatMessage(message: ChatMessageDTO) {
-        validateChatMessageIds(message.customerId, message.professionalId, message.jobId)
-        redisService.sendChatMessage(message)
-    }
-
-    private fun validateChatMessageIds(customerId : Long, professionalId : Long, jobId : Long) {
+    private fun userIsCustomerInJob(userId : Long, jobId : Long) : Boolean {
         val job = getJobById(jobId)
-        val notValidIds = job.customer.id != customerId || job.professional.id != professionalId
+        return userId == job.customer.id
+    }
+
+    fun getChatMessages(userId : Long, jobId : Long) : List<MessageResponseDTO> {
+        validateChatMessageIds(userId, jobId)
+        val requesterIsCustomer = userIsCustomerInJob(userId, jobId)
+        return redisService.getChatMessages(jobId).map { it.toMessageResponseDTO(requesterIsCustomer)}
+    }
+
+    fun postChatMessage(userId : Long, message: MessageDTO) {
+        validateChatMessageIds(userId, message.jobId)
+        val senderIsCustomer = userIsCustomerInJob(userId, message.jobId)
+        redisService.sendChatMessage(senderIsCustomer, message)
+    }
+
+    private fun validateChatMessageIds(userId : Long, jobId : Long) {
+        val job = getJobById(jobId)
+        val notValidIds = job.customer.id != userId && job.professional.id != userId
         if(notValidIds)
             throw BusinessException("Ha habido un error. Por favor, verifique los datos.")
     }

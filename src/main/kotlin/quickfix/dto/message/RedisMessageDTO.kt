@@ -2,6 +2,9 @@ package quickfix.dto.message
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import quickfix.utils.CustomDateTimeFormatter
+import quickfix.utils.dateTimeFromTimestamp
+import quickfix.utils.stringifyDateTime
 
 data class RedisMessageDTO @JsonCreator constructor(
 
@@ -13,4 +16,11 @@ data class RedisMessageDTO @JsonCreator constructor(
 
     @JsonProperty("timestamp")
     val timestamp: Long
+)
+
+
+fun RedisMessageDTO.toMessageResponseDTO(requesterIsCustomer : Boolean) = MessageResponseDTO(
+    message = this.msg,
+    itsMine = (senderIsCustomer && requesterIsCustomer) || (!senderIsCustomer && !requesterIsCustomer),
+    datetime = stringifyDateTime(dateTimeFromTimestamp(this.timestamp), CustomDateTimeFormatter)
 )

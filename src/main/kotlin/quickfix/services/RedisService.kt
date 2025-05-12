@@ -4,7 +4,7 @@ import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
-import quickfix.dto.message.ChatMessageDTO
+import quickfix.dto.message.MessageDTO
 import quickfix.dto.message.RedisMessageDTO
 import quickfix.dto.message.toRedisMessage
 import quickfix.utils.exceptions.BusinessException
@@ -111,21 +111,20 @@ class RedisService(
         Chat_CustomerId_ProfessionalId_JobId_
     *******************************************************/
 
-    private fun getChatKey(customerId: Long, professionalId: Long, jobId: Long) : String =
-        "Chat_${customerId}_${professionalId}_${jobId}_"
+    private fun getChatKey(jobId: Long) : String = "Chat_${jobId}_"
 
-    fun sendChatMessage(message: ChatMessageDTO) {
-        val key = getChatKey(message.customerId, message.professionalId, message.jobId)
-        redisChatStorage.opsForList().rightPush(key, message.toRedisMessage())
+    fun sendChatMessage(senderIsCustomer: Boolean, message: MessageDTO) {
+        val key = getChatKey(message.jobId)
+        redisChatStorage.opsForList().rightPush(key, message.toRedisMessage(senderIsCustomer))
     }
 
-    fun getChatMessages(customerId: Long, professionalId: Long, jobId: Long) : List<RedisMessageDTO> {
-        val key = getChatKey(customerId, professionalId, jobId)
+    fun getChatMessages(jobId: Long) : List<RedisMessageDTO> {
+        val key = getChatKey(jobId)
         return redisChatStorage.opsForList().range(key, 0, -1) ?: emptyList()
     }
 
-    fun deleteChatMessages(customerId: Long, professionalId: Long, jobId: Long) {
-        val key = getChatKey(customerId, professionalId, jobId)
+    fun deleteChatMessages(jobId: Long) {
+        val key = getChatKey(jobId)
         redisChatStorage.delete(key)
     }
 }
