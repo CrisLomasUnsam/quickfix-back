@@ -84,7 +84,7 @@ class RatingService(
 
         val existingRating = ratingRepository
             .findByJobIdAndUserFromId(jobId, currentUserId)
-            .orElse(null)
+
 
         val avg = ratingRepository.findAverageRatingByUserToId(userTo.id)
 
