@@ -4,6 +4,7 @@ import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
+import quickfix.dto.job.jobRequest.JobRequestRedisDTO
 import quickfix.dto.message.MessageDTO
 import quickfix.dto.message.RedisMessageDTO
 import quickfix.dto.message.toRedisMessage
@@ -12,9 +13,11 @@ import quickfix.utils.exceptions.BusinessException
 @Service
 class RedisService(
 
-    private val redisJobRequestStorage: RedisTemplate<String, JobRequestDTO>,
+    private val redisJobRequestStorage: RedisTemplate<String, JobRequestRedisDTO>,
     private val redisJobOfferStorage: RedisTemplate<String, CreateJobOfferDTO>,
-    private val redisChatStorage: RedisTemplate<String, RedisMessageDTO>
+    private val redisChatStorage: RedisTemplate<String, RedisMessageDTO>,
+    private val professionService: ProfessionService,
+    private val userService: UserService
 
 ) {
 
@@ -27,7 +30,7 @@ class RedisService(
     private fun getJobRequestKey(professionId: Long, customerId: Long) : String =
         "JobRequest_${professionId}_${customerId}_"
 
-    fun requestJob(jobRequest : JobRequestDTO, professionId : Long) {
+    fun requestJob(jobRequest : JobRequestRedisDTO, professionId : Long) {
 
         val customerId = jobRequest.customerId
 
@@ -44,14 +47,34 @@ class RedisService(
     }
 
     fun getJobRequests(professionIds : Set<Long>) : Set<JobRequestDTO> {
-        val jobRequests = mutableSetOf<JobRequestDTO>()
+        println("llego aca")
+        val jobRequests = mutableSetOf<JobRequestRedisDTO>()
         professionIds.forEach { professionId ->
             val tempKey = "JobRequest_${professionId}_*_"
             val requestsKeys = redisJobRequestStorage.keys(tempKey)
             val requestsValues = redisJobRequestStorage.opsForValue().multiGet(requestsKeys) ?: emptySet()
             jobRequests.addAll(requestsValues)
         }
-        return jobRequests
+        return jobRequests.map { jobRequest ->
+            val customerId = jobRequest.customerId
+            val customer = userService.getById(customerId)
+            val customerName =  customer.name
+            val customerLastName = customer.lastName
+            val customerAvatar = customer.avatar
+            val professionId = jobRequest.professionId
+            val professionName = professionService.getProfessionById(jobRequest.professionId).name
+            val detail = jobRequest.detail
+
+            JobRequestDTO(
+                customerId = customerId,
+                customerName = customerName,
+                customerLastName = customerLastName,
+                customerAvatar = "",
+                professionId = professionId,
+                professionName = professionName,
+                detail = detail
+            )
+        }.toSet()
     }
 
     fun removeJobRequest(professionId : Long, customerId: Long) {

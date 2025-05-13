@@ -8,7 +8,7 @@ import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer
 import org.springframework.data.redis.serializer.StringRedisSerializer
 import quickfix.dto.job.jobOffer.CreateJobOfferDTO
-import quickfix.dto.job.jobRequest.JobRequestDTO
+import quickfix.dto.job.jobRequest.JobRequestRedisDTO
 import quickfix.dto.message.RedisMessageDTO
 
 @Configuration
@@ -28,14 +28,14 @@ class RedisConfig {
     }
 
     @Bean
-    fun redisJobRequestStorage(connectionFactory: RedisConnectionFactory): RedisTemplate<String, JobRequestDTO> {
-        val storage = RedisTemplate<String, JobRequestDTO>()
+    fun redisJobRequestStorage(connectionFactory: RedisConnectionFactory): RedisTemplate<String, JobRequestRedisDTO> {
+        val storage = RedisTemplate<String, JobRequestRedisDTO>()
         storage.connectionFactory = connectionFactory
         storage.keySerializer = StringRedisSerializer()
         val objectMapper = ObjectMapper().apply {
             deactivateDefaultTyping()
         }
-        val jacksonSerializer = Jackson2JsonRedisSerializer(objectMapper, JobRequestDTO::class.java)
+        val jacksonSerializer = Jackson2JsonRedisSerializer(objectMapper, JobRequestRedisDTO::class.java)
         storage.valueSerializer = jacksonSerializer
         return storage
     }

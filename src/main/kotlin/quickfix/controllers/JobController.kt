@@ -2,9 +2,6 @@ package quickfix.controllers
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
-import org.springframework.data.web.PageableDefault
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import quickfix.dto.job.JobDTO
@@ -15,8 +12,8 @@ import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobRequest.CancelJobRequestDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
+import quickfix.dto.job.jobRequest.JobRequestRedisDTO
 import quickfix.dto.job.toDto
-import quickfix.models.Job
 import quickfix.services.JobService
 
 @RestController
@@ -105,7 +102,7 @@ class JobController(
 
     @PostMapping("/requestJob")
     @Operation(summary = "Buscar profesionales disponibles para el job seleccionado por el customer")
-    fun requestJob(@RequestBody jobRequest : JobRequestDTO) =
+    fun requestJob(@RequestBody jobRequest : JobRequestRedisDTO) =
         jobService.requestJob(jobRequest)
 
     @DeleteMapping("/requestJob")

@@ -3,10 +3,37 @@ package quickfix.dto.job.jobRequest
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
+import quickfix.utils.enums.JobStatus
 import quickfix.utils.exceptions.BusinessException
 
-@Schema(description = "Solicitud de un Job por un customer, consumido por observers")
+@Schema(description = "Solicitud de un Job por un customer")
 data class JobRequestDTO @JsonCreator constructor(
+
+    @JsonProperty("customerId")
+    var customerId: Long,
+
+    @JsonProperty("name")
+    var customerName: String,
+
+    @JsonProperty("lastName")
+    var customerLastName: String,
+
+    @JsonProperty("avatar")
+    var customerAvatar: String,
+
+    @JsonProperty("professionId")
+    var professionId: Long,
+
+    @JsonProperty("professionName")
+    var professionName: String,
+
+    @JsonProperty("detail")
+    var detail: String,
+
+)
+
+@Schema(description = "Para traer los jobRequests de Redis")
+data class JobRequestRedisDTO @JsonCreator constructor(
 
     @JsonProperty("customerId")
     var customerId: Long,
@@ -18,8 +45,6 @@ data class JobRequestDTO @JsonCreator constructor(
     var detail: String
 
 )
-
-
 
 fun JobRequestDTO.validate() {
     validCustomer(customerId)

@@ -12,6 +12,7 @@ import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobRequest.CancelJobRequestDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
+import quickfix.dto.job.jobRequest.JobRequestRedisDTO
 import quickfix.dto.message.MessageDTO
 import quickfix.dto.message.MessageResponseDTO
 import quickfix.dto.message.toMessageResponseDTO
@@ -68,12 +69,13 @@ class JobService(
      JOB REQUEST METHODS
      **************************/
 
+    @Transactional(readOnly = true)
     fun getJobRequests(professionalId : Long) : Set<JobRequestDTO> {
         val professionIds : Set<Long> = professionalService.getProfessionIds(professionalId)
         return redisService.getJobRequests(professionIds)
     }
 
-    fun requestJob(jobRequest : JobRequestDTO) {
+    fun requestJob(jobRequest : JobRequestRedisDTO) {
 
         userService.assertUserExists(jobRequest.customerId)
         professionService.assertProfessionExists(jobRequest.professionId)
