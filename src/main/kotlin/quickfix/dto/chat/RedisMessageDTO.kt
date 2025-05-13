@@ -1,4 +1,4 @@
-package quickfix.dto.message
+package quickfix.dto.chat
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
