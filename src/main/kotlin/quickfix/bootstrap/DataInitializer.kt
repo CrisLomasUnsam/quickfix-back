@@ -46,5 +46,7 @@ class DataInitializer : InitializingBean {
         val job3 = JobBuilder.buildMock(users["custom1"]!!, users["prof2"]!!, professions["Electricidad"]!!, done = false)
 
         jobRepository.saveAll(listOf(job1, job2, job3))
+
+        //"rate1 = RatingBuilder")
     }
 }
