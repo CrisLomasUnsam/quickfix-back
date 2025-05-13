@@ -30,6 +30,9 @@ data class JobRequestDTO @JsonCreator constructor(
     @JsonProperty("detail")
     var detail: String,
 
+    @JsonProperty("rating")
+    var rating: Double
+
 )
 
 @Schema(description = "Para traer los jobRequests de Redis")

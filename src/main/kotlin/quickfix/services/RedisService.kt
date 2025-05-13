@@ -1,7 +1,10 @@
 package quickfix.services
 
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Pageable
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
+import quickfix.dao.RatingRepository
 import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.job.jobRequest.JobRequestRedisDTO
@@ -17,9 +20,10 @@ class RedisService(
     private val redisJobOfferStorage: RedisTemplate<String, CreateJobOfferDTO>,
     private val redisChatStorage: RedisTemplate<String, RedisMessageDTO>,
     private val professionService: ProfessionService,
-    private val userService: UserService
+    private val userService: UserService,
 
 ) {
+    @Autowired lateinit var ratingRepository: RatingRepository
 
     /******************************************************
     JOB_REQUESTS WILL HAVE THE FOLLOWING KEY PATTERN:
@@ -64,6 +68,7 @@ class RedisService(
             val professionId = jobRequest.professionId
             val professionName = professionService.getProfessionById(jobRequest.professionId).name
             val detail = jobRequest.detail
+            val rating = ratingRepository.findAllByUserToId(customerId, Pageable.unpaged()).map { it.score }.average().takeIf { !it.isNaN() } ?: 0.0
 
             JobRequestDTO(
                 customerId = customerId,
@@ -72,7 +77,8 @@ class RedisService(
                 customerAvatar = "",
                 professionId = professionId,
                 professionName = professionName,
-                detail = detail
+                detail = detail,
+                rating = rating
             )
         }.toSet()
     }
