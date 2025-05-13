@@ -2,6 +2,7 @@ package quickfix.bootstrap
 
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
 import quickfix.dao.*
 import quickfix.models.*
@@ -163,6 +164,8 @@ class DataInitializer : InitializingBean {
         }
         userRepository.save(user)
     }
+    private fun byteArrayFromResource(path: String): ByteArray =
+        ClassPathResource(path).inputStream.readBytes()
 
     fun initUsers() {
 
@@ -173,9 +176,11 @@ class DataInitializer : InitializingBean {
             name = "Valentina"
             lastName = "Gomez"
             dni = 12345678
+            avatar = byteArrayFromResource("images/kirito.jpg")
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.FEMALE
             address = address1
+
             verified = true
             professionalInfo = professionalInfo1
             setNewPassword("password")
@@ -224,6 +229,7 @@ class DataInitializer : InitializingBean {
             name = "Juan"
             lastName = "Contardo"
             dni = 12345672
+            avatar = byteArrayFromResource("images/henry_cavill.jpg")
             dateBirth = LocalDate.of(1995, 5, 23)
             gender = Gender.MALE
             address = address4
