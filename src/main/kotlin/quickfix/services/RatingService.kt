@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.RatingRepository
 import quickfix.dto.rating.EditRatingDTO
+import quickfix.dto.rating.RateUserPageDTO
 import quickfix.dto.rating.RatingDTO
 import quickfix.models.Rating
 import quickfix.utils.exceptions.BusinessException
@@ -28,7 +29,7 @@ class RatingService(
         return ratingRepository.findAllByUserFromId(userId)
     }
 
-    @Transactional(rollbackFor = [Exception::class])
+
     fun rateUser(currentUserId: Long, ratingDTO: RatingDTO) {
 
         val userFrom = userService.getUserById(currentUserId)
@@ -61,10 +62,32 @@ class RatingService(
     @Transactional(rollbackFor = [Exception::class])
     fun updateRating(userId: Long, data: EditRatingDTO) {
         val rating = ratingRepository.findById(data.ratingId).orElseThrow { BusinessException("Rating no existe") }
-        //TODO: Validar que el usuario pueda editar este rating
+
+        if (rating.userFrom.id != userId) {
+            throw BusinessException("No tienes permiso para editar esta calificación")
+        }
         rating.apply {
             data.score?.let { this.score = it }
             data.comment?.let { rating.comment = it }
-        }.also { it.validate() }
+        }
+        rating.validate()
+    }
+
+    fun jobRating(currentUserId: Long, jobId: Long): RateUserPageDTO{
+        val job = jobService.getJobById(jobId)
+
+        if (currentUserId != job.customer.id && currentUserId != job.professional.id) {
+            throw BusinessException("Usted no participó en este job")
+        }
+
+        val userTo = if (currentUserId == job.customer.id)  job.professional else job.customer
+
+        val existingRating = ratingRepository
+            .findByJobIdAndUserFromId(jobId, currentUserId)
+            .orElse(null)
+
+        val avg = ratingRepository.findAverageRatingByUserToId(userTo.id)
+
+        return RateUserPageDTO.from(userTo, avg, existingRating, job)
     }
 }
