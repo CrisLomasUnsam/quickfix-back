@@ -9,6 +9,7 @@ import quickfix.dao.*
 @Service
 class DataInitializer : InitializingBean {
 
+    @Autowired private lateinit var ratingRepository: RatingRepository
     @Autowired private lateinit var jobRepository: JobRepository
     @Autowired private lateinit var userRepository: UserRepository
     @Autowired private lateinit var professionRepository: ProfessionRepository
@@ -47,6 +48,13 @@ class DataInitializer : InitializingBean {
 
         jobRepository.saveAll(listOf(job1, job2, job3))
 
-        //"rate1 = RatingBuilder")
+        val rating1 = RatingBuilder.buildMock(users["custom1"]!!, users["prof1"]!!, job1, 5)
+        val rating2 = RatingBuilder.buildMock(users["prof1"]!!, users["custom1"]!!, job1, 4)
+        val rating3 = RatingBuilder.buildMock(users["custom1"]!!, users["prof2"]!!, job2, 3)
+        val rating4 = RatingBuilder.buildMock(users["prof2"]!!, users["custom1"]!!, job2, 1)
+
+        ratingRepository.saveAll(listOf(rating1, rating2, rating3, rating4))
+
+
     }
 }

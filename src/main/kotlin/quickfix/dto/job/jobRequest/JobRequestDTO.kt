@@ -3,7 +3,7 @@ package quickfix.dto.job.jobRequest
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
-import quickfix.utils.enums.JobStatus
+import quickfix.models.User
 import quickfix.utils.exceptions.BusinessException
 
 @Schema(description = "Solicitud de un Job por un customer")
@@ -33,7 +33,27 @@ data class JobRequestDTO @JsonCreator constructor(
     @JsonProperty("rating")
     var rating: Double
 
-)
+) {
+    companion object {
+        fun toJobRequest(
+            jobRequestRedis: JobRequestRedisDTO,
+            customer: User,
+            professionName: String,
+            rating: Double
+        ) : JobRequestDTO {
+            return JobRequestDTO(
+                customerId = jobRequestRedis.customerId,
+                customerName = customer.name,
+                customerLastName = customer.lastName,
+                customerAvatar = "", // si tenés un campo real, ponelo acá
+                professionId = jobRequestRedis.professionId,
+                professionName = professionName,
+                detail = jobRequestRedis.detail,
+                rating = rating
+            )
+        }
+    }
+}
 
 @Schema(description = "Para traer los jobRequests de Redis")
 data class JobRequestRedisDTO @JsonCreator constructor(
