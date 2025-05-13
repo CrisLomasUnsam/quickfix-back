@@ -4,9 +4,9 @@ import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
-import quickfix.dto.message.MessageDTO
-import quickfix.dto.message.RedisMessageDTO
-import quickfix.dto.message.toRedisMessage
+import quickfix.dto.chat.MessageDTO
+import quickfix.dto.chat.RedisMessageDTO
+import quickfix.dto.chat.toRedisMessage
 import quickfix.utils.exceptions.BusinessException
 
 @Service
