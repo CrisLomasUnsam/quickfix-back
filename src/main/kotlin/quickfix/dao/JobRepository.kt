@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Component
 import quickfix.models.Job
 import quickfix.models.Rating
-import java.util.Optional
 
 @Component
 interface JobRepository : JpaRepository<Job, Long> {
