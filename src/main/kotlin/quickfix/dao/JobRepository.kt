@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Component
 import quickfix.models.Job
 import quickfix.models.Rating
+import java.util.Optional
 
 @Component
 interface JobRepository : JpaRepository<Job, Long> {
@@ -15,6 +16,12 @@ interface JobRepository : JpaRepository<Job, Long> {
     fun findAllByCustomerId(customerId: Long, pageable: Pageable): Page<Job>
 
     fun findAllByProfessionalId(professionalId: Long, pageable: Pageable): Page<Job>
+
+    fun existsByIdAndCustomerId(jobId: Long, customerId: Long): Boolean
+
+    fun existsByIdAndProfessionalId(jobId: Long, professionalId: Long): Boolean
+
+    fun getProfessionalIdById(id: Long): Long
 
     @Query(
         value = """

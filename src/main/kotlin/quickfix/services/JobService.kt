@@ -12,9 +12,9 @@ import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobRequest.CancelJobRequestDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
-import quickfix.dto.message.MessageDTO
-import quickfix.dto.message.MessageResponseDTO
-import quickfix.dto.message.toMessageResponseDTO
+import quickfix.dto.chat.MessageDTO
+import quickfix.dto.chat.MessageResponseDTO
+import quickfix.dto.chat.toMessageResponseDTO
 import quickfix.dto.professional.ProfessionalDTO
 import quickfix.models.Job
 import quickfix.models.Profession
@@ -22,6 +22,7 @@ import quickfix.models.User
 import quickfix.utils.PAGE_SIZE
 import quickfix.utils.enums.JobStatus
 import quickfix.utils.exceptions.BusinessException
+import quickfix.utils.exceptions.NotFoundException
 import java.time.LocalDate
 
 @Service
@@ -169,11 +170,22 @@ class JobService(
         redisService.sendChatMessage(senderIsCustomer, message)
     }
 
+    fun getProfessionalChatInfo(customerId: Long, jobId: Long): User {
+        if (!jobRepository.existsByIdAndCustomerId(jobId, customerId)) throw NotFoundException("ajustar")
+        val professionalId = jobRepository.getProfessionalIdById(jobId)
+        return userService.getUserById(professionalId)
+    }
+
+    fun getCustomerChatInfo(professionalId: Long, jobId: Long): User {
+        if (!jobRepository.existsByIdAndProfessionalId(jobId, professionalId)) throw NotFoundException("ajustar")
+        val customerId = jobRepository.getProfessionalIdById(jobId)
+        return userService.getUserById(customerId)
+    }
+
     private fun validateChatMessageIds(userId : Long, jobId : Long) {
         val job = getJobById(jobId)
         val notValidIds = job.customer.id != userId && job.professional.id != userId
         if(notValidIds)
             throw BusinessException("Ha habido un error. Por favor, verifique los datos.")
     }
-
 }

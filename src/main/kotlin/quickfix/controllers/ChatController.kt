@@ -3,8 +3,9 @@ package quickfix.controllers
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
-import quickfix.dto.message.MessageDTO
-import quickfix.dto.message.MessageResponseDTO
+import quickfix.dto.chat.ChatUserInfoDTO
+import quickfix.dto.chat.MessageDTO
+import quickfix.dto.chat.MessageResponseDTO
 import quickfix.services.JobService
 
 @RestController
@@ -29,4 +30,13 @@ class ChatController (
         jobService.postChatMessage(currentUserId, message)
     }
 
+    @GetMapping("/professionalChatInfo/{jobId}")
+    fun getProfessionalChatInfo(@ModelAttribute("currentUserId") currentUserId: Long, @PathVariable jobId: Long): ChatUserInfoDTO {
+        return  ChatUserInfoDTO.toDTO(jobService.getProfessionalChatInfo(currentUserId, jobId))
+    }
+
+    @GetMapping("/customerChatInfo/{jobId}")
+    fun getCustomerChatInfo(@ModelAttribute("currentUserId") currentUserId: Long, @PathVariable jobId: Long): ChatUserInfoDTO {
+        return ChatUserInfoDTO.toDTO(jobService.getCustomerChatInfo(currentUserId, jobId))
+    }
 }
