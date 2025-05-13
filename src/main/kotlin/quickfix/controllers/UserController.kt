@@ -1,6 +1,7 @@
 package quickfix.controllers
 
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.MediaType
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -37,8 +38,8 @@ class UserController(
     fun updateAvatar(@ModelAttribute("currentUserId") currentUserId: Long, @RequestParam("file") file: MultipartFile) =
         userService.updateAvatar(currentUserId, file)
         
-    @GetMapping("/avatar")
-    fun getAvatar(@ModelAttribute("currentUserId") currentUserId: Long) = 
-        userService.getAvatar(currentUserId)
+    @GetMapping("/avatar/{userId}", produces = [MediaType.IMAGE_JPEG_VALUE])
+    fun getAvatar(@PathVariable userId: Long) =
+        userService.getAvatar(userId)
 
 }
