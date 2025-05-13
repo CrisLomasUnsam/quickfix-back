@@ -18,7 +18,7 @@ interface RatingRepository : JpaRepository<Rating, Long> {
 
     fun existsByJobIdAndUserFromId(jobId: Long, userFromId: Long): Boolean
 
-    fun findByJobIdAndUserFromId(jobId: Long, userFromId: Long): Optional<Rating>
+    fun findByJobIdAndUserFromId(jobId: Long, userFromId: Long):  Rating?
 
  @Query(value = """
      SELECT COALESCE(AVG(r.score), 0) 
