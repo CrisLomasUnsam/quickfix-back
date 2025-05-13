@@ -6,6 +6,20 @@ import io.swagger.v3.oas.annotations.media.Schema
 import quickfix.models.User
 import quickfix.utils.exceptions.BusinessException
 
+@Schema(description = "Para traer los jobRequests de Redis")
+data class JobRequestRedisDTO @JsonCreator constructor(
+
+    @JsonProperty("customerId")
+    var customerId: Long,
+
+    @JsonProperty("professionId")
+    var professionId: Long,
+
+    @JsonProperty("detail")
+    var detail: String
+
+)
+
 @Schema(description = "Solicitud de un Job por un customer")
 data class JobRequestDTO @JsonCreator constructor(
 
@@ -54,20 +68,6 @@ data class JobRequestDTO @JsonCreator constructor(
         }
     }
 }
-
-@Schema(description = "Para traer los jobRequests de Redis")
-data class JobRequestRedisDTO @JsonCreator constructor(
-
-    @JsonProperty("customerId")
-    var customerId: Long,
-
-    @JsonProperty("professionId")
-    var professionId: Long,
-
-    @JsonProperty("detail")
-    var detail: String
-
-)
 
 fun JobRequestDTO.validate() {
     validCustomer(customerId)

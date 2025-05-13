@@ -42,7 +42,7 @@ class RedisService(
         val userHasPreviousRequest = redisJobRequestStorage.keys(tempKey).isNotEmpty()
 
         if(userHasPreviousRequest)
-            throw BusinessException("Este usuario ya tiene una solicitud activa.")
+            throw BusinessException("Este usuario $customerId ya tiene una solicitud activa.")
 
         val key = getJobRequestKey(professionId, customerId)
         redisJobRequestStorage.opsForValue().set(key,jobRequest)
@@ -51,7 +51,6 @@ class RedisService(
     }
 
     fun getJobRequests(professionIds : Set<Long>) : Set<JobRequestDTO> {
-        println("llego aca")
         val jobRequestsRedis = mutableSetOf<JobRequestRedisDTO>()
         professionIds.forEach { professionId ->
             val tempKey = "JobRequest_${professionId}_*_"
@@ -145,5 +144,14 @@ class RedisService(
     fun deleteChatMessages(jobId: Long) {
         val key = getChatKey(jobId)
         redisChatStorage.delete(key)
+    }
+
+    /* CLEANUP */
+
+    fun cleanupJobRequest() {
+        val keys = redisJobRequestStorage.keys("JobRequest_*_*")
+        keys.forEach { key ->
+            redisJobRequestStorage.delete(key)
+        }
     }
 }
