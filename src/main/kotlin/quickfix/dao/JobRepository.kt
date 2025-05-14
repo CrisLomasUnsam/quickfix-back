@@ -21,7 +21,15 @@ interface JobRepository : JpaRepository<Job, Long> {
 
     fun existsByIdAndProfessionalId(jobId: Long, professionalId: Long): Boolean
 
-    fun getProfessionalIdById(id: Long): Long
+    @Query(value="""
+        select professional_id from jobs where id = :jobId fetch first 1 rows only
+    """, nativeQuery = true)
+    fun getProfessionalIdByJobId(@Param("jobId") jobId: Long): Long
+
+    @Query(value="""
+        select customer_id from jobs where id = :jobId fetch first 1 rows only
+    """, nativeQuery = true)
+    fun getCustomerIdByJobId(@Param("jobId") jobId: Long): Long
 
     @Query(
         value = """
