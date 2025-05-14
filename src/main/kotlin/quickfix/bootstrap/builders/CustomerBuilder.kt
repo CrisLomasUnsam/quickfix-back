@@ -1,6 +1,5 @@
 package quickfix.bootstrap.builders
 
-import quickfix.models.Address
 import quickfix.models.Gender
 import quickfix.models.User
 import java.security.MessageDigest
