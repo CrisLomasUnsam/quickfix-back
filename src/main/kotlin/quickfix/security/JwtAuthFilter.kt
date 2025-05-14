@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
-import quickfix.utils.exceptions.ExpiredTokenException
+import quickfix.utils.exceptions.InvalidTokenException
 
 @Component
 class   JwtAuthFilter : OncePerRequestFilter() {
@@ -33,7 +33,7 @@ class   JwtAuthFilter : OncePerRequestFilter() {
 
             filterChain.doFilter(request, response)
 
-        } catch (e : ExpiredTokenException) {
+        } catch (e : InvalidTokenException) {
             logger.warn(e.message)
             response.sendError(HttpStatus.valueOf(498).value(), e.message)
         }

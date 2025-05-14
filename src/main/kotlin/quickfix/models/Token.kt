@@ -8,7 +8,7 @@ import java.util.*
 class Token: Identifier {
 
     @Id @GeneratedValue
-    override var id: Long = -1
+    override var id: Long = 0
 
 
     @OneToOne

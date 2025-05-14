@@ -1,7 +1,3 @@
 package quickfix.utils.exceptions
 
-import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.ResponseStatus
-
-@ResponseStatus(HttpStatus.UNAUTHORIZED)
-class InvalidCredentialsException (msg : String = "Credenciales inválidas") : Exception(msg)
+data class InvalidCredentialsException (override val message : String = "Credenciales inválidas") : Exception(message)

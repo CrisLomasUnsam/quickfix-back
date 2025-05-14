@@ -4,23 +4,23 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
 import quickfix.dto.user.NewCredentialRequestDTO
-import quickfix.services.UserService
+import quickfix.services.RegisterService
 
 @RestController
 @RequestMapping("/recovery")
-@Tag(name = "Contraseña")
+@Tag(name = "Recupero de contraseña")
 class RecoveryController(
-    private val userService: UserService
+    private val registerService: RegisterService
 ) {
 
     @PostMapping
     @Operation(summary = "Enviar un mail de recuperación al usuario")
     fun requestUpdateUserPassword(@RequestBody mail : String) =
-        userService.changeUserPassword(mail)
+        registerService.requestChangeUserPassword(mail)
 
     @PatchMapping("/confirm")
     @Operation(summary = "Confirmar cambio de contraseña")
     fun confirmPasswordChange(@RequestBody newCredentials: NewCredentialRequestDTO) {
-        userService.validateUserByToken(newCredentials)
+        registerService.recoveryPassword(newCredentials)
     }
 }

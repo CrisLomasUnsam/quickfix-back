@@ -21,8 +21,8 @@ import quickfix.models.Profession
 import quickfix.models.User
 import quickfix.utils.PAGE_SIZE
 import quickfix.utils.enums.JobStatus
-import quickfix.utils.exceptions.BusinessException
 import quickfix.utils.exceptions.NotFoundException
+import quickfix.utils.exceptions.JobException
 import java.time.LocalDate
 
 @Service
@@ -35,7 +35,7 @@ class JobService(
 ){
 
     fun getJobById(id: Long): Job =
-        jobRepository.findById(id).orElseThrow { throw BusinessException() }
+        jobRepository.findById(id).orElseThrow { throw JobException("Ha habido un error al recuperar la información del trabajo.") }
 
     fun findJobsByCustomerId(id: Long, pageNumber: Int): Page<Job>  =
          jobRepository.findAllByCustomerId(id, sortPage(pageNumber))
@@ -96,7 +96,7 @@ class JobService(
         val createdJobOffers = redisService.getJobOffers(customerId)
 
         return createdJobOffers.map { createdJobOffer ->
-            val professional = userService.getUserById(createdJobOffer.professionalId)
+            val professional = userService.getById(createdJobOffer.professionalId)
             val professionalRating = jobRepository.findRatingsByProfessionalId(createdJobOffer.professionalId).map { it.score }.average()
 
             JobOfferDTO(
@@ -112,7 +112,7 @@ class JobService(
     }
 
     fun offerJob(jobOffer : CreateJobOfferDTO) {
-        val professional = userService.getUserById(jobOffer.professionalId).professionalInfo
+        val professional = userService.getById(jobOffer.professionalId).professionalInfo
         professional.validateCanOfferJob()
         redisService.offerJob(jobOffer)
     }
@@ -123,13 +123,13 @@ class JobService(
     @Transactional(rollbackFor = [Exception::class])
     fun acceptJobOffer(acceptedJob: AcceptedJobOfferDTO) {
 
-        val customer: User = userService.getUserById(acceptedJob.customerId)
-        val professional : User = userService.getUserById(acceptedJob.professionalId)
+        val customer: User = userService.getById(acceptedJob.customerId)
+        val professional : User = userService.getById(acceptedJob.professionalId)
         val profession: Profession = professionService.getProfessionById(acceptedJob.professionId)
 
         val jobOffers : Set<CreateJobOfferDTO> = redisService.getJobOffers(acceptedJob.customerId)
         val jobOffer = jobOffers.firstOrNull { it.professionalId == acceptedJob.professionalId }
-            ?: throw BusinessException("No existe oferta de este profesional para el usuario.")
+            ?: throw JobException("No existe oferta de este profesional para el usuario.")
 
         val job = Job().apply {
             this.professional = professional
@@ -176,12 +176,12 @@ class JobService(
     fun getCustomerChatInfo(customerId: Long, jobId: Long): User {
         if (!jobRepository.existsByIdAndCustomerId(jobId, customerId)) throw NotFoundException("ajustar")
         val professionalId = jobRepository.getProfessionalIdByJobId(jobId)
-        return userService.getUserById(professionalId)
+        return userService.getById(professionalId)
     }
 
     fun getProfessionalChatInfo(professionalId: Long, jobId: Long): User {
         if (!jobRepository.existsByIdAndProfessionalId(jobId, professionalId)) throw NotFoundException("ajustar")
         val customerId = jobRepository.getCustomerIdByJobId(jobId)
-        return userService.getUserById(customerId)
+        return userService.getById(customerId)
     }
 }

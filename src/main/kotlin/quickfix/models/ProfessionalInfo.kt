@@ -2,7 +2,7 @@ package quickfix.models
 
 import jakarta.persistence.*
 import quickfix.utils.MAXIMUM_DEBT
-import quickfix.utils.exceptions.BusinessException
+import quickfix.utils.exceptions.ProfessionalException
 
 
 @Entity
@@ -10,13 +10,13 @@ import quickfix.utils.exceptions.BusinessException
 class ProfessionalInfo : Identifier {
 
     @Id @GeneratedValue
-    override var id: Long = -1
+    override var id: Long = 0
 
-    @OneToMany(cascade = [(CascadeType.ALL)], orphanRemoval = true)
-    @JoinColumn(name = "professional_id")
+    @OneToMany(cascade = [(CascadeType.ALL)], fetch = FetchType.EAGER)
+    @JoinColumn(name = "professional_id", nullable = false)
     var professionalProfessions: MutableSet<ProfessionalProfession> = mutableSetOf()
 
-    @OneToMany(cascade = [(CascadeType.ALL)], orphanRemoval = true)
+    @OneToMany(cascade = [(CascadeType.REMOVE)], orphanRemoval = true)
     var certificates: MutableSet<Certificate> = mutableSetOf()
 
     var balance: Double = 0.0
@@ -26,19 +26,19 @@ class ProfessionalInfo : Identifier {
 
     override fun validate() {
 
-    if (balance < 0) throw BusinessException("El saldo (balance) no puede ser negativo.")
-        if (debt < 0) throw BusinessException("La deuda (debt) no puede ser negativa.")
+    if (balance < 0) throw ProfessionalException("El saldo (balance) no puede ser negativo.")
+        if (debt < 0) throw ProfessionalException("La deuda (debt) no puede ser negativa.")
 
         certificates.forEach { cert ->
             if (!hasProfession(cert.profession.id)) {
-                throw BusinessException("El certificado '${cert.name}' pertenece a una profesión no asignada.")
+                throw ProfessionalException("El certificado '${cert.name}' pertenece a una profesión no asignada.")
             }
         }
     }
 
     fun addProfession(profession: Profession) {
         if (professionalProfessions.any { it.profession.id == profession.id }) {
-            throw BusinessException("Ya existe la profesión con id ${profession.id}.")
+            throw ProfessionalException("Ya existe la profesión con id ${profession.id}.")
         }
         this.professionalProfessions.add(
             ProfessionalProfession().apply {
@@ -52,13 +52,13 @@ class ProfessionalInfo : Identifier {
 
     fun disableProfession(professionId: Long) {
         val profession = professionalProfessions.find { it.profession.id == professionId }
-            ?: throw BusinessException("No existe la profesión con id $professionId para deshabilitar.")
+            ?: throw ProfessionalException("No existe la profesión con id $professionId para deshabilitar.")
         profession.disable()
     }
 
     fun enableProfession(professionId: Long) {
         val profession = professionalProfessions.find { it.profession.id == professionId }
-            ?: throw BusinessException("No existe la profesión con id $professionId para habilitar.")
+            ?: throw ProfessionalException("No existe la profesión con id $professionId para habilitar.")
         profession.enable()
     }
 
@@ -79,18 +79,18 @@ class ProfessionalInfo : Identifier {
 
     fun validateCertificateAlreadyExists(newCertificateName: String, profession: Profession) {
         if (certificates.any { certificate -> certificate.name.lowercase().replace(" ","") == newCertificateName.lowercase().replace(" ","") && certificate.profession == profession })
-            throw BusinessException("Ya tiene un certificado con el mismo nombre en la profesión ${profession.name}.")
+            throw ProfessionalException("Ya tiene un certificado con el mismo nombre en la profesión ${profession.name}.")
     }
     
     fun addCertificate(newCertificate: Certificate) {
         //Falta q el nombre no sea el mismo para la misma profesion
         if (certificates.any {
             it.name.equals(newCertificate.name, ignoreCase = true) }) {
-            throw BusinessException("Ya existe un certificado con el mismo nombre.")
+            throw ProfessionalException("Ya existe un certificado con el mismo nombre.")
         }
 
         if (!hasProfession(newCertificate.profession.id)) {
-            throw BusinessException("No se puede agregar un certificado para una profesión no asignada.")
+            throw ProfessionalException("No se puede agregar un certificado para una profesión no asignada.")
         }
         validateCertificateAlreadyExists(newCertificate.name, newCertificate.profession)
         this.certificates.add(newCertificate)
@@ -98,17 +98,17 @@ class ProfessionalInfo : Identifier {
 
     fun deleteCertificate(certificateName: String) {
         val cert= certificates.find { it.name == certificateName }
-            ?: throw  BusinessException("no existe un certificado con ese nombre.")
+            ?: throw  ProfessionalException("no existe un certificado con ese nombre.")
 
         if (!hasProfession(cert.profession.id))
-            throw BusinessException("No se puede eliminar un certificado de una profesión no asignada.")
+            throw ProfessionalException("No se puede eliminar un certificado de una profesión no asignada.")
 
         this.certificates.removeIf { it.name == certificateName }
     }
 
     fun payDebt() {
-        if (debt <= 0)  throw BusinessException("No tiene deudas pendientes.")
-        if (debt > balance) throw BusinessException("Saldo insuficiente para pagar la deuda.")
+        if (debt <= 0)  throw ProfessionalException("No tiene deudas pendientes.")
+        if (debt > balance) throw ProfessionalException("Saldo insuficiente para pagar la deuda.")
         balance -= debt
         debt = 0.0
     }
@@ -116,7 +116,7 @@ class ProfessionalInfo : Identifier {
 
     fun validateCanOfferJob() {
         if (this.debt >= MAXIMUM_DEBT) {
-            throw BusinessException("No puede ofertar trabajos con una deuda igual o superior a $MAXIMUM_DEBT.")
+            throw ProfessionalException("No puede ofertar trabajos con una deuda igual o superior a $MAXIMUM_DEBT.")
         }
     }
 

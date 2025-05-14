@@ -7,7 +7,7 @@ import jakarta.persistence.*
 class Profession : Identifier {
 
     @Id @GeneratedValue
-    override var id: Long = -1
+    override var id: Long = 0
 
     @Column(unique = true, nullable = false)
     lateinit var name: String

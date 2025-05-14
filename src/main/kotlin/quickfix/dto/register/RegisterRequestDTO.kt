@@ -4,7 +4,7 @@ import quickfix.dto.address.AddressDTO
 import quickfix.models.Address
 import quickfix.models.Gender
 import quickfix.models.User
-import quickfix.utils.datifyStringWithDay
+import quickfix.utils.functions.datifyStringWithDay
 
 class RegisterRequestDTO (
     var mail: String,
