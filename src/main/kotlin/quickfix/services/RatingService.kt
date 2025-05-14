@@ -76,16 +76,11 @@ class RatingService(
     fun jobRating(currentUserId: Long, jobId: Long): RateUserPageDTO{
         val job = jobService.getJobById(jobId)
 
-        if (currentUserId != job.customer.id && currentUserId != job.professional.id) {
+        if (currentUserId != job.customer.id && currentUserId != job.professional.id)
             throw BusinessException("Usted no participó en este job")
-        }
 
-        val userTo = if (currentUserId == job.customer.id)  job.professional else job.customer
-
-        val existingRating = ratingRepository
-            .findByJobIdAndUserFromId(jobId, currentUserId)
-
-
+        val userTo = if (currentUserId == job.customer.id) job.professional else job.customer
+        val existingRating = ratingRepository.findByJobIdAndUserFromId(jobId, currentUserId)
         val avg = ratingRepository.findAverageRatingByUserToId(userTo.id)
 
         return RateUserPageDTO.from(userTo, avg, existingRating, job)

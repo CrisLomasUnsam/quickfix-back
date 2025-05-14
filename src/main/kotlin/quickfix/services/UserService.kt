@@ -83,10 +83,12 @@ class UserService(
 
     private fun createRecoveryURL(token: String): String = "$FRONTEND_URL+$RECOVERY_FRONTEND_URL?token=$token"
 
+    fun getAvatar(userId: Long): ByteArray? = this.getUserById(userId).avatar
+
     @Transactional(rollbackFor = [Exception::class])
     fun updateAvatar(currentUserId: Long, file: MultipartFile) {
         val user = this.getUserById(currentUserId)
         user.avatar = file.bytes
     }
-    fun getAvatar(userId: Long): ByteArray = this.getUserById(userId).avatar
+
 }

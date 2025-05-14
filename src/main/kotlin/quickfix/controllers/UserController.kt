@@ -26,10 +26,6 @@ class UserController(
     fun userInfo(@ModelAttribute("currentUserId") currentUserId : Long) : UserDTO =
         UserDTO.toDTO(userService.getUserById(currentUserId))
 
-    @GetMapping("/img")
-    fun userImg(@ModelAttribute("currentUserId") currentUserId : Long) : ByteArray =
-        userService.getUserById(currentUserId).avatar
-
     @PatchMapping("/data/edit")
     fun updateUserInfo(@ModelAttribute("currentUserId") currentUserId : Long, @RequestBody modifiedInfo: UserModifiedInfoDTO) =
         userService.changeUserInfo(currentUserId, modifiedInfo)
@@ -37,9 +33,13 @@ class UserController(
     @PatchMapping("/avatar")
     fun updateAvatar(@ModelAttribute("currentUserId") currentUserId: Long, @RequestParam("file") file: MultipartFile) =
         userService.updateAvatar(currentUserId, file)
+
+    @GetMapping("/avatar", produces = [MediaType.IMAGE_JPEG_VALUE])
+    fun selfAvatar(@ModelAttribute("currentUserId") currentUserId : Long) : ByteArray? =
+        userService.getAvatar(currentUserId)
         
     @GetMapping("/avatar/{userId}", produces = [MediaType.IMAGE_JPEG_VALUE])
-    fun getAvatar(@PathVariable userId: Long) =
+    fun userAvatar(@PathVariable userId: Long) : ByteArray? =
         userService.getAvatar(userId)
 
 }

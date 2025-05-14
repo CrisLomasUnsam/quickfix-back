@@ -3,7 +3,6 @@ package quickfix.dto.rating
 import quickfix.models.Job
 import quickfix.models.Rating
 import quickfix.models.User
-import java.util.*
 
 
 data class RateUserPageDTO(

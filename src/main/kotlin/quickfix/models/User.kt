@@ -35,8 +35,8 @@ class User : Identifier {
     lateinit var name : String
     lateinit var lastName : String
 
-    @Column(name = "avatar", columnDefinition = "BYTEA")
-    lateinit var avatar: ByteArray
+    @Column(columnDefinition = "BYTEA", nullable = true)
+    var avatar: ByteArray? = null
     lateinit var dateBirth : LocalDate
     var verified : Boolean = false
 
