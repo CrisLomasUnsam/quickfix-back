@@ -120,9 +120,5 @@ class ProfessionalInfo : Identifier {
         }
     }
 
-    fun activeProfessionNames(): List<String> =
-        professionalProfessions
-            .filter { it.active }
-            .map { it.profession.name }
 
 }
