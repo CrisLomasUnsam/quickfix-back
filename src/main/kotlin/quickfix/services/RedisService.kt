@@ -12,6 +12,8 @@ import quickfix.dto.message.MessageDTO
 import quickfix.dto.message.RedisMessageDTO
 import quickfix.dto.message.toRedisMessage
 import quickfix.utils.exceptions.BusinessException
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 @Service
 class RedisService(
@@ -66,7 +68,9 @@ class RedisService(
                 .findAllByUserToId(jobRequest.customerId, Pageable.unpaged())
                 .map { it.score }
                 .average()
-                .takeIf { !it.isNaN() } ?: 0.0
+                .takeIf { !it.isNaN() }
+                ?.let { BigDecimal(it).setScale(1, RoundingMode.HALF_UP).toDouble()}
+                ?: 0.0
 
             JobRequestDTO.toJobRequest(jobRequest, customer, profession.name, rating)
         }.toSet()
