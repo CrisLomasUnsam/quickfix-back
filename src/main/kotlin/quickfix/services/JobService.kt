@@ -176,7 +176,7 @@ class JobService(
             throw BusinessException("Ha habido un error. Por favor, verifique los datos.")
     }
 
-    fun countFinishedJobsForUser(id: Long): Int =
-        jobRepository.countFinishedJobsForUser(id)
+    fun countFinishedJobsForProfessional(professionalId: Long): Int =
+        jobRepository.countByProfessionalIdAndStatus(professionalId)
 
 }
