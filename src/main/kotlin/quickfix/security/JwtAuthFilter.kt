@@ -11,7 +11,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 import quickfix.utils.exceptions.InvalidTokenException
 
 @Component
-class JwtAuthFilter : OncePerRequestFilter() {
+class   JwtAuthFilter : OncePerRequestFilter() {
 
     @Autowired
     lateinit var jwtTokenUtils : JwtTokenUtils

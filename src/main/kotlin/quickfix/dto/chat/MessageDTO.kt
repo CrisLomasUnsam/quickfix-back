@@ -1,4 +1,4 @@
-package quickfix.dto.message
+package quickfix.dto.chat
 
 data class MessageDTO(
     val jobId: Long,

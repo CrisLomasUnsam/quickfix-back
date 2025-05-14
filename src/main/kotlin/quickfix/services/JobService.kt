@@ -12,15 +12,16 @@ import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobRequest.CancelJobRequestDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
-import quickfix.dto.message.MessageDTO
-import quickfix.dto.message.MessageResponseDTO
-import quickfix.dto.message.toMessageResponseDTO
+import quickfix.dto.chat.MessageDTO
+import quickfix.dto.chat.MessageResponseDTO
+import quickfix.dto.chat.toMessageResponseDTO
 import quickfix.dto.professional.ProfessionalDTO
 import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.models.User
 import quickfix.utils.PAGE_SIZE
 import quickfix.utils.enums.JobStatus
+import quickfix.utils.exceptions.NotFoundException
 import quickfix.utils.exceptions.JobException
 import java.time.LocalDate
 
@@ -152,28 +153,35 @@ class JobService(
         redisService.deleteChatMessages(job.id)
     }
 
-    private fun userIsCustomerInJob(userId : Long, jobId : Long) : Boolean {
-        val job = getJobById(jobId)
-        return userId == job.customer.id
+    fun getCustomerChatMessages(customerId : Long, jobId : Long) : List<MessageResponseDTO> {
+        if(!jobRepository.existsByIdAndCustomerId(jobId, customerId)) throw NotFoundException("TODO")
+        return redisService.getChatMessages(jobId).map { it.toMessageResponseDTO(true)}
     }
 
-    fun getChatMessages(userId : Long, jobId : Long) : List<MessageResponseDTO> {
-        validateChatMessageIds(userId, jobId)
-        val requesterIsCustomer = userIsCustomerInJob(userId, jobId)
-        return redisService.getChatMessages(jobId).map { it.toMessageResponseDTO(requesterIsCustomer)}
+    fun getProfessionalChatMessages(professionalId : Long, jobId : Long) : List<MessageResponseDTO> {
+        if(!jobRepository.existsByIdAndProfessionalId(jobId, professionalId)) throw NotFoundException("TODO")
+        return redisService.getChatMessages(jobId).map { it.toMessageResponseDTO(false)}
     }
 
-    fun postChatMessage(userId : Long, message: MessageDTO) {
-        validateChatMessageIds(userId, message.jobId)
-        val senderIsCustomer = userIsCustomerInJob(userId, message.jobId)
-        redisService.sendChatMessage(senderIsCustomer, message)
+    fun postCustomerChatMessage(customerId : Long, message: MessageDTO) {
+        if(!jobRepository.existsByIdAndCustomerId(message.jobId, customerId)) throw NotFoundException("TODO")
+        redisService.sendChatMessage(true, message)
     }
 
-    private fun validateChatMessageIds(userId : Long, jobId : Long) {
-        val job = getJobById(jobId)
-        val notValidIds = job.customer.id != userId && job.professional.id != userId
-        if(notValidIds)
-            throw JobException("Ha habido un error. Por favor, verifique los datos.")
+    fun postProfessionalChatMessage(professionalId : Long, message: MessageDTO) {
+        if(!jobRepository.existsByIdAndProfessionalId(message.jobId, professionalId)) throw NotFoundException("TODO")
+        redisService.sendChatMessage(false, message)
     }
 
+    fun getCustomerChatInfo(customerId: Long, jobId: Long): User {
+        if (!jobRepository.existsByIdAndCustomerId(jobId, customerId)) throw NotFoundException("ajustar")
+        val professionalId = jobRepository.getProfessionalIdByJobId(jobId)
+        return userService.getById(professionalId)
+    }
+
+    fun getProfessionalChatInfo(professionalId: Long, jobId: Long): User {
+        if (!jobRepository.existsByIdAndProfessionalId(jobId, professionalId)) throw NotFoundException("ajustar")
+        val customerId = jobRepository.getCustomerIdByJobId(jobId)
+        return userService.getById(customerId)
+    }
 }

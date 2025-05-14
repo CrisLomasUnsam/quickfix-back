@@ -1,10 +1,9 @@
-package quickfix.dto.message
+package quickfix.dto.chat
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import quickfix.utils.functions.CustomDateTimeFormatter
 import quickfix.utils.functions.dateTimeFromTimestamp
-import quickfix.utils.functions.stringifyDateTime
+import quickfix.utils.functions.stringifyDateTimeWithoutYear
 
 data class RedisMessageDTO @JsonCreator constructor(
 
@@ -22,5 +21,5 @@ data class RedisMessageDTO @JsonCreator constructor(
 fun RedisMessageDTO.toMessageResponseDTO(requesterIsCustomer : Boolean) = MessageResponseDTO(
     message = this.message,
     itsMine = (senderIsCustomer && requesterIsCustomer) || (!senderIsCustomer && !requesterIsCustomer),
-    datetime = stringifyDateTime(dateTimeFromTimestamp(this.timestamp), CustomDateTimeFormatter)
+    datetime = stringifyDateTimeWithoutYear(dateTimeFromTimestamp(this.timestamp))
 )
