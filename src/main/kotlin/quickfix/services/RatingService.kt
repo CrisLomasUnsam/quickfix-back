@@ -5,8 +5,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.RatingRepository
-import quickfix.dto.rating.EditRatingDTO
-import quickfix.dto.rating.RatingDTO
+import quickfix.dto.rating.*
 import quickfix.models.Rating
 import quickfix.utils.exceptions.BusinessException
 import java.time.LocalDate
@@ -65,5 +64,13 @@ class RatingService(
             data.score?.let { this.score = it }
             data.comment?.let { rating.comment = it }
         }.also { it.validate() }
+    }
+
+    fun getSeeProfile(currentUserId: Long): UserProfileDTO {
+        val user = userService.getById(currentUserId)
+        val totalJobs = jobService.countFinishedJobsForUser(user.id)
+        val professions  = user.professionalInfo.activeProfessionNames()
+        val stats = ratingRepository.findRatingStatsForUser(user.id)
+        return UserProfileDTO.from(user, totalJobs, professions, stats)
     }
 }
