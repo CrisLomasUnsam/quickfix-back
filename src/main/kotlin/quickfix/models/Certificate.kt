@@ -1,6 +1,6 @@
 package quickfix.models
 import jakarta.persistence.*
-import quickfix.utils.exceptions.BusinessException
+import quickfix.utils.exceptions.ProfessionalException
 
 @Entity
 @Table(name = "certificates")
@@ -17,8 +17,8 @@ class Certificate : Identifier {
     lateinit var img : String
 
     override fun validate() {
-        if (!validName()) throw BusinessException("El nombre del certificado no puede estar vacío")
-        if (!validImg()) throw BusinessException("El formato de la imagen no es válido")
+        if (!validName()) throw ProfessionalException("El nombre del certificado no puede estar vacío")
+        if (!validImg()) throw ProfessionalException("El formato de la imagen no es válido")
         validProfession()
     }
 

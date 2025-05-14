@@ -21,7 +21,7 @@ import quickfix.models.Profession
 import quickfix.models.User
 import quickfix.utils.PAGE_SIZE
 import quickfix.utils.enums.JobStatus
-import quickfix.utils.exceptions.BusinessException
+import quickfix.utils.exceptions.JobException
 import java.time.LocalDate
 
 @Service
@@ -34,7 +34,7 @@ class JobService(
 ){
 
     fun getJobById(id: Long): Job =
-        jobRepository.findById(id).orElseThrow { throw BusinessException() }
+        jobRepository.findById(id).orElseThrow { throw JobException("Ha habido un error al recuperar la información del trabajo.") }
 
     fun findJobsByCustomerId(id: Long, pageNumber: Int): Page<Job>  =
          jobRepository.findAllByCustomerId(id, sortPage(pageNumber))
@@ -128,7 +128,7 @@ class JobService(
 
         val jobOffers : Set<CreateJobOfferDTO> = redisService.getJobOffers(acceptedJob.customerId)
         val jobOffer = jobOffers.firstOrNull { it.professionalId == acceptedJob.professionalId }
-            ?: throw BusinessException("No existe oferta de este profesional para el usuario.")
+            ?: throw JobException("No existe oferta de este profesional para el usuario.")
 
         val job = Job().apply {
             this.professional = professional
@@ -173,7 +173,7 @@ class JobService(
         val job = getJobById(jobId)
         val notValidIds = job.customer.id != userId && job.professional.id != userId
         if(notValidIds)
-            throw BusinessException("Ha habido un error. Por favor, verifique los datos.")
+            throw JobException("Ha habido un error. Por favor, verifique los datos.")
     }
 
 }

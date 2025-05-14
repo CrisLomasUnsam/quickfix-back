@@ -13,7 +13,7 @@ import quickfix.models.Token
 import quickfix.models.User
 import quickfix.utils.FRONTEND_URL
 import quickfix.utils.events.OnChangePasswordRequestEvent
-import quickfix.utils.exceptions.BusinessException
+import quickfix.utils.exceptions.NotFoundException
 import java.util.*
 
 @Service
@@ -24,13 +24,13 @@ class UserService(
 ) {
 
     fun getById(id: Long): User =
-        userRepository.findById(id).orElseThrow{ BusinessException("Usuario no encontrado $id") }
+        userRepository.findById(id).orElseThrow{ NotFoundException("Usuario no encontrado $id") }
 
     fun findByMail(mail : String) : Optional<User> =
         userRepository.findByMail(mail)
 
     fun getByMail(mail: String): User =
-        userRepository.findByMail(mail).orElseThrow{ BusinessException("Usuario no encontrado $mail") }
+        userRepository.findByMail(mail).orElseThrow{ NotFoundException("Usuario no encontrado $mail") }
 
     fun save(user : User) = userRepository.save(user)
 
@@ -38,11 +38,11 @@ class UserService(
 
     fun assertUserExists(id: Long) {
         if (!userRepository.existsById(id))
-            throw BusinessException("Usuario no encontrado: $id")
+            throw NotFoundException("Usuario no encontrado: $id")
     }
 
     fun getProfessionalInfo(userId: Long) : ProfessionalInfo =
-        userRepository.findUserWithProfessionalInfoById(userId).orElseThrow{ BusinessException() }.professionalInfo
+        userRepository.findUserWithProfessionalInfoById(userId).orElseThrow{ NotFoundException() }.professionalInfo
 
     fun getActiveProfessionsByUserId(id: Long): Set<Profession> =
         getProfessionalInfo(id)

@@ -5,7 +5,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import quickfix.dto.address.AddressDTO
-import quickfix.utils.exceptions.BusinessException
+import quickfix.utils.exceptions.AddressException
 
 @Entity
 @Table(name = "addresses")
@@ -40,10 +40,10 @@ class Address : Identifier {
     }
 
     override fun validate() {
-        if (!validName(street)) throw BusinessException("La calle debe contener sólo letras")
-        if (!validName(city)) throw BusinessException("La ciudad debe contener sólo letras")
-        if (!validName(state)) throw BusinessException("La provincia debe contener sólo letras")
-        if (!validZipCode()) throw BusinessException("El código postal deben contener sólo números")
+        if (!validName(street)) throw AddressException("La calle debe contener sólo letras")
+        if (!validName(city)) throw AddressException("La ciudad debe contener sólo letras")
+        if (!validName(state)) throw AddressException("La provincia debe contener sólo letras")
+        if (!validZipCode()) throw AddressException("El código postal deben contener sólo números")
     }
 
     private fun validZipCode(): Boolean =

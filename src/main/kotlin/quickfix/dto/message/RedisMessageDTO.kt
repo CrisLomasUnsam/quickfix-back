@@ -8,8 +8,8 @@ import quickfix.utils.functions.stringifyDateTime
 
 data class RedisMessageDTO @JsonCreator constructor(
 
-    @JsonProperty("msg")
-    val msg: String,
+    @JsonProperty("message")
+    val message: String,
 
     @JsonProperty("senderIsCustomer")
     val senderIsCustomer: Boolean,
@@ -20,7 +20,7 @@ data class RedisMessageDTO @JsonCreator constructor(
 
 
 fun RedisMessageDTO.toMessageResponseDTO(requesterIsCustomer : Boolean) = MessageResponseDTO(
-    message = this.msg,
+    message = this.message,
     itsMine = (senderIsCustomer && requesterIsCustomer) || (!senderIsCustomer && !requesterIsCustomer),
     datetime = stringifyDateTime(dateTimeFromTimestamp(this.timestamp), CustomDateTimeFormatter)
 )

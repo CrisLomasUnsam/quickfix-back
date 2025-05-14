@@ -9,7 +9,7 @@ import quickfix.models.Certificate
 import quickfix.models.Profession
 import quickfix.models.ProfessionalInfo
 import quickfix.utils.COMISSION
-import quickfix.utils.exceptions.BusinessException
+import quickfix.utils.exceptions.ProfessionalException
 import quickfix.utils.functions.datifyStringMonthAndYear
 
 @Service
@@ -45,7 +45,7 @@ class ProfessionalService(
         val profession = professionService.getByNameIgnoreCase(professionName)
 
         if (professional.professionalInfo.hasActiveProfession(profession.id))
-            throw BusinessException("La profesión ya forma parte de sus servicios")
+            throw ProfessionalException("La profesión ya forma parte de sus servicios")
 
         professional.professionalInfo.addProfession(profession)
     }
@@ -56,7 +56,7 @@ class ProfessionalService(
         val professionId = professionService.getByNameIgnoreCase(professionName).id
 
         if (!professional.professionalInfo.hasActiveProfession(professionId))
-            throw BusinessException("La profesión no forma parte de sus servicios")
+            throw ProfessionalException("La profesión no forma parte de sus servicios")
 
         professional.professionalInfo.removeProfession(professionId)
     }
