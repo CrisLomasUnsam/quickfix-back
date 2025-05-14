@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import quickfix.dto.rating.EditRatingDTO
 import quickfix.dto.rating.RatingDTO
+import quickfix.dto.rating.UserProfileDTO
 import quickfix.dto.rating.toDTO
 import quickfix.services.RatingService
 
@@ -44,8 +45,16 @@ class RatingController(val ratingService: RatingService) {
     fun findRatingsMadeByUser(@ModelAttribute("currentUserId") currentUserId: Long): List<RatingDTO> =
         ratingService.findRatingsMadeByUser(currentUserId).map { it.toDTO() }
 
+    @GetMapping("/seeProfile")
+    @Operation(summary = "Ver perfil de usuario ccalificacion y cantidad de trabajos terminados",)
+    fun getSeeProfile(@ModelAttribute("currentUserId") currentUserId: Long) : UserProfileDTO =
+        ratingService.getSeeProfile(currentUserId)
+
+
     @PatchMapping("/edit")
     @Operation(summary = "Editar una calificación")
     fun updateRating(@ModelAttribute("currentUserId") currentUserId: Long, @RequestBody data: EditRatingDTO) =
         ratingService.updateRating(currentUserId, data)
+
+
 }
