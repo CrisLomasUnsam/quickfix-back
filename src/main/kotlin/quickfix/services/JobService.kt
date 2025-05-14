@@ -48,12 +48,21 @@ class JobService(
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun setJobAsDone(id: Long) =
-        updateJobStatus(id,  true,  JobStatus.DONE)
+    fun setJobAsDone(professionalId: Long, jobId: Long) {
+        if(!jobRepository.existsByIdAndProfessionalId(jobId, professionalId))
+            throw JobException("Ha habido un error al modificar el estado de este trabajo.")
+        updateJobStatus(jobId,  true,  JobStatus.DONE)
+    }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun setJobAsCancelled(id: Long) =
-        updateJobStatus(id,  false, JobStatus.CANCELED)
+    fun setJobAsCancelled(userId: Long, jobId: Long) {
+        val userIsProfessional = jobRepository.existsByIdAndProfessionalId(jobId, userId)
+        val userIsCustomer = jobRepository.existsByIdAndProfessionalId(jobId, userId)
+
+        if(!userIsProfessional && !userIsCustomer)
+            throw JobException("Ha habido un error al modificar el estado de este trabajo.")
+        updateJobStatus(jobId,  false, JobStatus.CANCELED)
+    }
 
     private fun updateJobStatus(id: Long, done: Boolean, status: JobStatus) {
         val job = this.getJobById(id)
