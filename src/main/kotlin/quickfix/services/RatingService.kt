@@ -69,8 +69,7 @@ class RatingService(
     fun getSeeProfile(currentUserId: Long): UserProfileDTO {
         val user = userService.getById(currentUserId)
         val totalJobs = jobService.countFinishedJobsForProfessional(user.id)
-        val professions  = user.professionalInfo.activeProfessionNames()
         val stats = ratingRepository.findRatingStatsForUser(user.id)
-        return UserProfileDTO.from(user, totalJobs, professions, stats)
+        return UserProfileDTO.from(user, totalJobs, stats)
     }
 }
