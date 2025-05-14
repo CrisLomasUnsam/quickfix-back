@@ -21,7 +21,6 @@ import quickfix.models.Profession
 import quickfix.models.User
 import quickfix.utils.PAGE_SIZE
 import quickfix.utils.enums.JobStatus
-import quickfix.utils.exceptions.NotFoundException
 import quickfix.utils.exceptions.JobException
 import java.time.LocalDate
 
@@ -154,33 +153,33 @@ class JobService(
     }
 
     fun getCustomerChatMessages(customerId : Long, jobId : Long) : List<MessageResponseDTO> {
-        if(!jobRepository.existsByIdAndCustomerId(jobId, customerId)) throw NotFoundException("TODO")
+        if(!jobRepository.existsByIdAndCustomerId(jobId, customerId)) throw JobException("Ha habido un error al obtener los mensajes.")
         return redisService.getChatMessages(jobId).map { it.toMessageResponseDTO(true)}
     }
 
     fun getProfessionalChatMessages(professionalId : Long, jobId : Long) : List<MessageResponseDTO> {
-        if(!jobRepository.existsByIdAndProfessionalId(jobId, professionalId)) throw NotFoundException("TODO")
+        if(!jobRepository.existsByIdAndProfessionalId(jobId, professionalId)) throw JobException("Ha habido un error al obtener los mensajes.")
         return redisService.getChatMessages(jobId).map { it.toMessageResponseDTO(false)}
     }
 
     fun postCustomerChatMessage(customerId : Long, message: MessageDTO) {
-        if(!jobRepository.existsByIdAndCustomerId(message.jobId, customerId)) throw NotFoundException("TODO")
+        if(!jobRepository.existsByIdAndCustomerId(message.jobId, customerId)) throw JobException("Ha habido un error al enviar el mensaje.")
         redisService.sendChatMessage(true, message)
     }
 
     fun postProfessionalChatMessage(professionalId : Long, message: MessageDTO) {
-        if(!jobRepository.existsByIdAndProfessionalId(message.jobId, professionalId)) throw NotFoundException("TODO")
+        if(!jobRepository.existsByIdAndProfessionalId(message.jobId, professionalId)) throw JobException("Ha habido un error al enviar el mensaje.")
         redisService.sendChatMessage(false, message)
     }
 
     fun getCustomerChatInfo(customerId: Long, jobId: Long): User {
-        if (!jobRepository.existsByIdAndCustomerId(jobId, customerId)) throw NotFoundException("ajustar")
+        if (!jobRepository.existsByIdAndCustomerId(jobId, customerId)) throw JobException("Ha habido un error al obtener los datos solicitados.")
         val professionalId = jobRepository.getProfessionalIdByJobId(jobId)
         return userService.getById(professionalId)
     }
 
     fun getProfessionalChatInfo(professionalId: Long, jobId: Long): User {
-        if (!jobRepository.existsByIdAndProfessionalId(jobId, professionalId)) throw NotFoundException("ajustar")
+        if (!jobRepository.existsByIdAndProfessionalId(jobId, professionalId)) throw JobException("Ha habido un error al obtener los datos solicitados.")
         val customerId = jobRepository.getCustomerIdByJobId(jobId)
         return userService.getById(customerId)
     }
