@@ -64,10 +64,10 @@ class SecurityConfig {
 
                 it.requestMatchers(HttpMethod.OPTIONS).permitAll()
 
-                it.requestMatchers(HttpMethod.POST, "/chat").hasAnyAuthority(Role.CUSTOMER.name,Role.PROFESSIONAL.name)
-                it.requestMatchers(HttpMethod.GET, "/chat/**").hasAnyAuthority(Role.CUSTOMER.name,Role.PROFESSIONAL.name)
-                it.requestMatchers(HttpMethod.GET, "/chat/professionalChatInfo/**").hasAnyAuthority(Role.CUSTOMER.name)
-                it.requestMatchers(HttpMethod.GET, "/chat/customerChatInfo/**").hasAnyAuthority(Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.GET, "/chat/customer/**").hasAuthority(Role.CUSTOMER.name)
+                it.requestMatchers(HttpMethod.GET, "/chat/professional/**").hasAuthority(Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.POST, "/chat/customer").hasAuthority(Role.CUSTOMER.name)
+                it.requestMatchers(HttpMethod.POST, "/chat/professional").hasAuthority(Role.PROFESSIONAL.name)
 
                 it.requestMatchers(HttpMethod.GET, "/job/customer").hasAuthority(Role.CUSTOMER.name)
                 it.requestMatchers(HttpMethod.GET, "/job/professional").hasAuthority(Role.PROFESSIONAL.name)
