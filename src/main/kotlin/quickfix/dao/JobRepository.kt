@@ -46,6 +46,15 @@ interface JobRepository : JpaRepository<Job, Long> {
         WHERE r.user_to_id = :userToId AND j.professional_id = :userToId
     """, nativeQuery = true)
     fun findRatingsByProfessionalId(@Param("userToId") userToId: Long): List<Rating>
+    @Query(value = """
+        SELECT COUNT(*) 
+        FROM jobs j 
+        WHERE j.professional_id = :userId 
+        AND j.status = 'DONE'
+    """,
+    nativeQuery = true
+    )
+    fun countFinishedJobsForUser(@Param("userId") userId: Long): Int
 
 }
 
