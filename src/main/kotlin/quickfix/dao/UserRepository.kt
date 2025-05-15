@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Component
 import quickfix.models.User
+import quickfix.models.UserProfileProjectionDTO
 import java.time.LocalDate
 import java.util.*
 
@@ -34,4 +35,69 @@ interface UserRepository: CrudRepository<User, Long>{
         @Param("startDate") startDate: LocalDate,
         @Param("endDate") endDate: LocalDate
     ): Double?
+
+    @Query(value = """
+        SELECT u.id as id,
+               u.name as name,
+               u.last_name as lastName,
+               u.avatar as avatar,
+                u.verified AS verified,
+                
+                 -- Total jobs terminados
+               (
+                     SELECT COUNT(*) 
+                     FROM jobs j 
+                     WHERE (j.professional_id = u.id OR j.customer_id = u.id)
+                     and j.status = 'DONE'
+               ) as totalJobsFinished,        
+                      
+                -- Promedio de score
+               COALESCE((
+                SELECT AVG(r.score) 
+                FROM ratings r 
+                WHERE r.user_to_id = u.id
+                ), 0.0) as averageRating,
+                
+                 -- Total de ratings
+               (
+                    SELECT COUNT(*) 
+                    FROM ratings r 
+                    WHERE r.user_to_id = u.id
+                ) as totalRatings,
+                
+                 -- Cantidad por cada score
+                (
+                      SELECT COUNT(*) 
+                      FROM ratings r 
+                      WHERE r.user_to_id = u.id AND r.score = 1
+                ) as amountRating1,
+        
+                (
+                      SELECT COUNT(*) 
+                      FROM ratings r 
+                      WHERE r.user_to_id = u.id AND r.score = 2
+                ) as amountRating2,
+                
+                (
+                      SELECT COUNT(*) 
+                      FROM ratings r 
+                      WHERE r.user_to_id = u.id AND r.score = 3
+                ) as amountRating3,
+                
+                (
+                      SELECT COUNT(*) 
+                      FROM ratings r 
+                      WHERE r.user_to_id = u.id AND r.score = 4
+                ) as amountRating4,
+                
+                (
+                      SELECT COUNT(*) 
+                      FROM ratings r 
+                      WHERE r.user_to_id = u.id AND r.score = 5
+                ) as amountRating5
+                
+        FROM users u
+        WHERE u.id = :userId
+    """, nativeQuery = true)
+    fun getUserProfileData(@Param("userId") userID: Long) : UserProfileProjectionDTO
 }
