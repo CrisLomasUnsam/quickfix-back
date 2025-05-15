@@ -37,6 +37,9 @@ class RatingService(
         if (currentUserId != job.customer.id && currentUserId != job.professional.id)
             throw RatingException("Usted no puede calificar este servicio.")
 
+        if (ratingRepository.existsByJobIdAndUserFromId(job.id, userFrom.id))
+            throw RatingException("No puede agregar más calificaciones para este servicio.")
+
         val userTo = if (currentUserId == job.customer.id) job.professional else job.customer
 
         val rating = Rating().apply {
@@ -58,12 +61,10 @@ class RatingService(
             throw RatingException("Ha habido un error al modificar esta calificación.")
 
         val rating = getByJobId(data.jobId)
-
         rating.apply {
             score = data.score
             comment = data.comment
         }.also { it.validate() }
     }
-
 
 }

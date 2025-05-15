@@ -1,7 +1,7 @@
 package quickfix.models
 
 import jakarta.persistence.*
-import quickfix.utils.exceptions.BusinessException
+import quickfix.utils.exceptions.ProfessionalException
 
 @Entity
 @Table(name = "professional_professions")
@@ -17,21 +17,21 @@ class ProfessionalProfession : Identifier{
     var active: Boolean = true
 
     fun disable() {
-        if (!active) throw BusinessException("La profesión ya estaba deshabilitada.")
+        if (!active) throw ProfessionalException("La profesión ya estaba deshabilitada.")
         this.active = false
     }
 
     fun enable() {
-        if (active) throw BusinessException("La profesión ya estaba habilitada.")
+        if (active) throw ProfessionalException("La profesión ya estaba habilitada.")
         this.active = true
     }
 
     override fun validate() {
         if (profession.id <= 0) {
-            throw BusinessException("La profesión debe existir previamente (ID inválido).")
+            throw ProfessionalException("La profesión debe existir previamente (ID inválido).")
         }
         if (profession.name.isBlank()) {
-            throw BusinessException("El nombre de la profesión no puede estar vacío.")
+            throw ProfessionalException("El nombre de la profesión no puede estar vacío.")
         }
     }
 

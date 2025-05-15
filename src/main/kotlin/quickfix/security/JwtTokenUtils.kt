@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Component
-import quickfix.utils.exceptions.ExpiredTokenException
+import quickfix.utils.exceptions.InvalidTokenException
 import quickfix.utils.exceptions.InvalidCredentialsException
 import java.util.*
 import kotlin.time.Duration.Companion.minutes
@@ -60,7 +60,7 @@ class JwtTokenUtils {
             return UsernamePasswordAuthenticationToken(claims.subject, null, setOf(rol))
 
         } catch (expiredJwtException: ExpiredJwtException) {
-            throw ExpiredTokenException("Sesión vencida")
+            throw InvalidTokenException("Sesión vencida")
         }
     }
 }

@@ -17,6 +17,20 @@ interface JobRepository : JpaRepository<Job, Long> {
 
     fun findAllByProfessionalId(professionalId: Long, pageable: Pageable): Page<Job>
 
+    fun existsByIdAndCustomerId(jobId: Long, customerId: Long): Boolean
+
+    fun existsByIdAndProfessionalId(jobId: Long, professionalId: Long): Boolean
+
+    @Query(value="""
+        select professional_id from jobs where id = :jobId fetch first 1 rows only
+    """, nativeQuery = true)
+    fun getProfessionalIdByJobId(@Param("jobId") jobId: Long): Long
+
+    @Query(value="""
+        select customer_id from jobs where id = :jobId fetch first 1 rows only
+    """, nativeQuery = true)
+    fun getCustomerIdByJobId(@Param("jobId") jobId: Long): Long
+
     @Query(
         value = """
         select *

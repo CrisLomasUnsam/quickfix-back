@@ -3,8 +3,9 @@ package quickfix.controllers
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
-import quickfix.dto.message.MessageDTO
-import quickfix.dto.message.MessageResponseDTO
+import quickfix.dto.chat.ChatUserInfoDTO
+import quickfix.dto.chat.MessageDTO
+import quickfix.dto.chat.MessageResponseDTO
 import quickfix.services.JobService
 
 @RestController
@@ -20,13 +21,31 @@ class ChatController (
         return usernamePAT.principal.toString().toLong()
     }
 
-    @GetMapping("/{jobId}")
-    fun getMessages(@ModelAttribute("currentUserId") currentUserId: Long, @PathVariable jobId: Long) : List<MessageResponseDTO> =
-        jobService.getChatMessages(currentUserId, jobId)
+    @GetMapping("/customer/{jobId}")
+    fun getCustomerMessages(@ModelAttribute("currentUserId") currentUserId: Long, @PathVariable jobId: Long) : List<MessageResponseDTO> =
+        jobService.getCustomerChatMessages(currentUserId, jobId)
 
-    @PostMapping
-    fun postMessage(@ModelAttribute("currentUserId") currentUserId: Long, @RequestBody message: MessageDTO) {
-        jobService.postChatMessage(currentUserId, message)
+    @GetMapping("/professional/{jobId}")
+    fun getProfessionalMessages(@ModelAttribute("currentUserId") currentUserId: Long, @PathVariable jobId: Long) : List<MessageResponseDTO> =
+        jobService.getProfessionalChatMessages(currentUserId, jobId)
+
+    @PostMapping("/customer")
+    fun postCustomerMessage(@ModelAttribute("currentUserId") currentUserId: Long, @RequestBody message: MessageDTO) {
+        jobService.postCustomerChatMessage(currentUserId, message)
     }
 
+    @PostMapping("/professional")
+    fun postProfessionalMessage(@ModelAttribute("currentUserId") currentUserId: Long, @RequestBody message: MessageDTO) {
+        jobService.postProfessionalChatMessage(currentUserId, message)
+    }
+
+    @GetMapping("/professional/chatInfo/{jobId}")
+    fun getProfessionalChatInfo(@ModelAttribute("currentUserId") currentUserId: Long, @PathVariable jobId: Long): ChatUserInfoDTO {
+        return  ChatUserInfoDTO.toDTO(jobService.getProfessionalChatInfo(currentUserId, jobId))
+    }
+
+    @GetMapping("/customer/chatInfo/{jobId}")
+    fun getCustomerChatInfo(@ModelAttribute("currentUserId") currentUserId: Long, @PathVariable jobId: Long): ChatUserInfoDTO {
+        return ChatUserInfoDTO.toDTO(jobService.getCustomerChatInfo(currentUserId, jobId))
+    }
 }

@@ -3,7 +3,7 @@ package quickfix.dto.job.jobRequest
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
-import quickfix.utils.exceptions.BusinessException
+import quickfix.utils.exceptions.JobException
 
 @Schema(description = "Solicitud de un Job por un customer, consumido por observers")
 data class JobRequestDTO @JsonCreator constructor(
@@ -22,11 +22,5 @@ data class JobRequestDTO @JsonCreator constructor(
 
 
 fun JobRequestDTO.validate() {
-    validCustomer(customerId)
-    validProfession(professionId)
-    validDetail(detail)
+    if(detail.isBlank()) throw JobException("El detalle no puede estar vacío.")
 }
-
-private fun validCustomer(customerId: Long) { if(customerId < 1) throw BusinessException() }
-private fun validProfession(professionId: Long) { if(professionId < 1) throw BusinessException() }
-private fun validDetail(detail: String) { if(detail.isBlank()) throw BusinessException() }
