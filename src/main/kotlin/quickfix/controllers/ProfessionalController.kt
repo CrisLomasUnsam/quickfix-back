@@ -47,7 +47,6 @@ class ProfessionalController(
     fun getProfessions(@PathVariable professionalId: Long): List<Profession> =
         professionalService.getProfessions(professionalId)
 
-
     @PostMapping("/professions/{professionalId}")
     @Operation(summary = "Agregar servicio brindado")
     fun addProfession(@PathVariable professionalId: Long, @RequestBody profession: String) =
