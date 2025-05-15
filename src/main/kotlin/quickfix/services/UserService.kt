@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import quickfix.dao.TokenRepository
 import quickfix.dao.UserRepository
+import quickfix.dto.user.ISeeUserProfile
 import quickfix.dto.user.UserModifiedInfoDTO
 import quickfix.models.Profession
 import quickfix.models.ProfessionalInfo
@@ -23,6 +24,10 @@ class UserService(
     private val tokenRepository: TokenRepository
 ) {
 
+    private fun createRecoveryURL(token: String) = "$FRONTEND_URL/confirm?token=$token"
+
+    fun getAvatar(userId: Long): ByteArray = this.getById(userId).avatar
+
     fun getById(id: Long): User =
         userRepository.findById(id).orElseThrow{ NotFoundException("Usuario no encontrado $id") }
 
@@ -33,8 +38,6 @@ class UserService(
         userRepository.findByMail(mail).orElseThrow{ NotFoundException("Usuario no encontrado $mail") }
 
     fun save(user : User) = userRepository.save(user)
-
-    private fun createRecoveryURL(token: String) = "$FRONTEND_URL/confirm?token=$token"
 
     fun assertUserExists(id: Long) {
         if (!userRepository.existsById(id))
@@ -50,6 +53,12 @@ class UserService(
             .filter { it.active }
             .map { it.profession }
             .toSet()
+
+    fun getSeeProfessionalProfileInfo(professionalId : Long) : ISeeUserProfile =
+        userRepository.getSeeProfessionalProfileInfo(professionalId)
+
+    fun getSeeCustomerProfileInfo(customerId : Long) : ISeeUserProfile =
+        userRepository.getSeeCustomerProfileInfo(customerId)
 
     @Transactional(rollbackFor = [Exception::class])
     fun changeUserInfo(id: Long, modifiedInfo: UserModifiedInfoDTO) {
@@ -71,5 +80,4 @@ class UserService(
         val user = this.getById(currentUserId)
         user.avatar = file.bytes
     }
-    fun getAvatar(userId: Long): ByteArray = this.getById(userId).avatar
 }

@@ -5,8 +5,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.RatingRepository
-import quickfix.dto.rating.EditRatingDTO
-import quickfix.dto.rating.RatingDTO
+import quickfix.dto.rating.*
 import quickfix.models.Rating
 import quickfix.utils.exceptions.RatingException
 import java.time.LocalDate
@@ -18,7 +17,6 @@ class RatingService(
     val jobService: JobService
 ) {
 
-
     fun findRatingsReceivedByUser(userId: Long, pageable: Pageable): Page<Rating> {
         return ratingRepository.findAllByUserToId(userId, pageable)
     }
@@ -27,21 +25,20 @@ class RatingService(
         return ratingRepository.findAllByUserFromId(userId)
     }
 
+    private fun getByJobId(jobId: Long) : Rating =
+        ratingRepository.findByJobId(jobId).orElseThrow { RatingException("Ha habido un error al obtener la calificación.") }
+
     @Transactional(rollbackFor = [Exception::class])
     fun rateUser(currentUserId: Long, ratingDTO: RatingDTO) {
 
         val userFrom = userService.getById(currentUserId)
         val job = jobService.getJobById(ratingDTO.jobId)
 
-        if (currentUserId != job.customer.id && currentUserId != job.professional.id) {
-            throw RatingException("Usted no participó en ese job y no puede calificar.")
-        }
+        if (currentUserId != job.customer.id && currentUserId != job.professional.id)
+            throw RatingException("Usted no puede calificar este servicio.")
 
-        val alreadyRated = ratingRepository
-            .existsByJobIdAndUserFromId(job.id, userFrom.id)
-        if (alreadyRated) {
-            throw RatingException("Ya ha calificado este job anteriormente.")
-        }
+        if (ratingRepository.existsByJobIdAndUserFromId(job.id, userFrom.id))
+            throw RatingException("No puede agregar más calificaciones para este servicio.")
 
         val userTo = if (currentUserId == job.customer.id) job.professional else job.customer
 
@@ -58,12 +55,16 @@ class RatingService(
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun updateRating(userId: Long, data: EditRatingDTO) {
-        val rating = ratingRepository.findById(data.ratingId).orElseThrow { RatingException("Rating no existe") }
-        //TODO: Validar que el usuario pueda editar este rating
+    fun updateRating(userId: Long, data: RatingDTO) {
+
+        if(!ratingRepository.existsByJobIdAndUserFromId(data.jobId, userId))
+            throw RatingException("Ha habido un error al modificar esta calificación.")
+
+        val rating = getByJobId(data.jobId)
         rating.apply {
-            data.score?.let { this.score = it }
-            data.comment?.let { rating.comment = it }
+            score = data.score
+            comment = data.comment
         }.also { it.validate() }
     }
+
 }

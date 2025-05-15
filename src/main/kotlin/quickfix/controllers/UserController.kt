@@ -1,11 +1,13 @@
 package quickfix.controllers
 
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import quickfix.dto.user.UserDTO
 import quickfix.dto.user.UserModifiedInfoDTO
+import quickfix.dto.user.SeeUserProfileDTO
 import quickfix.services.UserService
 
 @RestController
@@ -40,5 +42,15 @@ class UserController(
     @GetMapping("/avatar")
     fun getAvatar(@ModelAttribute("currentUserId") currentUserId: Long) = 
         userService.getAvatar(currentUserId)
+
+    @GetMapping("/seeCustomerProfile/{customerId}")
+    @Operation(summary = "Ver perfil de cliente: calificacion y cantidad de trabajos terminados",)
+    fun getSeeCustomerProfileInfo(@PathVariable customerId: Long): SeeUserProfileDTO =
+        SeeUserProfileDTO.fromProjection(userService.getSeeCustomerProfileInfo(customerId))
+
+    @GetMapping("/seeProfessionalProfile/{professionalId}")
+    @Operation(summary = "Ver perfil de cliente: calificacion y cantidad de trabajos terminados",)
+    fun getSeeProfessionalProfileInfo(@PathVariable professionalId: Long): SeeUserProfileDTO =
+        SeeUserProfileDTO.fromProjection(userService.getSeeProfessionalProfileInfo(professionalId))
 
 }
