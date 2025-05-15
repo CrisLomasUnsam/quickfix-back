@@ -1,7 +1,7 @@
 package quickfix.utils
 
-const val COMISSION = 0.4
+const val COMMISSION = 0.04
 
-fun comission(totalEarnings: Double?): Double {
-    return (totalEarnings ?: 0.0) * COMISSION
+fun commission(totalEarnings: Double?): Double {
+    return (totalEarnings ?: 0.0) * COMMISSION
 }
