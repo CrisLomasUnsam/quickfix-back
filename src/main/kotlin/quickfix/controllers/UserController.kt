@@ -5,20 +5,16 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import quickfix.dao.UserRepository
-import quickfix.dto.rating.UserProfileDTO
 import quickfix.dto.user.UserDTO
 import quickfix.dto.user.UserModifiedInfoDTO
-import quickfix.models.UserProfileProjectionDTO
+import quickfix.dto.user.SeeUserProfileDTO
 import quickfix.services.UserService
-import quickfix.utils.exceptions.BusinessException
 
 @RestController
 @RequestMapping("/user")
 @Tag(name = "Usuarios", description = "Operaciones realizadas desde un usuario no profesional")
 class UserController(
-    val userService: UserService,
-    val userRepository: UserRepository
+    val userService: UserService
 ) {
 
     @ModelAttribute("currentUserId")
@@ -47,9 +43,14 @@ class UserController(
     fun getAvatar(@ModelAttribute("currentUserId") currentUserId: Long) = 
         userService.getAvatar(currentUserId)
 
-    @GetMapping("/seeProfile")
-    @Operation(summary = "Ver perfil de usuario ccalificacion y cantidad de trabajos terminados",)
-    fun getSeeProfile(@ModelAttribute("currentUserId") currentUserId: Long): UserProfileProjectionDTO {
-        return userRepository.getUserProfileData(currentUserId)
-    }
+    @GetMapping("/seeCustomerProfile/{customerId}")
+    @Operation(summary = "Ver perfil de cliente: calificacion y cantidad de trabajos terminados",)
+    fun getSeeCustomerProfileInfo(@PathVariable customerId: Long): SeeUserProfileDTO =
+        SeeUserProfileDTO.fromProjection(userService.getSeeCustomerProfileInfo(customerId))
+
+    @GetMapping("/seeProfessionalProfile/{professionalId}")
+    @Operation(summary = "Ver perfil de cliente: calificacion y cantidad de trabajos terminados",)
+    fun getSeeProfessionalProfileInfo(@PathVariable professionalId: Long): SeeUserProfileDTO =
+        SeeUserProfileDTO.fromProjection(userService.getSeeProfessionalProfileInfo(professionalId))
+
 }
