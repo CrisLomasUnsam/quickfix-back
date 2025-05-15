@@ -5,8 +5,8 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Component
+import quickfix.dto.user.ISeeUserProfile
 import quickfix.models.User
-import quickfix.models.UserProfileProjectionDTO
 import java.time.LocalDate
 import java.util.*
 
@@ -23,13 +23,7 @@ interface UserRepository: CrudRepository<User, Long>{
   
     fun findByDni(dni: Int): User?
 
-    @Query(value = """
-        SELECT sum(j.price)
-        FROM jobs j
-        WHERE j.professional_id = :professionalId
-        AND j.status = 'DONE'
-        AND j.date BETWEEN :startDate AND :endDate
-    """, nativeQuery = true)
+    @Query(value = "SELECT sum(price) FROM jobs WHERE professional_id = :professionalId AND status = 'DONE' AND date BETWEEN :startDate AND :endDate", nativeQuery = true)
     fun getEarningsByProfessionalIdAndDateRange(
         @Param("professionalId") professionalId: Long,
         @Param("startDate") startDate: LocalDate,
@@ -37,67 +31,44 @@ interface UserRepository: CrudRepository<User, Long>{
     ): Double?
 
     @Query(value = """
-        SELECT u.id as id,
-               u.name as name,
-               u.last_name as lastName,
-               u.avatar as avatar,
-                u.verified AS verified,
+        SELECT u.id as id, u.name as name, u.last_name as lastName, u.verified AS verified,
                 
                  -- Total jobs terminados
-               (
-                     SELECT COUNT(*) 
-                     FROM jobs j 
-                     WHERE (j.professional_id = u.id OR j.customer_id = u.id)
-                     and j.status = 'DONE'
-               ) as totalJobsFinished,        
-                      
+               (SELECT COUNT(*) FROM jobs j WHERE j.professional_id = u.id AND j.status = 'DONE') AS totalJobsFinished,        
                 -- Promedio de score
-               COALESCE((
-                SELECT AVG(r.score) 
-                FROM ratings r 
-                WHERE r.user_to_id = u.id
-                ), 0.0) as averageRating,
-                
+               COALESCE((SELECT AVG(r.score) FROM ratings r WHERE r.user_to_id = u.id), 0.0) as averageRating,
                  -- Total de ratings
-               (
-                    SELECT COUNT(*) 
-                    FROM ratings r 
-                    WHERE r.user_to_id = u.id
-                ) as totalRatings,
-                
+               (SELECT COUNT(*) FROM ratings r WHERE r.user_to_id = u.id) as totalRatings,
                  -- Cantidad por cada score
-                (
-                      SELECT COUNT(*) 
-                      FROM ratings r 
-                      WHERE r.user_to_id = u.id AND r.score = 1
-                ) as amountRating1,
-        
-                (
-                      SELECT COUNT(*) 
-                      FROM ratings r 
-                      WHERE r.user_to_id = u.id AND r.score = 2
-                ) as amountRating2,
-                
-                (
-                      SELECT COUNT(*) 
-                      FROM ratings r 
-                      WHERE r.user_to_id = u.id AND r.score = 3
-                ) as amountRating3,
-                
-                (
-                      SELECT COUNT(*) 
-                      FROM ratings r 
-                      WHERE r.user_to_id = u.id AND r.score = 4
-                ) as amountRating4,
-                
-                (
-                      SELECT COUNT(*) 
-                      FROM ratings r 
-                      WHERE r.user_to_id = u.id AND r.score = 5
-                ) as amountRating5
-                
+                (SELECT COUNT(*) FROM ratings r WHERE r.user_to_id = u.id AND r.score = 1) as amountRating1,
+                (SELECT COUNT(*) FROM ratings r WHERE r.user_to_id = u.id AND r.score = 2) as amountRating2,
+                (SELECT COUNT(*) FROM ratings r WHERE r.user_to_id = u.id AND r.score = 3) as amountRating3,
+                (SELECT COUNT(*) FROM ratings r WHERE r.user_to_id = u.id AND r.score = 4) as amountRating4,
+                (SELECT COUNT(*) FROM ratings r WHERE r.user_to_id = u.id AND r.score = 5) as amountRating5
+                     
         FROM users u
-        WHERE u.id = :userId
+        WHERE u.id = :professionalId
     """, nativeQuery = true)
-    fun getUserProfileData(@Param("userId") userID: Long) : UserProfileProjectionDTO
+    fun getSeeProfessionalProfileInfo(@Param("professionalId") professionalId: Long) : ISeeUserProfile
+
+    @Query(value = """
+        SELECT u.id as id, u.name as name, u.last_name as lastName, u.verified AS verified,
+                
+                 -- Total jobs terminados
+               (SELECT COUNT(*) FROM jobs j WHERE j.customer_id = u.id AND j.status = 'DONE') AS totalJobsFinished,        
+                -- Promedio de score
+               COALESCE((SELECT AVG(r.score) FROM ratings r WHERE r.user_to_id = u.id), 0.0) as averageRating,
+                 -- Total de ratings
+               (SELECT COUNT(*) FROM ratings r WHERE r.user_to_id = u.id) as totalRatings,
+                 -- Cantidad por cada score
+                (SELECT COUNT(*) FROM ratings r WHERE r.user_to_id = u.id AND r.score = 1) as amountRating1,
+                (SELECT COUNT(*) FROM ratings r WHERE r.user_to_id = u.id AND r.score = 2) as amountRating2,
+                (SELECT COUNT(*) FROM ratings r WHERE r.user_to_id = u.id AND r.score = 3) as amountRating3,
+                (SELECT COUNT(*) FROM ratings r WHERE r.user_to_id = u.id AND r.score = 4) as amountRating4,
+                (SELECT COUNT(*) FROM ratings r WHERE r.user_to_id = u.id AND r.score = 5) as amountRating5
+                     
+        FROM users u
+        WHERE u.id = :customerId
+    """, nativeQuery = true)
+    fun getSeeCustomerProfileInfo(@Param("customerId") customerId: Long) : ISeeUserProfile
 }
