@@ -2,6 +2,7 @@ package quickfix.utils
 
 const val FRONTEND_URL = "http://localhost:5173"
 
+const val IMAGES_UPLOADER_SERVER_URL = "http://localhost:5000/upload"
 const val IMAGES_VIEWER_SERVER_URL = "http://localhost:9090"
 const val AVATAR_FILE_NAME = "avatar-"
 const val CERTIFICATE_FILE_NAME = "certificate-"
