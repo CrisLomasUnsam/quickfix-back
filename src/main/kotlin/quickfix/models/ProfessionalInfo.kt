@@ -4,7 +4,6 @@ import jakarta.persistence.*
 import quickfix.utils.MAXIMUM_DEBT
 import quickfix.utils.exceptions.BusinessException
 
-
 @Entity
 @Table(name = "professionals")
 class ProfessionalInfo : Identifier {
@@ -113,12 +112,10 @@ class ProfessionalInfo : Identifier {
         debt = 0.0
     }
 
-
     fun validateCanOfferJob() {
         if (this.debt >= MAXIMUM_DEBT) {
             throw BusinessException("No puede ofertar trabajos con una deuda igual o superior a $MAXIMUM_DEBT.")
         }
     }
-
 
 }

@@ -7,9 +7,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
-import quickfix.dto.rating.EditRatingDTO
 import quickfix.dto.rating.RatingDTO
-import quickfix.dto.rating.UserProfileDTO
 import quickfix.dto.rating.toDTO
 import quickfix.services.RatingService
 
@@ -45,13 +43,9 @@ class RatingController(val ratingService: RatingService) {
     fun findRatingsMadeByUser(@ModelAttribute("currentUserId") currentUserId: Long): List<RatingDTO> =
         ratingService.findRatingsMadeByUser(currentUserId).map { it.toDTO() }
 
-
-
-
     @PatchMapping("/edit")
     @Operation(summary = "Editar una calificación")
-    fun updateRating(@ModelAttribute("currentUserId") currentUserId: Long, @RequestBody data: EditRatingDTO) =
+    fun updateRating(@ModelAttribute("currentUserId") currentUserId: Long, @RequestBody data: RatingDTO) =
         ratingService.updateRating(currentUserId, data)
-
 
 }
