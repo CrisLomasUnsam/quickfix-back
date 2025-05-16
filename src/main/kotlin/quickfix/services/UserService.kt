@@ -21,12 +21,11 @@ import java.util.*
 class UserService(
     private val userRepository: UserRepository,
     private val eventPublisher: ApplicationEventPublisher,
-    private val tokenRepository: TokenRepository
+    private val tokenRepository: TokenRepository,
+    private val imageService: ImageService
 ) {
 
     private fun createRecoveryURL(token: String) = "$FRONTEND_URL/confirm?token=$token"
-
-    fun getAvatar(userId: Long): ByteArray = this.getById(userId).avatar
 
     fun getById(id: Long): User =
         userRepository.findById(id).orElseThrow{ NotFoundException("Usuario no encontrado $id") }
@@ -75,9 +74,7 @@ class UserService(
 
     }
 
-    @Transactional(rollbackFor = [Exception::class])
     fun updateAvatar(currentUserId: Long, file: MultipartFile) {
-        val user = this.getById(currentUserId)
-        user.avatar = file.bytes
+        imageService.uploadProfileImage(currentUserId, file)
     }
 }
