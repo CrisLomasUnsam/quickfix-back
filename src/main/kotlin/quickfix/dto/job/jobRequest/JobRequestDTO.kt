@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
 import quickfix.models.User
-import quickfix.utils.exceptions.BusinessException
+import quickfix.utils.exceptions.CustomerException
+import quickfix.utils.exceptions.DetailException
+import quickfix.utils.exceptions.ProfessionException
 
 @Schema(description = "Para traer los jobRequests de Redis")
 data class JobRequestRedisDTO @JsonCreator constructor(
@@ -75,6 +77,6 @@ fun JobRequestDTO.validate() {
     validDetail(detail)
 }
 
-private fun validCustomer(customerId: Long) { if(customerId < 1) throw BusinessException() }
-private fun validProfession(professionId: Long) { if(professionId < 1) throw BusinessException() }
-private fun validDetail(detail: String) { if(detail.isBlank()) throw BusinessException() }
+private fun validCustomer(customerId: Long) { if(customerId < 1) throw CustomerException("No existe un customer con ese ID") }
+private fun validProfession(professionId: Long) { if(professionId < 1) throw ProfessionException("El ID de la profesión no matchea con una profesión en la BBDD") }
+private fun validDetail(detail: String) { if(detail.isBlank()) throw DetailException("EL detalle no puede estar vacío") }
