@@ -1,44 +1,63 @@
 package quickfix.services
 
-import org.springframework.http.client.MultipartBodyBuilder
+import org.springframework.core.io.ByteArrayResource
+import org.springframework.http.*
 import org.springframework.stereotype.Service
+import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.multipart.MultipartFile
-import quickfix.utils.AVATAR_FILE_NAME
-import quickfix.utils.CERTIFICATE_FILE_NAME
-import quickfix.utils.IMAGES_UPLOADER_SERVER_URL
-import quickfix.utils.VALID_IMG_EXTENSIONS
+import quickfix.utils.*
 import quickfix.utils.exceptions.ImageException
-import java.io.File
 
 @Service
 class ImageService {
 
-    private fun verifyExtension(extension : String?) {
+    fun getAvatarUrl(userId: Long) : String = "$AVATAR_URL_BASE$userId.jpg"
+
+    fun getCertificateUrl(certificateId: Long) : String = "$CERTIFICATE_URL_BASE$certificateId.jpg"
+
+    fun uploadProfileImage(userId: Long, avatar: MultipartFile) {
+
+        validateFile(avatar)
+        val renamedAvatar = object : ByteArrayResource(avatar.bytes) {
+            override fun getFilename(): String = "$AVATAR_FILE_NAME$userId.jpg"
+        }
+        sendImageToUploadServer(renamedAvatar)
+    }
+
+    fun uploadCertificate(certificateId: Long, certificate: MultipartFile) {
+
+        validateFile(certificate)
+        val renamedCertificate = object : ByteArrayResource(certificate.bytes) {
+            override fun getFilename(): String = "$CERTIFICATE_FILE_NAME$certificateId.jpg"
+        }
+        sendImageToUploadServer(renamedCertificate)
+    }
+
+    private fun validateFile(file: MultipartFile) {
+        validateFileSize(file.size)
+        validateExtension(file.originalFilename?.substringAfterLast("."))
+    }
+
+    private fun validateFileSize(fileSize: Long) {
+        if(fileSize > MAX_FILE_SIZE)
+            throw ImageException("El tamaño del archivo supera el tamaño máximo permitido.")
+    }
+
+    private fun validateExtension(extension : String?) {
         val isValidExtension = extension != null && extension in VALID_IMG_EXTENSIONS
         if(!isValidExtension)
             throw ImageException("Ha habido un error al subir la imagen. Verifique que la extensión sea alguna de las siguientes: ${VALID_IMG_EXTENSIONS.joinToString(", ")}.")
     }
 
-    fun uploadProfileImage(userId: Long, file: MultipartFile) {
-        val extension = file.originalFilename?.substringAfterLast('.')
-        verifyExtension(extension)
+    private fun sendImageToUploadServer(image : ByteArrayResource) {
+        val body = LinkedMultiValueMap<String, Any>().apply{
+            add("image", image)
+        }
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.MULTIPART_FORM_DATA
 
-        val renamedFile = File.createTempFile(AVATAR_FILE_NAME,"$userId.$extension",)
-        file.transferTo(renamedFile)
-
-        val request = MultipartBodyBuilder().apply { part("image", renamedFile) }.build()
-        RestTemplate().postForEntity(IMAGES_UPLOADER_SERVER_URL, request, String::class.java)
-    }
-
-    fun uploadCertificate(certificateId: Long, file: MultipartFile) {
-        val extension = file.originalFilename?.substringAfterLast('.')
-        verifyExtension(extension)
-
-        val renamedFile = File.createTempFile(CERTIFICATE_FILE_NAME,"$certificateId.$extension",)
-        file.transferTo(renamedFile)
-
-        val request = MultipartBodyBuilder().apply { part("image", renamedFile) }.build()
+        val request = HttpEntity(body, headers)
         RestTemplate().postForEntity(IMAGES_UPLOADER_SERVER_URL, request, String::class.java)
     }
 
