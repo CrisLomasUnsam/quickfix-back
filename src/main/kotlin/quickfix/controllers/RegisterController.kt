@@ -20,9 +20,9 @@ class RegisterController(
         registerService.registerUser(registerData)
     }
 
-    @GetMapping("/confirm/{token}")
+    @GetMapping("/confirm")
     @Operation(summary = "Confirmar registro de usuario por link")
-    fun confirmRegistration(@PathVariable token: String) {
+    fun confirmRegistration(@RequestParam token: String) {
         registerService.validateUserByToken(token)
     }
 }
