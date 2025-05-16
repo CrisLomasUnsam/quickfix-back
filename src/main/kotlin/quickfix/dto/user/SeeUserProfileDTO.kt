@@ -2,7 +2,7 @@ package quickfix.dto.user
 
 import quickfix.dto.rating.RatingPerValueDTO
 import quickfix.dto.rating.RatingStatsDTO
-import quickfix.utils.AVATAR_URL_BASE
+import quickfix.utils.functions.getAvatarUrl
 
 interface  ISeeUserProfile{
 
@@ -48,7 +48,7 @@ data class SeeUserProfileDTO(
                 id = seeUserProfileInfo.getId(),
                 name = seeUserProfileInfo.getName(),
                 lastName = seeUserProfileInfo.getLastName(),
-                avatar = AVATAR_URL_BASE + seeUserProfileInfo.getId(),
+                avatar = getAvatarUrl(seeUserProfileInfo.getId()),
                 verified = seeUserProfileInfo.getVerified(),
                 totalJobsFinished = seeUserProfileInfo.getTotalJobsFinished(),
                 ratingStats = ratingStats
