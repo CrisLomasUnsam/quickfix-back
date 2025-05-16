@@ -2,6 +2,7 @@ package quickfix.services
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
 import quickfix.dao.UserRepository
 import quickfix.dto.professional.FinancesDTO
 import quickfix.dto.professional.NewCertificateDTO
@@ -17,6 +18,7 @@ class ProfessionalService(
     val userService: UserService,
     val professionService: ProfessionService,
     private val userRepository: UserRepository,
+    private val imageService: ImageService,
 )  {
 
     fun getProfessionIds(professionalId : Long) : Set<Long> {
@@ -76,15 +78,23 @@ class ProfessionalService(
         val newCertificate = Certificate().apply {
             this.name = newCert.name
             this.profession = profession
-            this.img = newCert.img.trim()
         }
         professionalInfo.addCertificate(newCertificate)
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun deleteCertificate(professionalId: Long, certificateNameOrImg: String) {
+    fun uploadCertificateImg(professionalId: Long, certificateId: Long, certificate: MultipartFile) {
+        val professional = userService.getProfessionalInfo(professionalId)
+        professional.assertCertificateExists(certificateId)
+        professional.setCertificateHasImage(certificateId)
+        imageService.uploadCertificate(certificateId, certificate)
+    }
+
+    @Transactional(rollbackFor = [Exception::class])
+    fun deleteCertificate(professionalId: Long, certificateId: Long) {
         val professionalInfo = userService.getProfessionalInfo(professionalId)
-        professionalInfo.deleteCertificate(certificateNameOrImg)
+        professionalInfo.deleteCertificate(certificateId)
+        imageService.deleteCertificate(certificateId)
     }
 
     fun getTotalEarningsByDate(professionalId: Long, dateStr: String): Double {
