@@ -14,10 +14,15 @@ class Certificate : Identifier {
     @ManyToOne
     lateinit var profession: Profession
 
+    var hasImage : Boolean = false
+
     override fun validate() {
         if (!validName()) throw ProfessionalException("El nombre del certificado no puede estar vacío")
     }
 
+    fun setHasImage() {
+        hasImage = true
+    }
 
     private fun validName(): Boolean = name.isNotBlank() && name.all { it.isLetter() }
 
