@@ -12,6 +12,7 @@ import quickfix.services.ProfessionalService
 
 @RestController
 @RequestMapping("/professional")
+@Tag(name = "Profesionales", description = "Operaciones realizadas desde un profesional")
 class ProfessionalController(
     private val professionalService: ProfessionalService
 ) {
@@ -23,10 +24,12 @@ class ProfessionalController(
     }
 
     @GetMapping("/finances")
+    @Operation(summary = "Finanzas del profesional (debt y balance)")
     fun getFinances(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long): FinancesDTO =
         professionalService.getBalanceAndDebt(currentProfessionalId)
 
     @GetMapping("/finances/earnings")
+    @Operation(summary = "Ganancias totales por fecha")
     fun getTotalEarnings(
         @ModelAttribute("currentProfessionalId") currentProfessionalId: Long,
         @RequestParam dateStr: String
@@ -34,14 +37,17 @@ class ProfessionalController(
         professionalService.getTotalEarningsByDate(currentProfessionalId, dateStr)
 
     @PatchMapping("/finances/payDebt")
+    @Operation(summary = "Pagar deuda")
     fun payDebt(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long) =
         professionalService.payDebt(currentProfessionalId)
 
     @GetMapping("/professions")
+    @Operation(summary = "Obtener los servicios que puede brindar el profesional")
     fun getProfessions(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long): List<Profession> =
         professionalService.getProfessions(currentProfessionalId)
 
     @PostMapping("/professions")
+    @Operation(summary = "Agregar servicio brindado")
     fun addProfession(
         @ModelAttribute("currentProfessionalId") currentProfessionalId: Long,
         @RequestBody profession: String
@@ -49,6 +55,7 @@ class ProfessionalController(
         professionalService.addProfession(currentProfessionalId, profession)
 
     @DeleteMapping("/professions")
+    @Operation(summary = "Eliminar servicio brindado")
     fun deleteProfession(
         @ModelAttribute("currentProfessionalId") currentProfessionalId: Long,
         @RequestBody profession: String
@@ -56,10 +63,12 @@ class ProfessionalController(
         professionalService.deleteProfession(currentProfessionalId, profession)
 
     @GetMapping("/certificates")
+    @Operation(summary = "Obtener certificados")
     fun getCertificates(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long): Set<Certificate> =
         professionalService.getCertificates(currentProfessionalId)
 
     @PostMapping("/certificates")
+    @Operation(summary = "Agregar certificado")
     fun addCertificate(
         @ModelAttribute("currentProfessionalId") currentProfessionalId: Long,
         @RequestBody dto: NewCertificateDTO
@@ -67,6 +76,7 @@ class ProfessionalController(
         professionalService.addCertificate(currentProfessionalId, dto)
 
     @DeleteMapping("/certificates")
+    @Operation(summary = "Borrar un certificado")
     fun deleteCertificate(
         @ModelAttribute("currentProfessionalId") currentProfessionalId: Long,
         @RequestBody certificateNameOrImg: String
