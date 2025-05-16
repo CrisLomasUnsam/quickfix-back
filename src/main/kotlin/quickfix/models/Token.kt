@@ -18,7 +18,7 @@ class Token: Identifier {
     @Column(name = "token")
     lateinit var value: String
 
-    var expiryDate: LocalDateTime = LocalDateTime.now().plusMinutes(60)
+    var expiryDate: LocalDateTime = LocalDateTime.now().plusMinutes(15)
 
     override fun validate() {}
 
