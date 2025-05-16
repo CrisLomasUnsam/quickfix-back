@@ -11,8 +11,9 @@ import quickfix.models.Token
 import quickfix.models.User
 import quickfix.utils.FRONTEND_URL
 import quickfix.utils.events.OnRegistrationCompletedEvent
-import quickfix.utils.exceptions.BusinessException
+import quickfix.utils.exceptions.IllegalDataException
 import quickfix.utils.exceptions.InvalidCredentialsException
+import quickfix.utils.exceptions.InvalidTokenException
 import java.sql.SQLException
 import java.time.LocalDateTime
 
@@ -35,7 +36,7 @@ class RegisterService(
 
     private fun validateUserAlreadyExists(mail: String) {
         val user = userService.findByMail(mail)
-        if(user.isPresent) throw BusinessException("El usuario con mail $mail ya existe")
+        if(user.isPresent) throw IllegalDataException("El usuario con mail $mail ya existe")
     }
 
     private fun registerNewUser(registerData: RegisterRequestDTO) {
@@ -47,11 +48,11 @@ class RegisterService(
     }
 
     private fun verifyToken(token : String) : Token{
-        if (token.isBlank()) { throw BusinessException("Token invalido") }
+        if (token.isBlank()) { throw InvalidTokenException() }
         val verificationToken = getVerificationToken(token)
         if (verificationToken.expiryDate.isBefore(LocalDateTime.now())) {
             tokenRepository.delete(verificationToken)
-            throw BusinessException("Token expirado")
+            throw InvalidTokenException()
         }
         return verificationToken
     }

@@ -1,3 +1,3 @@
 package quickfix.utils.exceptions
 
-data class RatingException(val msg : String) : Exception(msg)
+data class RatingException(override val message : String) : Exception(message)
