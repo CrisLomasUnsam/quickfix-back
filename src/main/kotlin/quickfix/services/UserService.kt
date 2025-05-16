@@ -24,7 +24,7 @@ class UserService(
     private val tokenRepository: TokenRepository
 ) {
 
-    private fun createRecoveryURL(token: String) = "$FRONTEND_URL/confirm?token=$token"
+    private fun createRecoveryURL(token: String) = "$FRONTEND_URL/newPassword?token=$token"
 
     fun getAvatar(userId: Long): ByteArray = this.getById(userId).avatar
 
