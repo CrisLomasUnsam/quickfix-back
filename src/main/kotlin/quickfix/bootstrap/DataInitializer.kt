@@ -32,6 +32,7 @@ class DataInitializer : InitializingBean {
         val custom1 = CustomerBuilder.buildMock("custom1")
         val custom2 = CustomerBuilder.buildMock("custom2")
         val custom3 = CustomerBuilder.buildMock("custom3")
+        val tester = CustomerBuilder.buildMock("tester").apply { this.mail = "alt.gm-0okdbotm@yopmail.com" }
 
         userRepository.saveAll(listOf(custom1, custom2, custom3, prof1, prof2, prof3))
     }
@@ -44,7 +45,6 @@ class DataInitializer : InitializingBean {
         val job1 = JobBuilder.buildMock(users["custom1"]!!, users["prof1"]!!, professions["Plomería"]!!, done = true)
         val job2 = JobBuilder.buildMock(users["custom1"]!!, users["prof2"]!!, professions["Albañilería"]!!, done = true)
         val job3 = JobBuilder.buildMock(users["custom1"]!!, users["prof2"]!!, professions["Electricidad"]!!, done = false)
-
         jobRepository.saveAll(listOf(job1, job2, job3))
     }
 }
