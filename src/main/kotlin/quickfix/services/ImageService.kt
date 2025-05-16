@@ -12,9 +12,9 @@ import quickfix.utils.exceptions.ImageException
 @Service
 class ImageService {
 
-    fun getAvatarUrl(userId: Long) : String = "$AVATAR_URL_BASE$userId.jpg"
+    fun getAvatarUrl(userId: Long) : String = "$IMAGES_VIEWER_SERVER_URL/$AVATAR_FILE_NAME$userId.jpg"
 
-    fun getCertificateUrl(certificateId: Long) : String = "$CERTIFICATE_URL_BASE$certificateId.jpg"
+    fun getCertificateUrl(certificateId: Long) : String = "$IMAGES_VIEWER_SERVER_URL/$CERTIFICATE_FILE_NAME$certificateId.jpg"
 
     fun uploadProfileImage(userId: Long, avatar: MultipartFile) {
 
