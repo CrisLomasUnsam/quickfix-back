@@ -8,7 +8,6 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.multipart.MultipartFile
 import quickfix.utils.*
 import quickfix.utils.exceptions.ImageException
-
 @Service
 class ImageService {
 
@@ -28,6 +27,13 @@ class ImageService {
             override fun getFilename(): String = "$CERTIFICATE_FILE_NAME$certificateId.jpg"
         }
         sendImageToUploadServer(renamedCertificate)
+    }
+
+    fun deleteCertificate(certificateId: Long) {
+        val filename = "$CERTIFICATE_FILE_NAME$certificateId.jpg"
+        val url = "$IMAGES_UPLOADER_SERVER_URL/delete?filename=$filename"
+
+        RestTemplate().exchange(url, HttpMethod.DELETE,null, String::class.java)
     }
 
     private fun validateFile(file: MultipartFile) {
@@ -54,7 +60,7 @@ class ImageService {
         headers.contentType = MediaType.MULTIPART_FORM_DATA
 
         val request = HttpEntity(body, headers)
-        RestTemplate().postForEntity(IMAGES_UPLOADER_SERVER_URL, request, String::class.java)
+        RestTemplate().postForEntity("$IMAGES_UPLOADER_SERVER_URL/upload", request, String::class.java)
     }
 
 }
