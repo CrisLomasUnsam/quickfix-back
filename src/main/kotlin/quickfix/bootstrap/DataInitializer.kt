@@ -34,7 +34,7 @@ class DataInitializer : InitializingBean {
         val custom3 = CustomerBuilder.buildMock("custom3")
         val tester = CustomerBuilder.buildMock("tester").apply { this.mail = "alt.gm-0okdbotm@yopmail.com" }
 
-        userRepository.saveAll(listOf(custom1, custom2, custom3, prof1, prof2, prof3))
+        userRepository.saveAll(listOf(custom1, custom2, custom3, prof1, prof2, prof3, tester))
     }
 
     fun initJobs() {
