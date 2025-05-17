@@ -1,6 +1,7 @@
 package quickfix.dto.user
 
 import quickfix.models.User
+import quickfix.utils.functions.getAvatarUrl
 
 data class UserProfileInfoDto (
     val name : String,
@@ -13,7 +14,7 @@ data class UserProfileInfoDto (
             return UserProfileInfoDto(
                 name = user.name,
                 lastName = user.lastName,
-                avatar = "holis",
+                avatar = getAvatarUrl(user.id),
             )
         }
     }
