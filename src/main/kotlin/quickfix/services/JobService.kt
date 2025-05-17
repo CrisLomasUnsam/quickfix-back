@@ -15,7 +15,6 @@ import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.MessageResponseDTO
 import quickfix.dto.chat.toMessageResponseDTO
-import quickfix.dto.job.jobRequest.JobRequestRedisDTO
 import quickfix.dto.professional.ProfessionalDTO
 import quickfix.models.Job
 import quickfix.models.Profession
@@ -84,7 +83,7 @@ class JobService(
         return redisService.getJobRequests(professionIds)
     }
 
-    fun requestJob(jobRequest : JobRequestRedisDTO) {
+    fun requestJob(jobRequest : JobRequestDTO) {
 
         userService.assertUserExists(jobRequest.customerId)
         professionService.assertProfessionExists(jobRequest.professionId)

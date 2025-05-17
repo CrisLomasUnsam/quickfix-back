@@ -12,7 +12,6 @@ import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobRequest.CancelJobRequestDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
-import quickfix.dto.job.jobRequest.JobRequestRedisDTO
 import quickfix.dto.job.toDto
 import quickfix.services.JobService
 
@@ -98,7 +97,7 @@ class JobController(
 
     @PostMapping("/requestJob")
     @Operation(summary = "Buscar profesionales disponibles para el job seleccionado por el customer")
-    fun requestJob(@RequestBody jobRequest : JobRequestRedisDTO) =
+    fun requestJob(@RequestBody jobRequest : JobRequestDTO) =
         jobService.requestJob(jobRequest)
 
     @DeleteMapping("/requestJob")
