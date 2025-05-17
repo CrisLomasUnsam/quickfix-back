@@ -26,11 +26,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-<<<<<<< HEAD
-        jdbc:
-          lob:
-            non_contextual_creation: true
-=======
         #from here
         use_sql_comments: true
         type:
@@ -42,7 +37,6 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
->>>>>>> 083ae85e2794a95d1566fb98ea562ff92755d98c
 
   mail:
     host: smtp.gmail.com
