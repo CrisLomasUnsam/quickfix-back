@@ -61,7 +61,7 @@ data class JobRequestDTO @JsonCreator constructor(
                 customerId = jobRequestRedis.customerId,
                 customerName = customer.name,
                 customerLastName = customer.lastName,
-                customerAvatar = "", // si tenés un campo real, ponelo acá
+                customerAvatar = "",
                 professionId = jobRequestRedis.professionId,
                 professionName = professionName,
                 detail = jobRequestRedis.detail,
