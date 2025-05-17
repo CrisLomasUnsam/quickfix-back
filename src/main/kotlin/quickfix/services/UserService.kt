@@ -25,7 +25,7 @@ class UserService(
     private val imageService: ImageService
 ) {
 
-    private fun createRecoveryURL(token: String) = "$FRONTEND_URL/confirm?token=$token"
+    private fun createRecoveryURL(token: String) = "$FRONTEND_URL/newPassword?token=$token"
 
     fun getById(id: Long): User =
         userRepository.findById(id).orElseThrow{ NotFoundException("Usuario no encontrado $id") }
