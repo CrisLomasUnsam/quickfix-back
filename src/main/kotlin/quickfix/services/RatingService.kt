@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.RatingRepository
-import quickfix.dto.rating.*
+import quickfix.dto.rating.RatingDTO
 import quickfix.models.Rating
 import quickfix.utils.exceptions.RatingException
 import java.time.LocalDate
@@ -21,6 +21,7 @@ class RatingService(
         return ratingRepository.findAllByUserToId(userId, pageable)
     }
 
+    @Transactional(readOnly = true)
     fun findRatingsMadeByUser(userId: Long): List<Rating> {
         return ratingRepository.findAllByUserFromId(userId)
     }

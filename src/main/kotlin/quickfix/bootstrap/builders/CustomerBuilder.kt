@@ -27,7 +27,6 @@ class CustomerBuilder {
                 mail = "$userName@gmail.com"
                 name = userName
                 lastName = userName
-                avatar = ByteArray(1)
                 gender = Gender.OTHER
                 address = AddressBuilder.buildMock("$userName 123")
                 dateBirth = LocalDate.of(1990, 1, 1)

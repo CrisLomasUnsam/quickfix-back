@@ -1,4 +1,22 @@
 services:
+
+  img-uploader-server:
+    build:
+      context: ./Docker/img-uploader-server
+    container_name: img-uploader-server
+    ports:
+      - "5000:5000"
+    volumes:
+      - image-storage:/uploads
+
+  img-viewer-server:
+    image: nginx:alpine
+    container_name: img-viewer-server
+    volumes:
+      - image-storage:/usr/share/nginx/html
+    ports:
+      - "9090:80"  # http://localhost:9090/img.jpg
+
   db:
     image: postgres:17-alpine
     container_name: quickfix_sql
@@ -45,3 +63,4 @@ volumes:
   db:
   pgadmin-data:
   redis_data:
+  image-storage:

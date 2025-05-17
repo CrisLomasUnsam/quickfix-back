@@ -2,13 +2,14 @@ package quickfix.services
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
 import quickfix.dao.UserRepository
 import quickfix.dto.professional.FinancesDTO
 import quickfix.dto.professional.NewCertificateDTO
 import quickfix.models.Certificate
 import quickfix.models.Profession
 import quickfix.models.ProfessionalInfo
-import quickfix.utils.COMISSION
+import quickfix.utils.commission
 import quickfix.utils.exceptions.ProfessionalException
 import quickfix.utils.functions.datifyStringMonthAndYear
 
@@ -17,9 +18,10 @@ class ProfessionalService(
     val userService: UserService,
     val professionService: ProfessionService,
     private val userRepository: UserRepository,
+    private val imageService: ImageService,
 )  {
 
-    fun getProfessionIds(professionalId : Long) : Set<Long> {
+    fun getActiveProfessionIds(professionalId : Long) : Set<Long> {
         val professions = userService.getActiveProfessionsByUserId(professionalId)
         return professions.map { it.id }.toSet()
     }
@@ -33,10 +35,10 @@ class ProfessionalService(
         return financesDTO
     }
 
-    fun getProfessions(proffesionalId: Long) : List<Profession> {
+    fun getActiveProfessions(proffesionalId: Long) : Set<Profession> {
         userService.assertUserExists(proffesionalId)
-        val professionIds : Set<Long> = this.getProfessionIds(proffesionalId)
-        return professionIds.map { professionService.getProfessionById(it) }
+        val professionIds : Set<Long> = this.getActiveProfessionIds(proffesionalId)
+        return professionIds.map { professionService.getProfessionById(it) }.toSet()
     }
 
     @Transactional(rollbackFor = [Exception::class])
@@ -76,25 +78,31 @@ class ProfessionalService(
         val newCertificate = Certificate().apply {
             this.name = newCert.name
             this.profession = profession
-            this.img = newCert.img.trim()
         }
         professionalInfo.addCertificate(newCertificate)
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun deleteCertificate(professionalId: Long, certificateNameOrImg: String) {
+    fun uploadCertificateImg(professionalId: Long, certificateId: Long, certificate: MultipartFile) {
+        val professional = userService.getProfessionalInfo(professionalId)
+        professional.assertCertificateExists(certificateId)
+        professional.setCertificateHasImage(certificateId)
+        imageService.uploadCertificate(certificateId, certificate)
+    }
+
+    @Transactional(rollbackFor = [Exception::class])
+    fun deleteCertificate(professionalId: Long, certificateId: Long) {
         val professionalInfo = userService.getProfessionalInfo(professionalId)
-        professionalInfo.deleteCertificate(certificateNameOrImg)
+        professionalInfo.deleteCertificate(certificateId)
+        imageService.deleteCertificate(certificateId)
     }
 
     fun getTotalEarningsByDate(professionalId: Long, dateStr: String): Double {
         val dateStart = datifyStringMonthAndYear(dateStr)
         val dateEnd = dateStart.withDayOfMonth(dateStart.lengthOfMonth())
         val netEarnings = userRepository.getEarningsByProfessionalIdAndDateRange(professionalId, dateStart, dateEnd) ?: 0.0
-        return netEarnings - getComission(netEarnings)
+        return netEarnings - commission(netEarnings)
     }
-
-    private fun getComission(earnings : Double) = COMISSION * earnings
 
     @Transactional
     fun payDebt(professionalId: Long) {

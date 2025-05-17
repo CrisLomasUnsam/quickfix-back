@@ -49,4 +49,9 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.message)
     }
 
+    @ExceptionHandler(ImageException::class)
+    fun handleImage(e: ImageException): ResponseEntity<String> {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.message)
+    }
+
 }

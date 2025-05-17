@@ -2,11 +2,11 @@ package quickfix.services
 
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
-import quickfix.dto.job.jobOffer.CreateJobOfferDTO
-import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.RedisMessageDTO
 import quickfix.dto.chat.toRedisMessage
+import quickfix.dto.job.jobOffer.CreateJobOfferDTO
+import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.utils.exceptions.JobException
 
 @Service
@@ -27,17 +27,17 @@ class RedisService(
     private fun getJobRequestKey(professionId: Long, customerId: Long) : String =
         "JobRequest_${professionId}_${customerId}_"
 
-    fun requestJob(jobRequest : JobRequestDTO, professionId : Long) {
+    fun requestJob(jobRequest : JobRequestDTO) {
 
         val customerId = jobRequest.customerId
 
         val tempKey = "JobRequest_*_${customerId}_"
         val userHasPreviousRequest = redisJobRequestStorage.keys(tempKey).isNotEmpty()
 
-        if(userHasPreviousRequest)
+        if (userHasPreviousRequest)
             throw JobException("Este usuario ya tiene una solicitud activa.")
 
-        val key = getJobRequestKey(professionId, customerId)
+        val key = getJobRequestKey(jobRequest.professionId, customerId)
         redisJobRequestStorage.opsForValue().set(key,jobRequest)
         //TODO: Creo que es conveniente agregar TTL así no bloqueamos eternamente a un usuario
         //redisJobRequestStorage.expire(key, Duration.ofMinutes(5))
@@ -126,5 +126,14 @@ class RedisService(
     fun deleteChatMessages(jobId: Long) {
         val key = getChatKey(jobId)
         redisChatStorage.delete(key)
+    }
+
+    /* CLEANUP */
+
+    fun cleanupJobRequest() {
+        val keys = redisJobRequestStorage.keys("JobRequest_*_*")
+        keys.forEach { key ->
+            redisJobRequestStorage.delete(key)
+        }
     }
 }

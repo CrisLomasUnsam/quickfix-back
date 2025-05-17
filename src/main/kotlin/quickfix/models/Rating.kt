@@ -29,6 +29,8 @@ class Rating : Identifier {
     lateinit var yearAndMonth: LocalDate
 
     var score: Int = 0
+
+    @Column(length = 250)
     lateinit var comment: String
 
     override fun validate() {
