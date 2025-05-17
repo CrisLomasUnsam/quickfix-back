@@ -23,6 +23,9 @@ class ProfessionalInfo : Identifier {
 
     var hasVehicle: Boolean = false
 
+    fun getActiveProfessions() : Set<Profession> =
+        professionalProfessions.filter { it.active }.map { it.profession }.toSet()
+
     override fun validate() {
 
     if (balance < 0) throw ProfessionalException("El saldo (balance) no puede ser negativo.")
