@@ -101,7 +101,7 @@ class DataInitializer : InitializingBean {
 
     fun loadJobRequestsToRedis() {
 
-        redisService.cleanupJobRequest()
+        redisService.cleanupJobRequestsForTesting()
 
         val users = userRepository.findAll().associateBy { it.name }
         val professions = professionRepository.findAll().associateBy { it.name }
