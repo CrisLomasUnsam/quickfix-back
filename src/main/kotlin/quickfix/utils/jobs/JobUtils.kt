@@ -1,7 +1,7 @@
 package quickfix.utils.jobs
 
 import quickfix.utils.enums.JobStatus
-import quickfix.utils.hasMatchingStart
+import quickfix.utils.functions.hasMatchingStart
 
 private val jobStatusMapping = mapOf(
     "finalizados" to JobStatus.DONE,

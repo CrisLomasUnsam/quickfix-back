@@ -27,14 +27,8 @@ class JobController(
     val jobService: JobService
 ){
 
-    @ModelAttribute("currentCustomerId")
+    @ModelAttribute("currentUserId")
     fun getCurrentCustomerId(): Long {
-        val usernamePAT = SecurityContextHolder.getContext().authentication
-        return usernamePAT.principal.toString().toLong()
-    }
-
-    @ModelAttribute("currentProfessionalId")
-    fun getCurrentProfessionalId(): Long {
         val usernamePAT = SecurityContextHolder.getContext().authentication
         return usernamePAT.principal.toString().toLong()
     }
@@ -42,30 +36,32 @@ class JobController(
     @GetMapping("/customer")
     @Operation(summary = "Obtiene todos los servicios pedidos por un usuario")
     fun findJobsByCustomerId(
-        @ModelAttribute("currentCustomerId") currentCustomerId : Long, @RequestParam pageNumber: Int) : PageDTO<JobDTO> =
+        @ModelAttribute("currentUserId") currentCustomerId : Long, @RequestParam pageNumber: Int) : PageDTO<JobDTO> =
         PageDTO.toDTO(jobService.findJobsByCustomerId(currentCustomerId, pageNumber).map{ job -> toDto(job)  })
 
     @GetMapping("/professional")
     @Operation(summary = "Obtiene todos los servicios realizados por un profesional")
-    fun findJobsByProfessionalId(@ModelAttribute("currentProfessionalId") currentProfessionalId : Long, @RequestParam pageNumber: Int) : PageDTO<JobDTO> =
+    fun findJobsByProfessionalId(@ModelAttribute("currentUserId") currentProfessionalId : Long, @RequestParam pageNumber: Int) : PageDTO<JobDTO> =
         PageDTO.toDTO(jobService.findJobsByProfessionalId(currentProfessionalId, pageNumber).map{ job -> toDto(job)  })
 
-    @PatchMapping("/complete/{id}")
-    fun setJobAsDone(@PathVariable id: Long) = jobService.setJobAsDone(id)
+    @PatchMapping("/complete/{jobId}")
+    fun setJobAsDone(@ModelAttribute("currentUserId") currentProfessionalId : Long, @PathVariable jobId: Long) =
+        jobService.setJobAsDone(currentProfessionalId, jobId)
 
-    @PatchMapping("/cancel/{id}")
-    fun setJobAsCancelled(@PathVariable id: Long) = jobService.setJobAsCancelled(id)
+    @PatchMapping("/cancel/{jobId}")
+    fun setJobAsCancelled(@ModelAttribute("currentUserId") currentUserId : Long, @PathVariable jobId: Long) =
+        jobService.setJobAsCancelled(currentUserId, jobId)
 
     @GetMapping("/requestedJobs")
     @Operation(summary = "Buscar jobs solicitados como customer por filtro")
-    fun getRequestedJobsByParameters(@ModelAttribute("currentCustomerId") currentCustomerId : Long, @RequestParam(required = false) parameter: String?): List<JobDTO> {
+    fun getRequestedJobsByParameters(@ModelAttribute("currentUserId") currentCustomerId : Long, @RequestParam(required = false) parameter: String?): List<JobDTO> {
         val jobs = jobService.getJobsByParameter(currentCustomerId, parameter)
         return jobs.map {job -> toDto(job)  }
     }
 
     @GetMapping("/offeredJobs")
     @Operation(summary = "Buscar jobs realizados como profesional por filtro")
-    fun getOfferedJobsByParameters(@ModelAttribute("currentProfessionalId") currentProfessionalId : Long, @RequestParam(required = false) parameter: String?): List<JobDTO> {
+    fun getOfferedJobsByParameters(@ModelAttribute("currentUserId") currentProfessionalId : Long, @RequestParam(required = false) parameter: String?): List<JobDTO> {
         val jobs = jobService.getJobsByParameter(currentProfessionalId, parameter)
         return jobs.map {job -> toDto(job)  }
     }
@@ -76,7 +72,7 @@ class JobController(
 
     @GetMapping("/jobOffers")
     @Operation(summary = "Utilizado para el polling que devuelve las nuevas ofertas enviadas por los profesionales")
-    fun getJobOffers(@ModelAttribute("currentCustomerId") currentCustomerId : Long) : List<JobOfferDTO> =
+    fun getJobOffers(@ModelAttribute("currentUserId") currentCustomerId : Long) : List<JobOfferDTO> =
         jobService.getJobOffers(currentCustomerId)
 
     @PostMapping("/jobOffers")
@@ -100,7 +96,7 @@ class JobController(
 
     @GetMapping("/jobRequests")
     @Operation(summary = "Utilizado para el polling que devuelve los servicios solicitados por los usuarios")
-    fun getJobRequests(@ModelAttribute("currentProfessionalId") currentProfessionalId : Long) : Set<JobRequestDTO> =
+    fun getJobRequests(@ModelAttribute("currentUserId") currentProfessionalId : Long) : Set<JobRequestDTO> =
         jobService.getJobRequests(currentProfessionalId)
 
     @PostMapping("/requestJob")

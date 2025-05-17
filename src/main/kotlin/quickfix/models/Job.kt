@@ -2,7 +2,7 @@ package quickfix.models
 
 import jakarta.persistence.*
 import quickfix.utils.enums.JobStatus
-import quickfix.utils.exceptions.BusinessException
+import quickfix.utils.exceptions.JobException
 import java.time.LocalDate
 
 @Entity
@@ -10,7 +10,7 @@ import java.time.LocalDate
 class Job : Identifier {
 
     @Id @GeneratedValue
-    override var id: Long = -1
+    override var id: Long = 0
 
     @ManyToOne
     lateinit var professional: User
@@ -23,7 +23,7 @@ class Job : Identifier {
 
     var done: Boolean = false
 
-    @ManyToOne(cascade = [(CascadeType.ALL)])
+    @ManyToOne(cascade = [(CascadeType.MERGE)])
     @JoinColumn(name = "profession_id", nullable = false)
     lateinit var profession : Profession
 
@@ -42,8 +42,8 @@ class Job : Identifier {
     private fun validDate(): Boolean = this.date.isBefore(LocalDate.now()) || this.date.isEqual(LocalDate.now())
 
     override fun validate() {
-        if (!validPrice()) throw BusinessException("El precio debe ser mayor a cero")
-        if (!validDate()) throw BusinessException("La fecha no puede ser en el futuro")
+        if (!validPrice()) throw JobException("El precio debe ser mayor a cero")
+        if (!validDate()) throw JobException("La fecha no puede ser en el futuro")
     }
 
 }

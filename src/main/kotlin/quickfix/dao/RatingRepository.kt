@@ -20,11 +20,13 @@ interface RatingRepository : JpaRepository<Rating, Long> {
 
     fun findByJobIdAndUserFromId(jobId: Long, userFromId: Long):  Rating?
 
- @Query(value = """
-     SELECT COALESCE(AVG(r.score), 0) 
-     FROM ratings r
-    WHERE r.user_to_id = :userToId
- """,
-     nativeQuery = true)
-    fun findAverageRatingByUserToId(@Param("userToId") userToId: Long): Double
+    fun findByJobId(jobId: Long): Optional<Rating>
+
+     @Query(value = """
+         SELECT COALESCE(AVG(r.score), 0) 
+         FROM ratings r
+        WHERE r.user_to_id = :userToId
+     """, nativeQuery = true)
+     fun findAverageRatingByUserToId(@Param("userToId") userToId: Long): Double
+
 }

@@ -4,10 +4,10 @@ import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
-import quickfix.dto.message.ChatMessageDTO
-import quickfix.dto.message.RedisMessageDTO
-import quickfix.dto.message.toRedisMessage
-import quickfix.utils.exceptions.BusinessException
+import quickfix.dto.chat.MessageDTO
+import quickfix.dto.chat.RedisMessageDTO
+import quickfix.dto.chat.toRedisMessage
+import quickfix.utils.exceptions.JobException
 
 @Service
 class RedisService(
@@ -35,7 +35,7 @@ class RedisService(
         val userHasPreviousRequest = redisJobRequestStorage.keys(tempKey).isNotEmpty()
 
         if(userHasPreviousRequest)
-            throw BusinessException("Este usuario ya tiene una solicitud activa.")
+            throw JobException("Este usuario ya tiene una solicitud activa.")
 
         val key = getJobRequestKey(professionId, customerId)
         redisJobRequestStorage.opsForValue().set(key,jobRequest)
@@ -58,7 +58,7 @@ class RedisService(
         val key = getJobRequestKey(professionId, customerId)
 
         if (!redisJobRequestStorage.hasKey(key))
-            throw BusinessException("No existe una solicitud activa para el usuario $customerId en la profesión $professionId")
+            throw JobException("No existe una solicitud activa para el usuario $customerId en la profesión $professionId")
 
         redisJobRequestStorage.delete(key)
         this.removeAllJobOffers(professionId, customerId)
@@ -68,7 +68,7 @@ class RedisService(
         val tempKey = "JobRequest_*_${customerId}_"
         val requestsKeys = redisJobRequestStorage.keys(tempKey)
         if(requestsKeys.isEmpty())
-            throw BusinessException("No hay ninguna solicitud activa para este usuario.")
+            throw JobException("No hay ninguna solicitud activa para este usuario.")
     }
 
     /******************************************************
@@ -90,7 +90,7 @@ class RedisService(
         val keyPattern = "JobOffer_*_*_${jobOffer.professionalId}_"
         val professionalHasActiveOffer = redisJobOfferStorage.keys(keyPattern).isNotEmpty()
         if(professionalHasActiveOffer)
-            throw BusinessException("No puede realizar más de una oferta simultáneamente.")
+            throw JobException("No puede realizar más de una oferta simultáneamente.")
         val key = getJobOfferKey(jobOffer.professionId, jobOffer.customerId, jobOffer.professionalId)
         redisJobOfferStorage.opsForValue().set(key,jobOffer)
     }
@@ -111,21 +111,20 @@ class RedisService(
         Chat_CustomerId_ProfessionalId_JobId_
     *******************************************************/
 
-    private fun getChatKey(customerId: Long, professionalId: Long, jobId: Long) : String =
-        "Chat_${customerId}_${professionalId}_${jobId}_"
+    private fun getChatKey(jobId: Long) : String = "Chat_${jobId}_"
 
-    fun sendChatMessage(message: ChatMessageDTO) {
-        val key = getChatKey(message.customerId, message.professionalId, message.jobId)
-        redisChatStorage.opsForList().rightPush(key, message.toRedisMessage())
+    fun sendChatMessage(senderIsCustomer: Boolean, message: MessageDTO) {
+        val key = getChatKey(message.jobId)
+        redisChatStorage.opsForList().rightPush(key, message.toRedisMessage(senderIsCustomer))
     }
 
-    fun getChatMessages(customerId: Long, professionalId: Long, jobId: Long) : List<RedisMessageDTO> {
-        val key = getChatKey(customerId, professionalId, jobId)
+    fun getChatMessages(jobId: Long) : List<RedisMessageDTO> {
+        val key = getChatKey(jobId)
         return redisChatStorage.opsForList().range(key, 0, -1) ?: emptyList()
     }
 
-    fun deleteChatMessages(customerId: Long, professionalId: Long, jobId: Long) {
-        val key = getChatKey(customerId, professionalId, jobId)
+    fun deleteChatMessages(jobId: Long) {
+        val key = getChatKey(jobId)
         redisChatStorage.delete(key)
     }
 }

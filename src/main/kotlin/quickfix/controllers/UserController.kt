@@ -1,12 +1,13 @@
 package quickfix.controllers
 
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springframework.http.MediaType
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import quickfix.dto.user.UserDTO
 import quickfix.dto.user.UserModifiedInfoDTO
+import quickfix.dto.user.SeeUserProfileDTO
 import quickfix.services.UserService
 
 @RestController
@@ -24,22 +25,24 @@ class UserController(
 
     @GetMapping("/data")
     fun userInfo(@ModelAttribute("currentUserId") currentUserId : Long) : UserDTO =
-        UserDTO.toDTO(userService.getUserById(currentUserId))
+        UserDTO.toDTO(userService.getById(currentUserId))
 
     @PatchMapping("/data/edit")
     fun updateUserInfo(@ModelAttribute("currentUserId") currentUserId : Long, @RequestBody modifiedInfo: UserModifiedInfoDTO) =
         userService.changeUserInfo(currentUserId, modifiedInfo)
 
     @PatchMapping("/avatar")
-    fun updateAvatar(@ModelAttribute("currentUserId") currentUserId: Long, @RequestParam("file") file: MultipartFile) =
-        userService.updateAvatar(currentUserId, file)
+    fun updateAvatar(@ModelAttribute("currentUserId") currentUserId: Long, @RequestBody image: MultipartFile) =
+        userService.updateAvatar(currentUserId, image)
 
-    @GetMapping("/avatar", produces = [MediaType.IMAGE_JPEG_VALUE])
-    fun selfAvatar(@ModelAttribute("currentUserId") currentUserId : Long) : ByteArray? =
-        userService.getAvatar(currentUserId)
-        
-    @GetMapping("/avatar/{userId}", produces = [MediaType.IMAGE_JPEG_VALUE])
-    fun userAvatar(@PathVariable userId: Long) : ByteArray? =
-        userService.getAvatar(userId)
+    @GetMapping("/seeCustomerProfile/{customerId}")
+    @Operation(summary = "Ver perfil de cliente: calificacion y cantidad de trabajos terminados",)
+    fun getSeeCustomerProfileInfo(@PathVariable customerId: Long): SeeUserProfileDTO =
+        SeeUserProfileDTO.fromProjection(userService.getSeeCustomerProfileInfo(customerId))
+
+    @GetMapping("/seeProfessionalProfile/{professionalId}")
+    @Operation(summary = "Ver perfil de cliente: calificacion y cantidad de trabajos terminados",)
+    fun getSeeProfessionalProfileInfo(@PathVariable professionalId: Long): SeeUserProfileDTO =
+        SeeUserProfileDTO.fromProjection(userService.getSeeProfessionalProfileInfo(professionalId))
 
 }

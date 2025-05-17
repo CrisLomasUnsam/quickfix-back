@@ -12,15 +12,16 @@ import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobRequest.CancelJobRequestDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
-import quickfix.dto.message.ChatMessageDTO
-import quickfix.dto.message.RedisMessageDTO
+import quickfix.dto.chat.MessageDTO
+import quickfix.dto.chat.MessageResponseDTO
+import quickfix.dto.chat.toMessageResponseDTO
 import quickfix.dto.professional.ProfessionalDTO
 import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.models.User
 import quickfix.utils.PAGE_SIZE
 import quickfix.utils.enums.JobStatus
-import quickfix.utils.exceptions.BusinessException
+import quickfix.utils.exceptions.JobException
 import java.time.LocalDate
 
 @Service
@@ -33,7 +34,7 @@ class JobService(
 ){
 
     fun getJobById(id: Long): Job =
-        jobRepository.findById(id).orElseThrow { throw BusinessException() }
+        jobRepository.findById(id).orElseThrow { throw JobException("Ha habido un error al recuperar la información del trabajo.") }
 
     fun findJobsByCustomerId(id: Long, pageNumber: Int): Page<Job>  =
          jobRepository.findAllByCustomerId(id, sortPage(pageNumber))
@@ -47,12 +48,21 @@ class JobService(
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun setJobAsDone(id: Long) =
-        updateJobStatus(id,  true,  JobStatus.DONE)
+    fun setJobAsDone(professionalId: Long, jobId: Long) {
+        if(!jobRepository.existsByIdAndProfessionalId(jobId, professionalId))
+            throw JobException("Ha habido un error al modificar el estado de este trabajo.")
+        updateJobStatus(jobId,  true,  JobStatus.DONE)
+    }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun setJobAsCancelled(id: Long) =
-        updateJobStatus(id,  false, JobStatus.CANCELED)
+    fun setJobAsCancelled(userId: Long, jobId: Long) {
+        val userIsProfessional = jobRepository.existsByIdAndProfessionalId(jobId, userId)
+        val userIsCustomer = jobRepository.existsByIdAndProfessionalId(jobId, userId)
+
+        if(!userIsProfessional && !userIsCustomer)
+            throw JobException("Ha habido un error al modificar el estado de este trabajo.")
+        updateJobStatus(jobId,  false, JobStatus.CANCELED)
+    }
 
     private fun updateJobStatus(id: Long, done: Boolean, status: JobStatus) {
         val job = this.getJobById(id)
@@ -94,7 +104,7 @@ class JobService(
         val createdJobOffers = redisService.getJobOffers(customerId)
 
         return createdJobOffers.map { createdJobOffer ->
-            val professional = userService.getUserById(createdJobOffer.professionalId)
+            val professional = userService.getById(createdJobOffer.professionalId)
             val professionalRating = jobRepository.findRatingsByProfessionalId(createdJobOffer.professionalId).map { it.score }.average()
 
             JobOfferDTO(
@@ -110,7 +120,7 @@ class JobService(
     }
 
     fun offerJob(jobOffer : CreateJobOfferDTO) {
-        val professional = userService.getUserById(jobOffer.professionalId).professionalInfo
+        val professional = userService.getById(jobOffer.professionalId).professionalInfo
         professional.validateCanOfferJob()
         redisService.offerJob(jobOffer)
     }
@@ -121,13 +131,13 @@ class JobService(
     @Transactional(rollbackFor = [Exception::class])
     fun acceptJobOffer(acceptedJob: AcceptedJobOfferDTO) {
 
-        val customer: User = userService.getUserById(acceptedJob.customerId)
-        val professional : User = userService.getUserById(acceptedJob.professionalId)
+        val customer: User = userService.getById(acceptedJob.customerId)
+        val professional : User = userService.getById(acceptedJob.professionalId)
         val profession: Profession = professionService.getProfessionById(acceptedJob.professionId)
 
         val jobOffers : Set<CreateJobOfferDTO> = redisService.getJobOffers(acceptedJob.customerId)
         val jobOffer = jobOffers.firstOrNull { it.professionalId == acceptedJob.professionalId }
-            ?: throw BusinessException("No existe oferta de este profesional para el usuario.")
+            ?: throw JobException("No existe oferta de este profesional para el usuario.")
 
         val job = Job().apply {
             this.professional = professional
@@ -148,24 +158,39 @@ class JobService(
 
     private fun deleteChatMessages(jobId: Long){
         val job = getJobById(jobId)
-        redisService.deleteChatMessages(job.customer.id, job.professional.id, job.id)
+        redisService.deleteChatMessages(job.id)
     }
 
-    fun getChatMessages(customerId : Long, professionalId : Long, jobId : Long) : List<RedisMessageDTO> {
-        validateChatMessageIds(customerId, professionalId, jobId)
-        return redisService.getChatMessages(customerId, professionalId, jobId)
+    fun getCustomerChatMessages(customerId : Long, jobId : Long) : List<MessageResponseDTO> {
+        if(!jobRepository.existsByIdAndCustomerId(jobId, customerId)) throw JobException("Ha habido un error al obtener los mensajes.")
+        return redisService.getChatMessages(jobId).map { it.toMessageResponseDTO(true)}
     }
 
-    fun postChatMessage(message: ChatMessageDTO) {
-        validateChatMessageIds(message.customerId, message.professionalId, message.jobId)
-        redisService.sendChatMessage(message)
+    fun getProfessionalChatMessages(professionalId : Long, jobId : Long) : List<MessageResponseDTO> {
+        if(!jobRepository.existsByIdAndProfessionalId(jobId, professionalId)) throw JobException("Ha habido un error al obtener los mensajes.")
+        return redisService.getChatMessages(jobId).map { it.toMessageResponseDTO(false)}
     }
 
-    private fun validateChatMessageIds(customerId : Long, professionalId : Long, jobId : Long) {
-        val job = getJobById(jobId)
-        val notValidIds = job.customer.id != customerId || job.professional.id != professionalId
-        if(notValidIds)
-            throw BusinessException("Ha habido un error. Por favor, verifique los datos.")
+    fun postCustomerChatMessage(customerId : Long, message: MessageDTO) {
+        if(!jobRepository.existsByIdAndCustomerId(message.jobId, customerId)) throw JobException("Ha habido un error al enviar el mensaje.")
+        redisService.sendChatMessage(true, message)
+    }
+
+    fun postProfessionalChatMessage(professionalId : Long, message: MessageDTO) {
+        if(!jobRepository.existsByIdAndProfessionalId(message.jobId, professionalId)) throw JobException("Ha habido un error al enviar el mensaje.")
+        redisService.sendChatMessage(false, message)
+    }
+
+    fun getCustomerChatInfo(customerId: Long, jobId: Long): User {
+        if (!jobRepository.existsByIdAndCustomerId(jobId, customerId)) throw JobException("Ha habido un error al obtener los datos solicitados.")
+        val professionalId = jobRepository.getProfessionalIdByJobId(jobId)
+        return userService.getById(professionalId)
+    }
+
+    fun getProfessionalChatInfo(professionalId: Long, jobId: Long): User {
+        if (!jobRepository.existsByIdAndProfessionalId(jobId, professionalId)) throw JobException("Ha habido un error al obtener los datos solicitados.")
+        val customerId = jobRepository.getCustomerIdByJobId(jobId)
+        return userService.getById(customerId)
     }
 
 }
