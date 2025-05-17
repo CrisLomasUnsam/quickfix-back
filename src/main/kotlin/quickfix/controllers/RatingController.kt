@@ -27,11 +27,6 @@ class RatingController(val ratingService: RatingService) {
     fun rateUser(@ModelAttribute("currentUserId") currentUserId : Long, @RequestBody rating: RatingDTO) =
         ratingService.rateUser(currentUserId, rating)
 
-    @GetMapping("/jobRating/{jobId}")
-    @Operation(summary = "Obtener calificacion de un recibidas por un usuario")
-    fun getJobRating(@ModelAttribute("currentUserId") currentUserId: Long, @PathVariable jobId: Long)=
-        ratingService.jobRating(currentUserId, jobId)
-
     @GetMapping("/received")
     @Operation(summary = "Obtener calificaciones paginadas recibidas por un usuario")
     fun findRatingsReceivedByUser(
