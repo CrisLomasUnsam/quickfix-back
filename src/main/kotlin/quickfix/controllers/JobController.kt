@@ -2,12 +2,10 @@ package quickfix.controllers
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
-import org.springframework.data.web.PageableDefault
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
-import quickfix.dto.job.JobDTO
+import quickfix.dto.job.JobBasicInfoDTO
+import quickfix.dto.job.JobWithRatingDTO
 import quickfix.dto.job.PageDTO
 import quickfix.dto.job.jobOffer.AcceptedJobOfferDTO
 import quickfix.dto.job.jobOffer.CancelJobOfferDTO
@@ -15,8 +13,6 @@ import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobRequest.CancelJobRequestDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
-import quickfix.dto.job.toDto
-import quickfix.models.Job
 import quickfix.services.JobService
 
 @RestController
@@ -36,13 +32,13 @@ class JobController(
     @GetMapping("/customer")
     @Operation(summary = "Obtiene todos los servicios pedidos por un usuario")
     fun findJobsByCustomerId(
-        @ModelAttribute("currentUserId") currentCustomerId : Long, @RequestParam pageNumber: Int) : PageDTO<JobDTO> =
-        PageDTO.toDTO(jobService.findJobsByCustomerId(currentCustomerId, pageNumber).map{ job -> toDto(job)  })
+        @ModelAttribute("currentUserId") currentCustomerId : Long, @RequestParam pageNumber: Int) : PageDTO<JobWithRatingDTO> =
+        PageDTO.toDTO(jobService.findJobsByCustomerId(currentCustomerId, pageNumber))
 
     @GetMapping("/professional")
     @Operation(summary = "Obtiene todos los servicios realizados por un profesional")
-    fun findJobsByProfessionalId(@ModelAttribute("currentUserId") currentProfessionalId : Long, @RequestParam pageNumber: Int) : PageDTO<JobDTO> =
-        PageDTO.toDTO(jobService.findJobsByProfessionalId(currentProfessionalId, pageNumber).map{ job -> toDto(job)  })
+    fun findJobsByProfessionalId(@ModelAttribute("currentUserId") currentProfessionalId : Long, @RequestParam pageNumber: Int) : PageDTO<JobWithRatingDTO> =
+        PageDTO.toDTO(jobService.findJobsByProfessionalId(currentProfessionalId, pageNumber))
 
     @PatchMapping("/complete/{jobId}")
     fun setJobAsDone(@ModelAttribute("currentUserId") currentProfessionalId : Long, @PathVariable jobId: Long) =
@@ -54,17 +50,15 @@ class JobController(
 
     @GetMapping("/requestedJobs")
     @Operation(summary = "Buscar jobs solicitados como customer por filtro")
-    fun getRequestedJobsByParameters(@ModelAttribute("currentUserId") currentCustomerId : Long, @RequestParam(required = false) parameter: String?): List<JobDTO> {
-        val jobs = jobService.getJobsByParameter(currentCustomerId, parameter)
-        return jobs.map {job -> toDto(job)  }
-    }
+    fun getRequestedJobsByParameters(@ModelAttribute("currentUserId") currentCustomerId : Long, @RequestParam(required = false) parameter: String?): List<JobBasicInfoDTO> =
+        jobService.getJobsByParameter(currentCustomerId, parameter)
+
 
     @GetMapping("/offeredJobs")
     @Operation(summary = "Buscar jobs realizados como profesional por filtro")
-    fun getOfferedJobsByParameters(@ModelAttribute("currentUserId") currentProfessionalId : Long, @RequestParam(required = false) parameter: String?): List<JobDTO> {
-        val jobs = jobService.getJobsByParameter(currentProfessionalId, parameter)
-        return jobs.map {job -> toDto(job)  }
-    }
+    fun getOfferedJobsByParameters(@ModelAttribute("currentUserId") currentProfessionalId : Long, @RequestParam(required = false) parameter: String?): List<JobBasicInfoDTO> =
+        jobService.getJobsByParameter(currentProfessionalId, parameter)
+
 
     /*************************
      JOB OFFERS
