@@ -4,6 +4,8 @@ import quickfix.utils.exceptions.IllegalDataException
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.time.format.TextStyle
+import java.util.*
 
 val YearAndMonthformatter: DateTimeFormatter = DateTimeFormatter.ofPattern("MM/yyyy")
 val DateWithDayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
@@ -31,4 +33,12 @@ fun datifyStringMonthAndYear(fechaStr: String): LocalDate {
     } catch (e: DateTimeParseException) {
         throw IllegalDataException("La fecha no tiene el formato esperado MM/yyyy")
     }
+}
+
+fun LocalDate.toYearMonthString(): String {
+    val spanish = Locale.forLanguageTag("es-ES")
+    val monthName = this.month
+        .getDisplayName(TextStyle.FULL, spanish)      // "junio"
+        .replaceFirstChar { it.uppercase(spanish) }   // "Junio"
+    return "$monthName, ${this.year}"
 }

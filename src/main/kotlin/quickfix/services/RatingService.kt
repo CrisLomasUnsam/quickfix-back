@@ -21,6 +21,7 @@ class RatingService(
         return ratingRepository.findAllByUserToId(userId, pageable)
     }
 
+    @Transactional(readOnly = true)
     fun findRatingsMadeByUser(userId: Long): List<Rating> {
         return ratingRepository.findAllByUserFromId(userId)
     }
