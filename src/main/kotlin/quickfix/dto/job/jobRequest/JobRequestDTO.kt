@@ -3,24 +3,9 @@ package quickfix.dto.job.jobRequest
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
-import quickfix.models.User
 import quickfix.utils.exceptions.CustomerException
 import quickfix.utils.exceptions.DetailException
 import quickfix.utils.exceptions.ProfessionException
-
-@Schema(description = "Para traer los jobRequests de Redis")
-data class JobRequestRedisDTO @JsonCreator constructor(
-
-    @JsonProperty("customerId")
-    var customerId: Long,
-
-    @JsonProperty("professionId")
-    var professionId: Long,
-
-    @JsonProperty("detail")
-    var detail: String
-
-)
 
 @Schema(description = "Solicitud de un Job por un customer")
 data class JobRequestDTO @JsonCreator constructor(
@@ -29,13 +14,13 @@ data class JobRequestDTO @JsonCreator constructor(
     var customerId: Long,
 
     @JsonProperty("name")
-    var customerName: String,
+    var name: String,
 
     @JsonProperty("lastName")
-    var customerLastName: String,
+    var lastName: String,
 
     @JsonProperty("avatar")
-    var customerAvatar: String,
+    var avatar: String,
 
     @JsonProperty("professionId")
     var professionId: Long,
@@ -49,27 +34,7 @@ data class JobRequestDTO @JsonCreator constructor(
     @JsonProperty("rating")
     var rating: Double
 
-) {
-    companion object {
-        fun toJobRequest(
-            jobRequestRedis: JobRequestRedisDTO,
-            customer: User,
-            professionName: String,
-            rating: Double
-        ) : JobRequestDTO {
-            return JobRequestDTO(
-                customerId = jobRequestRedis.customerId,
-                customerName = customer.name,
-                customerLastName = customer.lastName,
-                customerAvatar = "",
-                professionId = jobRequestRedis.professionId,
-                professionName = professionName,
-                detail = jobRequestRedis.detail,
-                rating = rating
-            )
-        }
-    }
-}
+)
 
 fun JobRequestDTO.validate() {
     validCustomer(customerId)
