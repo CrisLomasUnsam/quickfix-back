@@ -15,6 +15,9 @@ import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.MessageResponseDTO
 import quickfix.dto.chat.toMessageResponseDTO
+import quickfix.dto.job.JobBasicInfoDTO
+import quickfix.dto.job.JobWithRatingDTO
+import quickfix.dto.job.toDto
 import quickfix.dto.professional.ProfessionalDTO
 import quickfix.models.Job
 import quickfix.models.Profession
@@ -36,12 +39,20 @@ class JobService(
     fun getJobById(id: Long): Job =
         jobRepository.findById(id).orElseThrow { throw JobException("Ha habido un error al recuperar la información del trabajo.") }
 
-    fun findJobsByCustomerId(id: Long, pageNumber: Int): Page<Job>  =
-         jobRepository.findAllByCustomerId(id, sortPage(pageNumber))
 
-    fun findJobsByProfessionalId(id: Long, pageNumber: Int): Page<Job> =
-         jobRepository.findAllByProfessionalId(id, sortPage(pageNumber))
+    @Transactional(readOnly = true)
+    fun findJobsByCustomerId(id: Long, pageNumber: Int): Page<JobWithRatingDTO> {
+        val pageable = sortPage(pageNumber)
+        return jobRepository.findAllByCustomerId(id, pageable).map { it.toDto() }
+    }
 
+
+    @Transactional(readOnly = true)
+    fun findJobsByProfessionalId(id: Long, pageNumber: Int): Page<JobWithRatingDTO> {
+        val pageable = sortPage(pageNumber)
+        return jobRepository.findAllByProfessionalId(id, pageable).map { it.toDto() }
+
+    }
     private fun sortPage(pageNumber: Int) : PageRequest {
         val sort: Sort = Sort.by("date").ascending()
         return PageRequest.of(pageNumber, PAGE_SIZE, sort)
@@ -70,8 +81,9 @@ class JobService(
         job.status = status
     }
 
-    fun getJobsByParameter(id: Long, parameter: String?): List<Job> =
-        jobRepository.findJobByFilter(id, parameter)
+    fun getJobsByParameter(id: Long, parameter: String?): List<JobBasicInfoDTO> =
+        jobRepository.findJobByFilter(id, parameter).map { it.toDto() }
+
 
     /*************************
      JOB REQUEST METHODS
