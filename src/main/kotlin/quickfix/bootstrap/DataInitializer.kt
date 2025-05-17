@@ -160,15 +160,15 @@ class DataInitializer : InitializingBean {
             detail = "Tengo una pérdida en mi baño."
         )
 
-        redisService.requestJob(jobRequest1, professions["Electricidad"]!!.id)
-        redisService.requestJob(jobRequest2, professions["Mecánica"]!!.id)
-        redisService.requestJob(jobRequest3, professions["Albañilería"]!!.id)
-        redisService.requestJob(jobRequest4, professions["Plomería"]!!.id)
-        redisService.requestJob(jobRequest5, professions["Carpintería"]!!.id)
-        redisService.requestJob(jobRequest6, professions["Jardinería"]!!.id)
-        redisService.requestJob(jobRequest7, professions["Pintorería"]!!.id)
-        redisService.requestJob(jobRequest8, professions["Gasfitería"]!!.id)
-        redisService.requestJob(jobRequest9, professions["Plomería"]!!.id)
+        redisService.requestJob(jobRequest1)
+        redisService.requestJob(jobRequest2)
+        redisService.requestJob(jobRequest3)
+        redisService.requestJob(jobRequest4)
+        redisService.requestJob(jobRequest5)
+        redisService.requestJob(jobRequest6)
+        redisService.requestJob(jobRequest7)
+        redisService.requestJob(jobRequest8)
+        redisService.requestJob(jobRequest9)
 
     }
 

@@ -88,7 +88,7 @@ class JobService(
 
         userService.assertUserExists(jobRequest.customerId)
         professionService.assertProfessionExists(jobRequest.professionId)
-        redisService.requestJob(jobRequest, jobRequest.professionId)
+        redisService.requestJob(jobRequest)
     }
 
     fun cancelJobRequest (cancelJobRequest : CancelJobRequestDTO) {

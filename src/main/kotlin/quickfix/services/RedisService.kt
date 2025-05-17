@@ -36,7 +36,7 @@ class RedisService(
     private fun getJobRequestKey(professionId: Long, customerId: Long) : String =
         "JobRequest_${professionId}_${customerId}_"
 
-    fun requestJob(jobRequest : JobRequestRedisDTO, professionId : Long) {
+    fun requestJob(jobRequest : JobRequestRedisDTO) {
 
         val customerId = jobRequest.customerId
 
@@ -46,7 +46,7 @@ class RedisService(
         if(userHasPreviousRequest)
             throw JobException("Este usuario ya tiene una solicitud activa.")
 
-        val key = getJobRequestKey(professionId, customerId)
+        val key = getJobRequestKey(jobRequest.professionId, customerId)
         redisJobRequestStorage.opsForValue().set(key,jobRequest)
         //TODO: Creo que es conveniente agregar TTL así no bloqueamos eternamente a un usuario
         //redisJobRequestStorage.expire(key, Duration.ofMinutes(5))
