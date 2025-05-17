@@ -7,6 +7,7 @@ import quickfix.models.User
 import quickfix.utils.enums.JobStatus
 import quickfix.utils.functions.getAvatarUrl
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class JobBuilder {
     companion object{
@@ -26,7 +27,7 @@ class JobBuilder {
 
 class JobRequestBuilder {
     companion object{
-        fun buildMock(customer: User, profession: Profession) =
+        fun buildMock(customer: User, profession: Profession, isFutureRequest: Boolean = false) =
             JobRequestDTO(
                 customerId = customer.id,
                 name = customer.name,
@@ -35,7 +36,8 @@ class JobRequestBuilder {
                 professionId = profession.id,
                 professionName = profession.name,
                 detail = "Lorem ipsum dolor em sit amet lo gump samar ipsum it.",
-                rating = (Math.random() % 5) + 1.0
+                rating = (Math.random() % 5) + 1.0,
+                neededDatetime = if(isFutureRequest) LocalDateTime.now().plusDays(7) else LocalDateTime.now()
             )
     }
 }
