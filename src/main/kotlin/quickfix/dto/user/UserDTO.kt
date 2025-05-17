@@ -3,8 +3,8 @@ package quickfix.dto.user
 import quickfix.models.Address
 import quickfix.models.Gender
 import quickfix.models.User
-import quickfix.utils.DateWithDayFormatter
-import quickfix.utils.stringifyDate
+import quickfix.utils.functions.DateWithDayFormatter
+import quickfix.utils.functions.stringifyDate
 
 data class UserDTO(
     var mail: String,

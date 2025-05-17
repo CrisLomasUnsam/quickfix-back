@@ -4,9 +4,9 @@ import jakarta.persistence.*
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import quickfix.dto.user.UserModifiedInfoDTO
-import quickfix.utils.datifyStringWithDay
-import quickfix.utils.exceptions.BusinessException
+import quickfix.utils.exceptions.IllegalDataException
 import quickfix.utils.exceptions.InvalidCredentialsException
+import quickfix.utils.functions.datifyStringWithDay
 import java.time.LocalDate
 
 @Entity
@@ -14,7 +14,7 @@ import java.time.LocalDate
 class User : Identifier {
 
     @Id @GeneratedValue
-    override var id: Long = -1
+    override var id: Long = 0
 
     @Column(length = 97)
     private lateinit var password : String
@@ -34,9 +34,6 @@ class User : Identifier {
     lateinit var mail: String
     lateinit var name : String
     lateinit var lastName : String
-
-    @Lob
-    lateinit var avatar: ByteArray
     lateinit var dateBirth : LocalDate
     var verified : Boolean = false
 
@@ -52,19 +49,19 @@ class User : Identifier {
                 this.mail = it
                 if (!validMail()) {
                     this.mail = oldMail
-                    throw BusinessException("Email inválido")
+                    throw IllegalDataException("Email inválido")
                 }
             }
 
         modifiedInfoDTO.name
             ?.takeIf { it.isNotBlank() }
             ?.let {
-                if (!validName(it)) throw BusinessException("Nombre sólo puede contener letras")
+                if (!validName(it)) throw IllegalDataException("Nombre sólo puede contener letras")
                 this.name = it
             }
 
         modifiedInfoDTO.lastName?.takeIf { it.isNotBlank() }?.let {
-            if (!validName(it)) throw BusinessException("Apellido sólo puede contener letras")
+            if (!validName(it)) throw IllegalDataException("Apellido sólo puede contener letras")
             this.lastName = it
         }
 
@@ -75,7 +72,7 @@ class User : Identifier {
                 this.dateBirth = datifyStringWithDay(modifiedInfoDTO.dateBirth!!)
                 if (!isAdult()) {
                     this.dateBirth = oldDate
-                    throw BusinessException("Debe ser mayor de edad")
+                    throw IllegalDataException("Debe ser mayor de edad")
                 }
             }
 
@@ -120,22 +117,22 @@ class User : Identifier {
     private fun validateCommonFields() {
 
         if (!this.validMail())
-            throw BusinessException("El email no es válido.")
+            throw IllegalDataException("El email no es válido.")
 
         if (!this.validName(name))
-            throw BusinessException("El nombre no puede estar vacío ni contener caracteres especiales o numéricos.")
+            throw IllegalDataException("El nombre no puede estar vacío ni contener caracteres especiales o numéricos.")
 
         if (!this.validName(lastName))
-            throw BusinessException("El apellido no puede estar vacío ni contener caracteres especiales o numéricos.")
+            throw IllegalDataException("El apellido no puede estar vacío ni contener caracteres especiales o numéricos.")
 
         if (!this.validDNI())
-            throw BusinessException("El DNI es incorrecto.")
+            throw IllegalDataException("El DNI es incorrecto.")
 
         if (!this.isAdult())
-            throw BusinessException("El usuario debe ser mayor a $EDAD_REQUERIDA años.")
+            throw IllegalDataException("El usuario debe ser mayor a $EDAD_REQUERIDA años.")
 
         if (!dateBirth.isBefore(LocalDate.now()))
-            throw BusinessException("La fecha de nacimiento no es válida.")
+            throw IllegalDataException("La fecha de nacimiento no es válida.")
     }
 
 

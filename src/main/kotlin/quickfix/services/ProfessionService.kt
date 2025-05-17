@@ -3,7 +3,7 @@ package quickfix.services
 import org.springframework.stereotype.Service
 import quickfix.dao.ProfessionRepository
 import quickfix.models.Profession
-import quickfix.utils.exceptions.BusinessException
+import quickfix.utils.exceptions.NotFoundException
 
 @Service
 class ProfessionService(
@@ -12,14 +12,14 @@ class ProfessionService(
 
     fun assertProfessionExists(professionId: Long) {
         if(!professionRepository.existsById(professionId))
-            throw BusinessException("La profesión no existe")
+            throw NotFoundException("La profesión no existe")
     }
 
     fun getProfessionById(id: Long): Profession =
-        professionRepository.findById(id).orElseThrow{ BusinessException("La profesión no está disponible.") }
+        professionRepository.findById(id).orElseThrow{ NotFoundException("La profesión no está disponible.") }
 
     fun getByNameIgnoreCase(profession : String) : Profession {
-        return professionRepository.findByNameIgnoreCase(profession).orElseThrow {  BusinessException("La profesión no está disponible.")  }
+        return professionRepository.findByNameIgnoreCase(profession).orElseThrow {  NotFoundException("La profesión no está disponible.")  }
     }
 
 }

@@ -4,30 +4,29 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.TokenRepository
-import quickfix.dao.UserRepository
 import quickfix.dto.register.RegisterRequestDTO
 import quickfix.dto.register.toUser
+import quickfix.dto.user.NewCredentialRequestDTO
 import quickfix.models.Token
 import quickfix.models.User
-import quickfix.utils.CONFIRM_FRONTEND_URL
 import quickfix.utils.FRONTEND_URL
 import quickfix.utils.events.OnRegistrationCompletedEvent
-import quickfix.utils.exceptions.BusinessException
+import quickfix.utils.exceptions.IllegalDataException
 import quickfix.utils.exceptions.InvalidCredentialsException
+import quickfix.utils.exceptions.InvalidTokenException
 import java.sql.SQLException
 import java.time.LocalDateTime
 
 @Service
 class RegisterService(
-    private val userRepository: UserRepository,
+    private val userService: UserService,
     private val eventPublisher: ApplicationEventPublisher,
     private val tokenRepository: TokenRepository
 ) {
     fun getVerificationToken(token: String) = tokenRepository.findByValue(token)
         ?: throw InvalidCredentialsException()
 
-    fun getUserByMail(mail: String): User =
-        userRepository.findByMail(mail).orElseThrow{ BusinessException("Usuario no encontrado $mail") }
+    fun getUserByMail(mail: String): User = userService.getByMail(mail)
 
     @Transactional(rollbackFor = [SQLException::class, Exception::class])
     fun registerUser(registerData: RegisterRequestDTO){
@@ -36,31 +35,47 @@ class RegisterService(
     }
 
     private fun validateUserAlreadyExists(mail: String) {
-        val user = userRepository.findByMail(mail)
-        if(user.isPresent) throw BusinessException("El usuario con mail $mail ya existe")
+        val user = userService.findByMail(mail)
+        if(user.isPresent) throw IllegalDataException("El usuario con mail $mail ya existe")
     }
 
     private fun registerNewUser(registerData: RegisterRequestDTO) {
         val user : User = registerData.toUser().apply { setNewPassword(registerData.rawPassword) }
-        val savedUser = userRepository.save(user) /*Se persiste un usuario sin verificar aun pero cuyo mail no esta en la bbdd*/
+        val savedUser = userService.save(user)
         val token = tokenRepository.save(Token.createTokenEntity(savedUser))
-        val confirmationURL = createConfirmationLink(token.value)
+        val confirmationURL = createConfirmationOrRecoveryLink(token.value)
         eventPublisher.publishEvent(OnRegistrationCompletedEvent(savedUser, confirmationURL))
     }
 
-    @Transactional(rollbackFor = [SQLException::class, Exception::class])
-    fun validateUserByToken(token: String) {
-        if (token.isBlank()) { throw BusinessException("Token invalido") }
+    private fun verifyToken(token : String) : Token{
+        if (token.isBlank()) { throw InvalidTokenException() }
         val verificationToken = getVerificationToken(token)
-        val user = verificationToken.user
-        val savedUser = getUserByMail(user.mail)
         if (verificationToken.expiryDate.isBefore(LocalDateTime.now())) {
             tokenRepository.delete(verificationToken)
-            throw BusinessException("Token expirado")
+            throw InvalidTokenException()
         }
-        savedUser.verified = true
-        tokenRepository.delete(verificationToken)
+        return verificationToken
     }
 
-    private fun createConfirmationLink(token: String) = "$FRONTEND_URL+$CONFIRM_FRONTEND_URL?token=$token"
+    @Transactional(rollbackFor = [Exception::class])
+    fun validateUserByToken(token: String) {
+        val verifiedToken = verifyToken(token)
+        val user = getUserByMail(verifiedToken.user.mail)
+        user.verified = true
+        tokenRepository.delete(verifiedToken)
+    }
+
+    @Transactional(rollbackFor = [Exception::class])
+    fun recoveryPassword(newCredential: NewCredentialRequestDTO) {
+        val token = newCredential.token
+        val verifiedToken = verifyToken(token)
+        val userToUpdate = getUserByMail(verifiedToken.user.mail)
+        userService.save(userToUpdate.apply { setNewPassword(newCredential.newRawPassword) })
+        tokenRepository.delete(verifiedToken)
+    }
+
+    @Transactional(rollbackFor = [Exception::class])
+    fun requestChangeUserPassword(mail: String) = userService.requestChangePassword(mail)
+
+    private fun createConfirmationOrRecoveryLink(token: String) = "$FRONTEND_URL/confirm?token=$token"
 }

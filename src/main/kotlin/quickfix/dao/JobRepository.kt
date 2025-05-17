@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Component
 import quickfix.models.Job
 import quickfix.models.Rating
+import quickfix.utils.enums.JobStatus
 
 @Component
 interface JobRepository : JpaRepository<Job, Long> {
@@ -60,6 +61,8 @@ interface JobRepository : JpaRepository<Job, Long> {
         WHERE r.user_to_id = :userToId AND j.professional_id = :userToId
     """, nativeQuery = true)
     fun findRatingsByProfessionalId(@Param("userToId") userToId: Long): List<Rating>
+
+    fun countByProfessionalIdAndStatus(professionalId: Long, status: JobStatus = JobStatus.DONE): Int
 
 }
 

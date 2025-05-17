@@ -1,7 +1,7 @@
 package quickfix.models
 
 import jakarta.persistence.*
-import quickfix.utils.exceptions.BusinessException
+import quickfix.utils.exceptions.RatingException
 import java.time.LocalDate
 
 @Entity
@@ -15,7 +15,7 @@ import java.time.LocalDate
 class Rating : Identifier {
 
     @Id @GeneratedValue
-    override var id: Long = -1
+    override var id: Long = 0
 
     @ManyToOne
     lateinit var userFrom: User
@@ -32,11 +32,11 @@ class Rating : Identifier {
     lateinit var comment: String
 
     override fun validate() {
-        if (!validScore(score)) throw BusinessException("El puntaje no puede ser mayor a 5 o menor a 1")
-        if (!validDate(yearAndMonth)) throw BusinessException("Fecha fuera de rango válido")
-        if (!validComment(comment)) throw BusinessException("Debe agregar un comentario")
-        if (!jobIncludesUsers()) throw BusinessException("El job a valorar no contiene a uno/ambos usuarios")
-        if (userFrom.id == userTo.id) throw BusinessException("Un usuario no puede calificarse a sí mismo")
+        if (!validScore(score)) throw RatingException("El puntaje no puede ser mayor a 5 o menor a 1")
+        if (!validDate(yearAndMonth)) throw RatingException("Fecha fuera de rango válido")
+        if (!validComment(comment)) throw RatingException("Debe agregar un comentario")
+        if (!jobIncludesUsers()) throw RatingException("El job a valorar no contiene a uno/ambos usuarios")
+        if (userFrom.id == userTo.id) throw RatingException("Un usuario no puede calificarse a sí mismo")
     }
 
     private fun jobIncludesUsers(): Boolean = setOf(job.customer.id, job.professional.id).containsAll(setOf(userFrom.id, userTo.id))

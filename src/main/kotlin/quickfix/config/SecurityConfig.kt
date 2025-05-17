@@ -91,6 +91,9 @@ class SecurityConfig {
                 it.requestMatchers(HttpMethod.POST, "/rating/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.PATCH, "/rating/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
 
+
+                it.requestMatchers(HttpMethod.GET, "/user/seeCustomerProfile/**").hasAuthority(Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.GET, "/user/seeProfessionalProfile/**").hasAuthority(Role.CUSTOMER.name)
                 it.requestMatchers(HttpMethod.GET, "/user/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.PATCH, "/user/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
 

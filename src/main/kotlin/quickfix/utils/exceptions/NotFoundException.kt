@@ -1,6 +1,3 @@
 package quickfix.utils.exceptions
-import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.ResponseStatus
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-class NotFoundException(message: String) : Exception(message)
+data class NotFoundException(override val message: String = "Ha habido un error al recuperar los datos") : Exception(message)

@@ -1,6 +1,6 @@
-package quickfix.utils
+package quickfix.utils.functions
 
-import quickfix.utils.exceptions.BusinessException
+import quickfix.utils.exceptions.IllegalDataException
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -20,7 +20,7 @@ fun datifyStringWithDay(dateStr: String): LocalDate {
     return try {
         LocalDate.parse(dateStr, DateWithDayFormatter)
     } catch (e: DateTimeParseException) {
-        throw BusinessException("La fecha no tiene el formato esperado dd/MM/yyyy")
+        throw IllegalDataException("La fecha no tiene el formato esperado dd/MM/yyyy")
     }
 }
 
@@ -29,6 +29,6 @@ fun datifyStringMonthAndYear(fechaStr: String): LocalDate {
         val date = YearMonth.parse(fechaStr, YearAndMonthformatter)
         date.atDay(1)
     } catch (e: DateTimeParseException) {
-        throw BusinessException("La fecha no tiene el formato esperado MM/yyyy")
+        throw IllegalDataException("La fecha no tiene el formato esperado MM/yyyy")
     }
 }

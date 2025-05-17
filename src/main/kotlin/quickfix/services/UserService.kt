@@ -6,60 +6,64 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import quickfix.dao.TokenRepository
 import quickfix.dao.UserRepository
-import quickfix.dto.user.NewCredentialRequestDTO
+import quickfix.dto.user.ISeeUserProfile
 import quickfix.dto.user.UserModifiedInfoDTO
 import quickfix.models.Profession
 import quickfix.models.ProfessionalInfo
 import quickfix.models.Token
 import quickfix.models.User
 import quickfix.utils.FRONTEND_URL
-import quickfix.utils.RECOVERY_FRONTEND_URL
 import quickfix.utils.events.OnChangePasswordRequestEvent
-import quickfix.utils.exceptions.BusinessException
-import quickfix.utils.exceptions.InvalidCredentialsException
-import java.time.LocalDateTime
+import quickfix.utils.exceptions.NotFoundException
+import java.util.*
 
 @Service
 class UserService(
     private val userRepository: UserRepository,
     private val eventPublisher: ApplicationEventPublisher,
-    private val tokenRepository: TokenRepository
+    private val tokenRepository: TokenRepository,
+    private val imageService: ImageService
 ) {
 
-    fun getUserById(id: Long): User =
-        userRepository.findById(id).orElseThrow{ BusinessException("Usuario no encontrado $id") }
+    private fun createRecoveryURL(token: String) = "$FRONTEND_URL/confirm?token=$token"
 
-    fun getUserByMail(mail: String): User =
-        userRepository.findByMail(mail).orElseThrow{ BusinessException("Usuario no encontrado $mail") }
+    fun getById(id: Long): User =
+        userRepository.findById(id).orElseThrow{ NotFoundException("Usuario no encontrado $id") }
 
-    fun getVerificationToken(token: String) = tokenRepository.findByValue(token)
-        ?: throw InvalidCredentialsException()
+    fun findByMail(mail : String) : Optional<User> =
+        userRepository.findByMail(mail)
 
+    fun getByMail(mail: String): User =
+        userRepository.findByMail(mail).orElseThrow{ NotFoundException("Usuario no encontrado $mail") }
+
+    fun save(user : User) = userRepository.save(user)
 
     fun assertUserExists(id: Long) {
         if (!userRepository.existsById(id))
-            throw BusinessException("Usuario no encontrado: $id")
+            throw NotFoundException("Usuario no encontrado: $id")
     }
 
     fun getProfessionalInfo(userId: Long) : ProfessionalInfo =
-        userRepository.findUserWithProfessionalInfoById(userId).orElseThrow{ BusinessException() }.professionalInfo
+        userRepository.findUserWithProfessionalInfoById(userId).orElseThrow{ NotFoundException() }.professionalInfo
 
     fun getActiveProfessionsByUserId(id: Long): Set<Profession> =
-        getProfessionalInfo(id)
-            .professionalProfessions
-            .filter { it.active }
-            .map { it.profession }
-            .toSet()
+        getProfessionalInfo(id).getActiveProfessions()
+
+    fun getSeeProfessionalProfileInfo(professionalId : Long) : ISeeUserProfile =
+        userRepository.getSeeProfessionalProfileInfo(professionalId)
+
+    fun getSeeCustomerProfileInfo(customerId : Long) : ISeeUserProfile =
+        userRepository.getSeeCustomerProfileInfo(customerId)
 
     @Transactional(rollbackFor = [Exception::class])
     fun changeUserInfo(id: Long, modifiedInfo: UserModifiedInfoDTO) {
-        val user = this.getUserById(id)
+        val user = this.getById(id)
         user.updateUserInfo(modifiedInfo)
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun changeUserPassword(mail: String) {
-        val user = getUserByMail(mail)
+    fun requestChangePassword(mail: String) {
+        val user = getByMail(mail)
         val token = tokenRepository.save(Token.createTokenEntity(user))
         val recoveryURL = createRecoveryURL(token.value)
         eventPublisher.publishEvent(OnChangePasswordRequestEvent(user, recoveryURL))
@@ -67,26 +71,8 @@ class UserService(
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun validateUserByToken(newCredential: NewCredentialRequestDTO) {
-        val token = newCredential.token
-        if (token.isBlank()) { throw BusinessException("Token invalido") }
-        val verificationToken = getVerificationToken(token)
-        val user = verificationToken.user
-        val userToUpdate = getUserByMail(user.mail)
-        if (verificationToken.expiryDate.isBefore(LocalDateTime.now())) {
-            tokenRepository.delete(verificationToken)
-            throw BusinessException("Token expirado")
-        }
-        userRepository.save(userToUpdate.apply { setNewPassword(newCredential.newRawPassword) })
-        tokenRepository.delete(verificationToken)
-    }
-
-    private fun createRecoveryURL(token: String): String = "$FRONTEND_URL+$RECOVERY_FRONTEND_URL?token=$token"
-
-    @Transactional(rollbackFor = [Exception::class])
     fun updateAvatar(currentUserId: Long, file: MultipartFile) {
-        val user = this.getUserById(currentUserId)
-        user.avatar = file.bytes
+        imageService.uploadProfileImage(currentUserId, file)
     }
-    fun getAvatar(userId: Long): ByteArray = this.getUserById(userId).avatar
+
 }

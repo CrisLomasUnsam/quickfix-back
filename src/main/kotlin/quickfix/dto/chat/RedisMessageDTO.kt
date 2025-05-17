@@ -2,8 +2,8 @@ package quickfix.dto.chat
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import quickfix.utils.dateTimeFromTimestamp
-import quickfix.utils.stringifyDateTimeWithoutYear
+import quickfix.utils.functions.dateTimeFromTimestamp
+import quickfix.utils.functions.stringifyDateTimeWithoutYear
 
 data class RedisMessageDTO @JsonCreator constructor(
 

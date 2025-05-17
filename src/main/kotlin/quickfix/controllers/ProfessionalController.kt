@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import quickfix.dto.professional.FinancesDTO
 import quickfix.dto.professional.NewCertificateDTO
 import quickfix.models.Certificate
@@ -43,8 +44,8 @@ class ProfessionalController(
 
     @GetMapping("/professions")
     @Operation(summary = "Obtener los servicios que puede brindar el profesional")
-    fun getProfessions(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long): List<Profession> =
-        professionalService.getProfessions(currentProfessionalId)
+    fun getActiveProfessions(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long) : Set<Profession> =
+        professionalService.getActiveProfessions(currentProfessionalId)
 
     @PostMapping("/professions")
     @Operation(summary = "Agregar servicio brindado")
@@ -69,17 +70,18 @@ class ProfessionalController(
 
     @PostMapping("/certificates")
     @Operation(summary = "Agregar certificado")
-    fun addCertificate(
-        @ModelAttribute("currentProfessionalId") currentProfessionalId: Long,
-        @RequestBody dto: NewCertificateDTO
-    ) =
-        professionalService.addCertificate(currentProfessionalId, dto)
+    fun addCertificate(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long, @RequestBody certificateDto: NewCertificateDTO) =
+        professionalService.addCertificate(currentProfessionalId, certificateDto)
 
-    @DeleteMapping("/certificates")
+    //TODO: Valen refactorizó esto y ya le agregó el model attribute. Corregir cuando se mergee
+    @PostMapping("/certificates/{certificateId}")
+    @Operation(summary = "Agregar certificado")
+    fun uploadCertificateImg(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long, @PathVariable certificateId : Long, @RequestBody image: MultipartFile) =
+        professionalService.uploadCertificateImg(currentProfessionalId, certificateId, image)
+
+    //TODO: Valen refactorizó esto y ya le agregó el model attribute. Corregir cuando se mergee
+    @DeleteMapping("/certificates/{certificateId}")
     @Operation(summary = "Borrar un certificado")
-    fun deleteCertificate(
-        @ModelAttribute("currentProfessionalId") currentProfessionalId: Long,
-        @RequestBody certificateNameOrImg: String
-    ) =
-        professionalService.deleteCertificate(currentProfessionalId, certificateNameOrImg.trim())
+    fun deleteCertificate(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long, @PathVariable certificateId : Long) =
+        professionalService.deleteCertificate(currentProfessionalId, certificateId)
 }
