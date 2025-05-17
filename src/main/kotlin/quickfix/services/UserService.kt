@@ -8,6 +8,7 @@ import quickfix.dao.TokenRepository
 import quickfix.dao.UserRepository
 import quickfix.dto.user.ISeeUserProfile
 import quickfix.dto.user.UserModifiedInfoDTO
+import quickfix.dto.user.UserProfileInfoDto
 import quickfix.models.Profession
 import quickfix.models.ProfessionalInfo
 import quickfix.models.Token
@@ -59,6 +60,8 @@ class UserService(
 
     fun getSeeCustomerProfileInfo(customerId : Long) : ISeeUserProfile =
         userRepository.getSeeCustomerProfileInfo(customerId)
+
+    fun getUserProfileInfo(userId: Long) : User = this.getById(userId)
 
     @Transactional(rollbackFor = [Exception::class])
     fun changeUserInfo(id: Long, modifiedInfo: UserModifiedInfoDTO) {
