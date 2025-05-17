@@ -74,7 +74,9 @@ class UserService(
 
     }
 
+    @Transactional(rollbackFor = [Exception::class])
     fun updateAvatar(currentUserId: Long, file: MultipartFile) {
         imageService.uploadProfileImage(currentUserId, file)
     }
+
 }

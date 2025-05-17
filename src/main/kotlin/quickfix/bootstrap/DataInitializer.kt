@@ -2,6 +2,7 @@ package quickfix.bootstrap
 
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
 import quickfix.bootstrap.builders.*
 import quickfix.dao.*
@@ -22,6 +23,8 @@ class DataInitializer : InitializingBean {
     fun initProfessions() {
         professionRepository.saveAll(ProfessionBuilder.buildProfessions())
     }
+    private fun byteArrayFromResource(path: String): ByteArray =
+        ClassPathResource(path).inputStream.readBytes()
 
     fun initUsers() {
         val professions = professionRepository.findAll().toList()
