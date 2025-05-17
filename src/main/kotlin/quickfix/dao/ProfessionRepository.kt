@@ -9,5 +9,4 @@ import java.util.*
 interface ProfessionRepository: CrudRepository<Profession, Long> {
   
     fun findByNameIgnoreCase(name: String): Optional<Profession>
-
 }

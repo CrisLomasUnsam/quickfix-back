@@ -47,11 +47,7 @@ class UserService(
         userRepository.findUserWithProfessionalInfoById(userId).orElseThrow{ NotFoundException() }.professionalInfo
 
     fun getActiveProfessionsByUserId(id: Long): Set<Profession> =
-        getProfessionalInfo(id)
-            .professionalProfessions
-            .filter { it.active }
-            .map { it.profession }
-            .toSet()
+        getProfessionalInfo(id).getActiveProfessions()
 
     fun getSeeProfessionalProfileInfo(professionalId : Long) : ISeeUserProfile =
         userRepository.getSeeProfessionalProfileInfo(professionalId)

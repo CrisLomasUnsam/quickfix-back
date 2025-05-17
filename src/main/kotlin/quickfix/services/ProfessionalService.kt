@@ -21,7 +21,7 @@ class ProfessionalService(
     private val imageService: ImageService,
 )  {
 
-    fun getProfessionIds(professionalId : Long) : Set<Long> {
+    fun getActiveProfessionIds(professionalId : Long) : Set<Long> {
         val professions = userService.getActiveProfessionsByUserId(professionalId)
         return professions.map { it.id }.toSet()
     }
@@ -35,10 +35,10 @@ class ProfessionalService(
         return financesDTO
     }
 
-    fun getProfessions(proffesionalId: Long) : List<Profession> {
+    fun getActiveProfessions(proffesionalId: Long) : Set<Profession> {
         userService.assertUserExists(proffesionalId)
-        val professionIds : Set<Long> = this.getProfessionIds(proffesionalId)
-        return professionIds.map { professionService.getProfessionById(it) }
+        val professionIds : Set<Long> = this.getActiveProfessionIds(proffesionalId)
+        return professionIds.map { professionService.getProfessionById(it) }.toSet()
     }
 
     @Transactional(rollbackFor = [Exception::class])

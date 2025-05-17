@@ -34,8 +34,8 @@ class ProfessionalController (
 
     @GetMapping("/professions/{professionalId}")
     @Operation(summary = "Obtener los servicios que puede brindar el profesional")
-    fun getProfessions(@PathVariable professionalId : Long) : List<Profession> =
-        professionalService.getProfessions(professionalId)
+    fun getProfessions(@PathVariable professionalId : Long) : Set<Profession> =
+        professionalService.getActiveProfessions(professionalId)
 
 
     @PostMapping("/professions/{professionalId}")
