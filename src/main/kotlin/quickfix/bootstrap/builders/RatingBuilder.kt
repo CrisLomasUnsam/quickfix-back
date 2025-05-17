@@ -10,7 +10,7 @@ class RatingBuilder {
     companion object{
         fun buildMock(userFrom: User, job: Job, score: Int): Rating {
 
-            val userTo = if (job.customer == userFrom) job.professional else job.customer
+            val userTo = if (job.customer.id == userFrom.id) job.professional else job.customer
 
             return Rating().apply {
                 this.userFrom = userFrom
