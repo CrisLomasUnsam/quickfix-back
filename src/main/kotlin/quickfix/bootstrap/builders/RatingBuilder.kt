@@ -8,8 +8,11 @@ import java.time.LocalDate
 
 class RatingBuilder {
     companion object{
-        fun buildMock(userFrom: User, userTo: User, job: Job, score: Int) =
-            Rating().apply {
+        fun buildMock(userFrom: User, job: Job, score: Int): Rating {
+
+            val userTo = if (job.customer == userFrom) job.professional else job.customer
+
+            return Rating().apply {
                 this.userFrom = userFrom
                 this.userTo = userTo
                 this.job = job
@@ -17,5 +20,6 @@ class RatingBuilder {
                 this.comment = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi magna odio, finibus eu mi ut, elementum fringilla mauris."
                 this.yearAndMonth = LocalDate.now()
             }
+        }
     }
 }

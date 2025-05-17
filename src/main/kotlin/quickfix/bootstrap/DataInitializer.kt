@@ -72,30 +72,31 @@ class DataInitializer : InitializingBean {
 
         jobRepository.saveAll(listOf(job1, job2, job3, job4, job5, job6, job7, job8, job9, job10, job11, job12, job13))
 
-        val rating1 = RatingBuilder.buildMock(users["custom1"]!!, users["prof1"]!!, job1, score = 5)
-        val rating2 = RatingBuilder.buildMock(users["custom1"]!!, users["prof2"]!!, job2, score = 4)
-        val rating3 = RatingBuilder.buildMock(users["custom1"]!!, users["prof2"]!!, job3, score = 3)
-        val rating4 = RatingBuilder.buildMock(users["custom2"]!!, users["prof1"]!!, job4, score = 4)
-        val rating5 = RatingBuilder.buildMock(users["custom2"]!!, users["prof2"]!!, job5, score = 3)
-        val rating6 = RatingBuilder.buildMock(users["custom3"]!!, users["prof1"]!!, job6, score = 5)
-        val rating7 = RatingBuilder.buildMock(users["custom3"]!!, users["prof1"]!!, job7, score = 4)
-        val rating8 = RatingBuilder.buildMock(users["prof1"]!!, users["custom1"]!!, job1, score = 4)
-        val rating9 = RatingBuilder.buildMock(users["prof2"]!!, users["custom1"]!!, job2, score = 5)
-        val rating10 = RatingBuilder.buildMock(users["prof2"]!!, users["custom1"]!!, job3, score = 4)
-        val rating11 = RatingBuilder.buildMock(users["prof1"]!!, users["custom2"]!!, job4, score = 3)
-        val rating12 = RatingBuilder.buildMock(users["prof2"]!!, users["custom2"]!!, job5, score = 4)
-        val rating13 = RatingBuilder.buildMock(users["prof1"]!!, users["custom3"]!!, job6, score = 3)
-        val rating14 = RatingBuilder.buildMock(users["prof1"]!!, users["custom3"]!!, job7, score = 5)
-        val rating15 = RatingBuilder.buildMock(users["prof2"]!!, users["custom4"]!!, job8, score = 4)
-        val rating16 = RatingBuilder.buildMock(users["prof1"]!!, users["custom5"]!!, job9, score = 5)
-        val rating17 = RatingBuilder.buildMock(users["prof2"]!!, users["custom6"]!!, job10, score = 3)
-        val rating18 = RatingBuilder.buildMock(users["prof1"]!!, users["custom7"]!!, job11, score = 5)
-        val rating19 = RatingBuilder.buildMock(users["prof2"]!!, users["custom8"]!!, job12, score = 4)
-        val rating20 = RatingBuilder.buildMock(users["prof1"]!!, users["custom9"]!!, job13, score = 5)
+        val rating1 = RatingBuilder.buildMock(users["custom1"]!!, job1, score = 5)
+        val rating2 = RatingBuilder.buildMock(users["custom1"]!!, job2, score = 4)
+        val rating3 = RatingBuilder.buildMock(users["custom1"]!!, job3, score = 3)
+        val rating4 = RatingBuilder.buildMock(users["custom2"]!!, job4, score = 4)
+        val rating5 = RatingBuilder.buildMock(users["custom2"]!!, job5, score = 3)
+        val rating6 = RatingBuilder.buildMock(users["custom3"]!!, job6, score = 5)
+        val rating7 = RatingBuilder.buildMock(users["custom3"]!!, job7, score = 4)
+        val rating8 = RatingBuilder.buildMock(users["prof1"]!!, job1, score = 4)
+        val rating9 = RatingBuilder.buildMock(users["prof2"]!!, job2, score = 5)
+        val rating10 = RatingBuilder.buildMock(users["prof2"]!!, job3, score = 4)
+        val rating11 = RatingBuilder.buildMock(users["prof1"]!!, job4, score = 3)
+        val rating12 = RatingBuilder.buildMock(users["prof2"]!!, job5, score = 4)
+        val rating13 = RatingBuilder.buildMock(users["prof1"]!!, job6, score = 3)
+        val rating14 = RatingBuilder.buildMock(users["prof1"]!!, job7, score = 5)
+        val rating15 = RatingBuilder.buildMock(users["prof2"]!!, job8, score = 4)
+        val rating16 = RatingBuilder.buildMock(users["prof1"]!!, job9, score = 5)
+        val rating17 = RatingBuilder.buildMock(users["prof2"]!!, job10, score = 3)
+        val rating18 = RatingBuilder.buildMock(users["prof1"]!!, job11, score = 5)
+        val rating19 = RatingBuilder.buildMock(users["prof2"]!!, job12, score = 4)
+        val rating20 = RatingBuilder.buildMock(users["prof1"]!!, job13, score = 5)
 
-
-        ratingRepository.saveAll(listOf(rating1, rating2, rating3, rating4, rating5, rating6, rating7, rating8, rating9, rating10,
-            rating11, rating12, rating13, rating14, rating15, rating16, rating17, rating18, rating19, rating20, rating20))
+        ratingRepository.saveAll(
+            listOf(rating1, rating2, rating3, rating4, rating5, rating6, rating7, rating8, rating9, rating10,
+            rating11, rating12, rating13, rating14, rating15, rating16, rating17, rating18, rating19, rating20, rating20)
+        )
 
     }
 
