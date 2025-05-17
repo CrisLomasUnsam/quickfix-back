@@ -22,12 +22,11 @@ import java.util.*
 class UserService(
     private val userRepository: UserRepository,
     private val eventPublisher: ApplicationEventPublisher,
-    private val tokenRepository: TokenRepository
+    private val tokenRepository: TokenRepository,
+    private val imageService: ImageService
 ) {
 
-    private fun createRecoveryURL(token: String) = "$FRONTEND_URL/confirm?token=$token"
-
-    fun getAvatar(userId: Long): ByteArray = this.getById(userId).avatar
+    private fun createRecoveryURL(token: String) = "$FRONTEND_URL/newPassword?token=$token"
 
     fun getById(id: Long): User =
         userRepository.findById(id).orElseThrow{ NotFoundException("Usuario no encontrado $id") }
@@ -49,11 +48,7 @@ class UserService(
         userRepository.findUserWithProfessionalInfoById(userId).orElseThrow{ NotFoundException() }.professionalInfo
 
     fun getActiveProfessionsByUserId(id: Long): Set<Profession> =
-        getProfessionalInfo(id)
-            .professionalProfessions
-            .filter { it.active }
-            .map { it.profession }
-            .toSet()
+        getProfessionalInfo(id).getActiveProfessions()
 
     fun getSeeProfessionalProfileInfo(professionalId : Long) : ISeeUserProfile =
         userRepository.getSeeProfessionalProfileInfo(professionalId)
@@ -80,7 +75,7 @@ class UserService(
 
     @Transactional(rollbackFor = [Exception::class])
     fun updateAvatar(currentUserId: Long, file: MultipartFile) {
-        val user = this.getById(currentUserId)
-        user.avatar = file.bytes
+        imageService.uploadProfileImage(currentUserId, file)
     }
+
 }

@@ -28,21 +28,13 @@ class UserController(
     fun userInfo(@ModelAttribute("currentUserId") currentUserId : Long) : UserDTO =
         UserDTO.toDTO(userService.getById(currentUserId))
 
-    @GetMapping("/img")
-    fun userImg(@ModelAttribute("currentUserId") currentUserId : Long) : ByteArray =
-        userService.getById(currentUserId).avatar
-
     @PatchMapping("/data/edit")
     fun updateUserInfo(@ModelAttribute("currentUserId") currentUserId : Long, @RequestBody modifiedInfo: UserModifiedInfoDTO) =
         userService.changeUserInfo(currentUserId, modifiedInfo)
 
     @PatchMapping("/avatar")
-    fun updateAvatar(@ModelAttribute("currentUserId") currentUserId: Long, @RequestParam("file") file: MultipartFile) =
-        userService.updateAvatar(currentUserId, file)
-        
-    @GetMapping("/avatar")
-    fun getAvatar(@ModelAttribute("currentUserId") currentUserId: Long) = 
-        userService.getAvatar(currentUserId)
+    fun updateAvatar(@ModelAttribute("currentUserId") currentUserId: Long, @RequestBody image: MultipartFile) =
+        userService.updateAvatar(currentUserId, image)
 
     @GetMapping("/seeCustomerProfile/{customerId}")
     @Operation(summary = "Ver perfil de cliente: calificacion y cantidad de trabajos terminados",)

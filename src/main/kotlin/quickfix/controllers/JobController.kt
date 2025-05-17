@@ -2,9 +2,6 @@ package quickfix.controllers
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
-import org.springframework.data.web.PageableDefault
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import quickfix.dto.job.JobDTO
@@ -16,7 +13,6 @@ import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobRequest.CancelJobRequestDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.job.toDto
-import quickfix.models.Job
 import quickfix.services.JobService
 
 @RestController

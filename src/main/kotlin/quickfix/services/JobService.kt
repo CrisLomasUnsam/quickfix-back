@@ -77,8 +77,9 @@ class JobService(
      JOB REQUEST METHODS
      **************************/
 
+    @Transactional(readOnly = true)
     fun getJobRequests(professionalId : Long) : Set<JobRequestDTO> {
-        val professionIds : Set<Long> = professionalService.getProfessionIds(professionalId)
+        val professionIds : Set<Long> = professionalService.getActiveProfessionIds(professionalId)
         return redisService.getJobRequests(professionIds)
     }
 
@@ -86,7 +87,7 @@ class JobService(
 
         userService.assertUserExists(jobRequest.customerId)
         professionService.assertProfessionExists(jobRequest.professionId)
-        redisService.requestJob(jobRequest, jobRequest.professionId)
+        redisService.requestJob(jobRequest)
     }
 
     fun cancelJobRequest (cancelJobRequest : CancelJobRequestDTO) {
