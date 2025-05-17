@@ -14,19 +14,14 @@ class Certificate : Identifier {
     @ManyToOne
     lateinit var profession: Profession
 
-    lateinit var img : String
+    var hasImage : Boolean = false
 
     override fun validate() {
         if (!validName()) throw ProfessionalException("El nombre del certificado no puede estar vacío")
-        if (!validImg()) throw ProfessionalException("El formato de la imagen no es válido")
-        validProfession()
     }
 
-    private fun validProfession() = profession.validate()
-
-    private fun validImg(): Boolean {
-        val imageRegex = Regex(""".*\.(jpg|jpeg|png|svg)$""", RegexOption.IGNORE_CASE)
-        return img.isNotBlank() && imageRegex.matches(img)
+    fun setHasImage() {
+        hasImage = true
     }
 
     private fun validName(): Boolean = name.isNotBlank() && name.all { it.isLetter() }

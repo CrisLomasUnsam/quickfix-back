@@ -1,9 +1,9 @@
 package quickfix.controllers
 
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import quickfix.dto.professional.FinancesDTO
 import quickfix.dto.professional.NewCertificateDTO
 import quickfix.models.Certificate
@@ -55,11 +55,18 @@ class ProfessionalController (
 
     @PostMapping("/certificates/{professionalId}")
     @Operation(summary = "Agregar certificado")
-    fun addCertificate(@PathVariable professionalId : Long, @RequestBody dto: NewCertificateDTO) =
-        professionalService.addCertificate(professionalId, dto)
+    fun addCertificate(@PathVariable professionalId : Long, @RequestBody certificateDto: NewCertificateDTO) =
+        professionalService.addCertificate(professionalId, certificateDto)
 
-    @DeleteMapping("/certificates/{professionalId}")
+    //TODO: Valen refactorizó esto y ya le agregó el model attribute. Corregir cuando se mergee
+    @PostMapping("/certificates/{professionalId}/{certificateId}")
+    @Operation(summary = "Agregar certificado")
+    fun uploadCertificateImg(@PathVariable professionalId : Long, @PathVariable certificateId : Long, @RequestBody image: MultipartFile) =
+        professionalService.uploadCertificateImg(professionalId, certificateId, image)
+
+    //TODO: Valen refactorizó esto y ya le agregó el model attribute. Corregir cuando se mergee
+    @DeleteMapping("/certificates/{professionalId}/{certificateId}")
     @Operation(summary = "Borrar un certificado")
-    fun deleteCertificate(@PathVariable professionalId : Long, @Parameter(description = "Imagen o nombre del cert") @RequestBody certificateNameOrImg: String) =
-        professionalService.deleteCertificate(professionalId, certificateNameOrImg.trim())
+    fun deleteCertificate(@PathVariable professionalId : Long, @PathVariable certificateId : Long) =
+        professionalService.deleteCertificate(professionalId, certificateId)
 }
