@@ -70,6 +70,15 @@ class RedisService(
         if(requestsKeys.isEmpty())
             throw JobException("No hay ninguna solicitud activa para este usuario.")
     }
+    /* CLEANUP */
+
+    fun cleanupJobRequestsForTesting() {
+        val keys = redisJobRequestStorage.keys("JobRequest_*_*")
+        keys.forEach { key ->
+            redisJobRequestStorage.delete(key)
+        }
+    }
+
 
     /******************************************************
     JOB_OFFERS WILL HAVE THE FOLLOWING KEY PATTERN:
@@ -128,12 +137,4 @@ class RedisService(
         redisChatStorage.delete(key)
     }
 
-    /* CLEANUP */
-
-    fun cleanupJobRequest() {
-        val keys = redisJobRequestStorage.keys("JobRequest_*_*")
-        keys.forEach { key ->
-            redisJobRequestStorage.delete(key)
-        }
-    }
 }
