@@ -11,7 +11,7 @@ data class PageDTO<T>(
     var totalPages: Int
 ) {
     companion object{
-        fun toDTO(page: Page<JobDTO>): PageDTO<JobDTO> {
+        fun toDTO(page: Page<JobWithRatingDTO>): PageDTO<JobWithRatingDTO> {
             return PageDTO(
                 content = page.content,
                 first = page.isFirst,
