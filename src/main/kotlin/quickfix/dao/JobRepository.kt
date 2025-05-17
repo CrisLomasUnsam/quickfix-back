@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Component
+import quickfix.dto.job.JobBasicInfoProjection
+import quickfix.dto.job.JobWithRatingProjection
 import quickfix.models.Job
 import quickfix.models.Rating
 import quickfix.utils.enums.JobStatus
@@ -13,9 +15,62 @@ import quickfix.utils.enums.JobStatus
 @Component
 interface JobRepository : JpaRepository<Job, Long> {
 
-    fun findAllByCustomerId(customerId: Long, pageable: Pageable): Page<Job>
 
-    fun findAllByProfessionalId(professionalId: Long, pageable: Pageable): Page<Job>
+    @Query(
+        value = """
+        select 
+            j.id as id,
+            j.date as date,
+            -- join a users como “profesional”
+            u_prof.name as userName,
+            u_prof.last_name as userLastName,
+            pr.name as profession,
+            j.status as status,
+            j.price as price,
+            coalesce(r.score, 0) as score
+            from jobs j
+            -- tabla de usuarios para el profesional
+            join users u_prof
+                on u_prof.id = j.professional_id
+            -- tabla de profesiones
+            join professions pr
+                on pr.id = j.profession_id
+             -- rating
+            left join ratings r 
+                on r.job_id = j.id
+            where j.customer_id = :customerId
+            order by j.date asc
+        """,
+        countQuery = "select count(*) from jobs where customer_id = :customerId",
+        nativeQuery = true)
+    fun findAllByCustomerId(@Param("customerId") customerId: Long, pageable: Pageable): Page<JobWithRatingProjection>
+
+
+    @Query(
+        value = """
+        select 
+            j.id as id,
+            j.date as date,
+            -- ahora la misma tabla users para el cliente”
+            u_cust.name as userName,
+            u_cust.last_name as userLastName,
+            pr.name as profession,
+            j.status as status,
+            j.price as price,
+            coalesce(r.score, 0) as score
+            from jobs j
+            join users u_cust
+                on u_cust.id = j.customer_id
+            join professions pr
+                on pr.id = j.profession_id
+            left join ratings r 
+                on r.job_id = j.id
+            where j.professional_id = :professionalId
+            order by j.date asc
+        """,
+        countQuery = "select count(*) from jobs where professional_id = :professionalId",
+        nativeQuery = true)
+    fun findAllByProfessionalId(@Param("professionalId") professionalId: Long, pageable: Pageable): Page<JobWithRatingProjection>
 
     fun existsByIdAndCustomerId(jobId: Long, customerId: Long): Boolean
 
@@ -33,9 +88,19 @@ interface JobRepository : JpaRepository<Job, Long> {
 
     @Query(
         value = """
-        select *
-           from jobs j
-           where j.customer_id = :customerId
+        select 
+            j.id as id,
+            j.date as date,
+            u.name as userName,
+            pr.name as profession,
+            j.status as status,
+            j.price as price
+            from jobs j
+            join users u
+                on u.id = j.customer_id
+            join professions pr
+                on pr.id = j.profession_id
+            where j.customer_id = :customerId
             and (
                 :param is null
             or j.id::text              ILIKE CONCAT('%', :param, '%')
@@ -46,7 +111,7 @@ interface JobRepository : JpaRepository<Job, Long> {
         """,
         nativeQuery = true
     )
-    fun findJobByFilter(@Param("customerId") customerId: Long, @Param("param") param: String?) : List<Job>
+    fun findJobByFilter(@Param("customerId") customerId: Long, @Param("param") param: String?) : List<JobBasicInfoProjection>
 
     @Query(value = """
         SELECT r.* FROM ratings r
