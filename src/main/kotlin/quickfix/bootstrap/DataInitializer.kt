@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import quickfix.bootstrap.builders.*
 import quickfix.dao.*
-import quickfix.dto.job.jobRequest.JobRequestRedisDTO
+import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.services.RedisService
 
 @Service
@@ -106,59 +106,111 @@ class DataInitializer : InitializingBean {
 
         val users = userRepository.findAll().associateBy { it.name }
         val professions = professionRepository.findAll().associateBy { it.name }
+        val ratings = ratingRepository.findAll().
+            groupBy { it.userTo.name }.
+            mapValues { (_, userRatings) ->
+                userRatings
+                    .map { it.score }
+                    .average()
+            }
 
-        val jobRequest1 = JobRequestRedisDTO(
+        val jobRequest1 = JobRequestDTO(
             customerId = users["custom1"]!!.id,
+            name = users["custom1"]!!.name,
+            lastName = users["custom1"]!!.lastName,
+            avatar = users["custom1"]!!.avatar.toString(),
             professionId = professions["Electricidad"]!!.id,
-            detail = "Pasaron 3 meses, probé el disyuntor y no anda. Necesito cambiarlo."
+            professionName = professions["Electricidad"]!!.name,
+            detail = "Pasaron 3 meses, probé el disyuntor y no anda. Necesito cambiarlo.",
+            rating = ratings[users["custom1"]!!.name] ?: 0.0
         )
 
-        val jobRequest2 = JobRequestRedisDTO(
+        val jobRequest2 = JobRequestDTO(
             customerId = users["custom2"]!!.id,
+            name = users["custom2"]!!.name,
+            lastName = users["custom2"]!!.lastName,
+            avatar = users["custom2"]!!.avatar.toString(),
             professionId = professions["Mecánica"]!!.id,
-            detail = "Se me quedó el auto en la puerta de mi casa."
+            professionName = professions["Mecánica"]!!.name,
+            detail = "Se me quedó el auto en la puerta de mi casa.",
+            rating = ratings[users["custom2"]!!.name] ?: 0.0
         )
 
-        val jobRequest3 = JobRequestRedisDTO(
+        val jobRequest3 = JobRequestDTO(
             customerId = users["custom3"]!!.id,
+            name = users["custom3"]!!.name,
+            lastName = users["custom3"]!!.lastName,
+            avatar = users["custom3"]!!.avatar.toString(),
             professionId = professions["Albañilería"]!!.id,
-            detail = "Quiero reparar un techo de durlock."
+            professionName = professions["Albañilería"]!!.name,
+            detail = "Quiero reparar un techo de durlock.",
+            rating = ratings[users["custom3"]!!.name] ?: 0.0
         )
 
-        val jobRequest4 = JobRequestRedisDTO(
+        val jobRequest4 = JobRequestDTO(
             customerId = users["custom4"]!!.id,
+            name = users["custom4"]!!.name,
+            lastName = users["custom4"]!!.lastName,
+            avatar = users["custom4"]!!.avatar.toString(),
             professionId = professions["Plomería"]!!.id,
-            detail = "Tengo una pérdida de agua debajo del fregadero, necesito que alguien lo revise."
+            professionName = professions["Plomería"]!!.name,
+            detail = "Tengo una pérdida de agua debajo del fregadero, necesito que alguien lo revise.",
+            rating = ratings[users["custom4"]!!.name] ?: 0.0
         )
 
-        val jobRequest5 = JobRequestRedisDTO(
+        val jobRequest5 = JobRequestDTO(
             customerId = users["custom5"]!!.id,
+            name = users["custom5"]!!.name,
+            lastName = users["custom5"]!!.lastName,
+            avatar = users["custom5"]!!.avatar.toString(),
             professionId = professions["Carpintería"]!!.id,
-            detail = "Quiero montar un par de estantes."
+            professionName = professions["Carpintería"]!!.name,
+            detail = "Quiero montar un par de estantes.",
+            rating = ratings[users["custom5"]!!.name] ?: 0.0
         )
 
-        val jobRequest6 = JobRequestRedisDTO(
+        val jobRequest6 = JobRequestDTO(
             customerId = users["custom6"]!!.id,
+            name = users["custom6"]!!.name,
+            lastName = users["custom6"]!!.lastName,
+            avatar = users["custom6"]!!.avatar.toString(),
             professionId = professions["Jardinería"]!!.id,
-            detail = "Necesito que me corten el pasto y poden los árboles del fondo."
+            professionName = professions["Jardinería"]!!.name,
+            detail = "Necesito que me corten el pasto y poden los árboles del fondo.",
+            rating = ratings[users["custom6"]!!.name] ?: 0.0
         )
 
-        val jobRequest7 = JobRequestRedisDTO(
+        val jobRequest7 = JobRequestDTO(
             customerId = users["custom7"]!!.id,
+            name = users["custom7"]!!.name,
+            lastName = users["custom7"]!!.lastName,
+            avatar = users["custom7"]!!.avatar.toString(),
             professionId = professions["Pintorería"]!!.id,
-            detail = "Quiero pintar el frente de la casa, incluyendo rejas y persianas."
+            professionName = professions["Pintorería"]!!.name,
+            detail = "Quiero pintar el frente de la casa, incluyendo rejas y persianas.",
+            rating = ratings[users["custom7"]!!.name] ?: 0.0
         )
 
-        val jobRequest8 = JobRequestRedisDTO(
+        val jobRequest8 = JobRequestDTO(
             customerId = users["custom8"]!!.id,
+            name = users["custom8"]!!.name,
+            lastName = users["custom8"]!!.lastName,
+            avatar = users["custom8"]!!.avatar.toString(),
             professionId = professions["Gasfitería"]!!.id,
-            detail = "Necesito conectar un horno nuevo."
+            professionName = professions["Gasfitería"]!!.name,
+            detail = "Necesito conectar un horno nuevo.",
+            rating = ratings[users["custom8"]!!.name] ?: 0.0
         )
 
-        val jobRequest9 = JobRequestRedisDTO(
+        val jobRequest9 = JobRequestDTO(
             customerId = users["custom9"]!!.id,
+            name = users["custom9"]!!.name,
+            lastName = users["custom9"]!!.lastName,
+            avatar = users["custom9"]!!.avatar.toString(),
             professionId = professions["Plomería"]!!.id,
-            detail = "Tengo una pérdida en mi baño."
+            professionName = professions["Plomería"]!!.name,
+            detail = "Tengo una pérdida en mi baño.",
+            rating = ratings[users["custom9"]!!.name] ?: 0.0
         )
 
         redisService.requestJob(jobRequest1)

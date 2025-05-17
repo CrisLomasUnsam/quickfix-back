@@ -1,31 +1,22 @@
 package quickfix.services
 
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Pageable
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
-import quickfix.dao.RatingRepository
-import quickfix.dto.job.jobOffer.CreateJobOfferDTO
-import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.RedisMessageDTO
 import quickfix.dto.chat.toRedisMessage
+import quickfix.dto.job.jobOffer.CreateJobOfferDTO
+import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.utils.exceptions.JobException
-import quickfix.dto.job.jobRequest.JobRequestRedisDTO
-import java.math.BigDecimal
-import java.math.RoundingMode
 
 @Service
 class RedisService(
 
-    private val redisJobRequestStorage: RedisTemplate<String, JobRequestRedisDTO>,
+    private val redisJobRequestStorage: RedisTemplate<String, JobRequestDTO>,
     private val redisJobOfferStorage: RedisTemplate<String, CreateJobOfferDTO>,
-    private val redisChatStorage: RedisTemplate<String, RedisMessageDTO>,
-    private val professionService: ProfessionService,
-    private val userService: UserService,
+    private val redisChatStorage: RedisTemplate<String, RedisMessageDTO>
 
 ) {
-    @Autowired lateinit var ratingRepository: RatingRepository
 
     /******************************************************
     JOB_REQUESTS WILL HAVE THE FOLLOWING KEY PATTERN:
@@ -36,14 +27,14 @@ class RedisService(
     private fun getJobRequestKey(professionId: Long, customerId: Long) : String =
         "JobRequest_${professionId}_${customerId}_"
 
-    fun requestJob(jobRequest : JobRequestRedisDTO) {
+    fun requestJob(jobRequest : JobRequestDTO) {
 
         val customerId = jobRequest.customerId
 
         val tempKey = "JobRequest_*_${customerId}_"
         val userHasPreviousRequest = redisJobRequestStorage.keys(tempKey).isNotEmpty()
 
-        if(userHasPreviousRequest)
+        if (userHasPreviousRequest)
             throw JobException("Este usuario ya tiene una solicitud activa.")
 
         val key = getJobRequestKey(jobRequest.professionId, customerId)
@@ -53,27 +44,14 @@ class RedisService(
     }
 
     fun getJobRequests(professionIds : Set<Long>) : Set<JobRequestDTO> {
-        val jobRequestsRedis = mutableSetOf<JobRequestRedisDTO>()
+        val jobRequests = mutableSetOf<JobRequestDTO>()
         professionIds.forEach { professionId ->
             val tempKey = "JobRequest_${professionId}_*_"
             val requestsKeys = redisJobRequestStorage.keys(tempKey)
             val requestsValues = redisJobRequestStorage.opsForValue().multiGet(requestsKeys) ?: emptySet()
-            jobRequestsRedis.addAll(requestsValues)
+            jobRequests.addAll(requestsValues)
         }
-
-        return jobRequestsRedis.map { jobRequest ->
-            val customer = userService.getById(jobRequest.customerId)
-            val profession = professionService.getProfessionById(jobRequest.professionId)
-            val rating = ratingRepository
-                .findAllByUserToId(jobRequest.customerId, Pageable.unpaged())
-                .map { it.score }
-                .average()
-                .takeIf { !it.isNaN() }
-                ?.let { BigDecimal(it).setScale(1, RoundingMode.HALF_UP).toDouble()}
-                ?: 0.0
-
-            JobRequestDTO.toJobRequest(jobRequest, customer, profession.name, rating)
-        }.toSet()
+        return jobRequests
     }
 
     fun removeJobRequest(professionId : Long, customerId: Long) {
