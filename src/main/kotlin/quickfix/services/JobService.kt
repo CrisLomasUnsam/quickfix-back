@@ -79,7 +79,7 @@ class JobService(
 
     @Transactional(readOnly = true)
     fun getJobRequests(professionalId : Long) : Set<JobRequestDTO> {
-        val professionIds : Set<Long> = professionalService.getProfessionIds(professionalId)
+        val professionIds : Set<Long> = professionalService.getActiveProfessionIds(professionalId)
         return redisService.getJobRequests(professionIds)
     }
 
