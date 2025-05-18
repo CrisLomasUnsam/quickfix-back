@@ -27,7 +27,7 @@ class JobBuilder {
 
 class JobRequestBuilder {
     companion object{
-        fun buildMock(customer: User, profession: Profession, isFutureRequest: Boolean = false) =
+        fun buildMock(customer: User, profession: Profession, isInstantRequest: Boolean = false) =
             JobRequestDTO(
                 customerId = customer.id,
                 name = customer.name,
@@ -37,7 +37,8 @@ class JobRequestBuilder {
                 professionName = profession.name,
                 detail = "Lorem ipsum dolor em sit amet lo gump samar ipsum it.",
                 rating = (Math.random() % 5) + 1.0,
-                neededDatetime = if(isFutureRequest) LocalDateTime.now().plusDays(7) else LocalDateTime.now()
+                neededDatetime = if(isInstantRequest) LocalDateTime.now() else LocalDateTime.now().plusDays(1),
+                instantRequest = isInstantRequest
             )
     }
 }
