@@ -5,11 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import quickfix.bootstrap.builders.*
 import quickfix.dao.*
+import quickfix.services.JobService
 import quickfix.services.RedisService
 
 @Service
 class DataInitializer : InitializingBean {
 
+    @Autowired private lateinit var jobService: JobService
     @Autowired private lateinit var redisService: RedisService
     @Autowired private lateinit var ratingRepository: RatingRepository
     @Autowired private lateinit var jobRepository: JobRepository
@@ -101,12 +103,12 @@ class DataInitializer : InitializingBean {
 
     fun loadJobRequestsToRedis() {
 
-        redisService.cleanupJobRequest()
+        redisService.cleanupJobRequestsForTesting()
 
         val users = userRepository.findAll().associateBy { it.name }
         val professions = professionRepository.findAll().associateBy { it.name }
 
-        val jobRequest1 = JobRequestBuilder.buildMock(users["custom1"]!!, professions["Electricidad"]!!)
+        val jobRequest1 = JobRequestBuilder.buildMock(users["custom1"]!!, professions["Electricidad"]!!, isInstantRequest = true)
         val jobRequest2 = JobRequestBuilder.buildMock(users["custom2"]!!, professions["Mecánica"]!!)
         val jobRequest3 = JobRequestBuilder.buildMock(users["custom3"]!!, professions["Albañilería"]!!)
         val jobRequest4 = JobRequestBuilder.buildMock(users["custom4"]!!, professions["Plomería"]!!)
@@ -116,15 +118,28 @@ class DataInitializer : InitializingBean {
         val jobRequest8 = JobRequestBuilder.buildMock(users["custom8"]!!, professions["Gasfitería"]!!)
         val jobRequest9 = JobRequestBuilder.buildMock(users["custom9"]!!, professions["Plomería"]!!)
 
-        redisService.requestJob(jobRequest1)
-        redisService.requestJob(jobRequest2)
-        redisService.requestJob(jobRequest3)
-        redisService.requestJob(jobRequest4)
-        redisService.requestJob(jobRequest5)
-        redisService.requestJob(jobRequest6)
-        redisService.requestJob(jobRequest7)
-        redisService.requestJob(jobRequest8)
-        redisService.requestJob(jobRequest9)
+        val jobRequest10 = JobRequestBuilder.buildMock(users["custom1"]!!, professions["Mecánica"]!!)
+        val jobRequest11 = JobRequestBuilder.buildMock(users["custom1"]!!, professions["Albañilería"]!!)
+        val jobRequest12 = JobRequestBuilder.buildMock(users["custom1"]!!, professions["Plomería"]!!)
+        val jobRequest13 = JobRequestBuilder.buildMock(users["custom1"]!!, professions["Carpintería"]!!)
+        val jobRequest14 = JobRequestBuilder.buildMock(users["custom1"]!!, professions["Jardinería"]!!)
+        val jobRequest15 = JobRequestBuilder.buildMock(users["custom1"]!!, professions["Pintorería"]!!)
+
+        jobService.requestJob(jobRequest1)
+        jobService.requestJob(jobRequest2)
+        jobService.requestJob(jobRequest3)
+        jobService.requestJob(jobRequest4)
+        jobService.requestJob(jobRequest5)
+        jobService.requestJob(jobRequest6)
+        jobService.requestJob(jobRequest7)
+        jobService.requestJob(jobRequest8)
+        jobService.requestJob(jobRequest9)
+        jobService.requestJob(jobRequest10)
+        jobService.requestJob(jobRequest11)
+        jobService.requestJob(jobRequest12)
+        jobService.requestJob(jobRequest13)
+        jobService.requestJob(jobRequest14)
+        jobService.requestJob(jobRequest15)
 
     }
 

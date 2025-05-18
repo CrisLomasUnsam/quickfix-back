@@ -78,6 +78,7 @@ class SecurityConfig {
                 it.requestMatchers(HttpMethod.POST, "/job/jobOffers").hasAuthority(Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.DELETE, "/job/jobOffers").hasAuthority(Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.POST, "/job/acceptJobOffer").hasAuthority(Role.CUSTOMER.name)
+                it.requestMatchers(HttpMethod.GET, "/job/myJobRequests").hasAuthority(Role.CUSTOMER.name)
                 it.requestMatchers(HttpMethod.GET, "/job/jobRequests").hasAuthority(Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.POST, "/job/requestJob").hasAuthority(Role.CUSTOMER.name)
                 it.requestMatchers(HttpMethod.DELETE, "/job/requestJob").hasAuthority(Role.CUSTOMER.name)
