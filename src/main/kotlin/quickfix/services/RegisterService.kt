@@ -77,5 +77,5 @@ class RegisterService(
     @Transactional(rollbackFor = [Exception::class])
     fun requestChangeUserPassword(mail: String) = userService.requestChangePassword(mail)
 
-    private fun createConfirmationOrRecoveryLink(token: String) = "$FRONTEND_URL/confirm?token=$token"
+    private fun createConfirmationOrRecoveryLink(token: String) = "$FRONTEND_URL/emailConfirmation?token=$token"
 }
