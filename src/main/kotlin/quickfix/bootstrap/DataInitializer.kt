@@ -69,9 +69,9 @@ class DataInitializer : InitializingBean {
 
         val rating5 = RatingBuilder.buildMock(users["Tomas"]!!, job6, score = 5)
         val rating6 = RatingBuilder.buildMock(users["Tomas"]!!, job7, score = 4)
-        val rating7 = RatingBuilder.buildMock(users["Tomas"]!!, job1, score = 4)
-        val rating8 = RatingBuilder.buildMock(users["Tomas"]!!, job2, score = 5)
-        val rating9 = RatingBuilder.buildMock(users["Pablo"]!!, job3, score = 4)
+        val rating7 = RatingBuilder.buildMock(users["Tomas"]!!, job8, score = 4)
+        val rating8 = RatingBuilder.buildMock(users["Tomas"]!!, job9, score = 5)
+        val rating9 = RatingBuilder.buildMock(users["Pablo"]!!, job9, score = 4)
 
         ratingRepository.saveAll(listOf(rating1, rating2, rating3, rating4, rating5, rating6, rating7, rating8, rating9))
     }
