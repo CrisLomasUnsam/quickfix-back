@@ -6,6 +6,12 @@ services:
     container_name: img-uploader-server
     ports:
       - "5000:5000"
+    depends_on:
+      - img-viewer-server
+      - db
+      - redis
+      - pgadmin
+      - redis-insight
     volumes:
       - image-storage:/uploads
 
