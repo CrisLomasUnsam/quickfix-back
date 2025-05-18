@@ -56,8 +56,6 @@ class UserService(
     fun getSeeCustomerProfileInfo(customerId : Long) : ISeeUserProfile =
         userRepository.getSeeCustomerProfileInfo(customerId)
 
-    fun getUserProfileInfo(userId: Long) : User = this.getById(userId)
-
     @Transactional(rollbackFor = [Exception::class])
     fun changeUserInfo(id: Long, modifiedInfo: UserModifiedInfoDTO) {
         val user = this.getById(id)

@@ -32,6 +32,10 @@ class UserController(
     fun updateUserInfo(@ModelAttribute("currentUserId") currentUserId : Long, @RequestBody modifiedInfo: UserModifiedInfoDTO) =
         userService.changeUserInfo(currentUserId, modifiedInfo)
 
+    @GetMapping("/userProfileInfo")
+    fun getUserProfileInfo(@ModelAttribute("currentUserId") currentUserId: Long): UserProfileInfoDto =
+        UserProfileInfoDto.toDTO(userService.getById(currentUserId))
+
     @PatchMapping("/avatar")
     fun updateAvatar(@ModelAttribute("currentUserId") currentUserId: Long, @RequestBody image: MultipartFile) =
         userService.updateAvatar(currentUserId, image)
@@ -46,7 +50,4 @@ class UserController(
     fun getSeeProfessionalProfileInfo(@PathVariable professionalId: Long): SeeUserProfileDTO =
         SeeUserProfileDTO.fromProjection(userService.getSeeProfessionalProfileInfo(professionalId))
 
-    @GetMapping("/userProfileInfo")
-    fun getUserProfileInfo(@ModelAttribute("currentUserId") currentUserId: Long): UserProfileInfoDto =
-        UserProfileInfoDto.toDTO(userService.getUserProfileInfo(currentUserId))
 }
