@@ -15,6 +15,7 @@ import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.MessageResponseDTO
 import quickfix.dto.chat.toMessageResponseDTO
+import quickfix.dto.job.jobRequest.MyJobRequestDTO
 import quickfix.dto.job.jobRequest.validate
 import quickfix.dto.professional.ProfessionalDTO
 import quickfix.models.Job
@@ -24,7 +25,6 @@ import quickfix.utils.PAGE_SIZE
 import quickfix.utils.enums.JobStatus
 import quickfix.utils.exceptions.JobException
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 @Service
 class JobService(
@@ -80,8 +80,11 @@ class JobService(
      **************************/
 
     @Transactional(readOnly = true)
-    fun getMyJobRequests(customerId : Long) : List<JobRequestDTO> =
-        redisService.getMyJobRequests(customerId)
+    fun getMyJobRequests(customerId : Long) : List<MyJobRequestDTO> {
+        val myJobRequests = redisService.getMyJobRequests(customerId)
+        return myJobRequests.map{ MyJobRequestDTO.fromJobRequest(it, redisService.countOffersForRequest(it)) }
+    }
+
 
     @Transactional(readOnly = true)
     fun getJobRequests(professionalId : Long) : List<JobRequestDTO> {
@@ -90,7 +93,6 @@ class JobService(
     }
 
     fun requestJob(jobRequest : JobRequestDTO) {
-
         userService.assertUserExists(jobRequest.customerId)
         professionService.assertProfessionExists(jobRequest.professionId)
         redisService.requestJob(jobRequest.apply{ validate() })
