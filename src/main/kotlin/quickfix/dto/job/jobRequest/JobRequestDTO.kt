@@ -1,7 +1,6 @@
 package quickfix.dto.job.jobRequest
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
 import quickfix.utils.MINUTES_TO_BE_CONSIDERED_FUTURE_REQUEST
@@ -33,14 +32,16 @@ data class JobRequestDTO @JsonCreator constructor(
     var professionName: String,
 
     @JsonProperty("neededDatetime")
-    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
-    var neededDatetime: LocalDateTime?,
+    var neededDatetime: LocalDateTime,
 
     @JsonProperty("detail")
     var detail: String,
 
     @JsonProperty("rating")
-    var rating: Double
+    var rating: Double,
+
+    @JsonProperty("instantRequest")
+    var instantRequest: Boolean = false
 
 )
 
@@ -49,8 +50,12 @@ fun JobRequestDTO.validate() {
     validProfession(professionId)
     validDetail(detail)
     validDatetime(neededDatetime)
-    if(neededDatetime == null || neededDatetime!!.isBefore(LocalDateTime.now()))
-        neededDatetime = LocalDateTime.now()
+    setInstantRequest()
+}
+
+private fun JobRequestDTO.setInstantRequest(){
+    if(neededDatetime.isBefore(LocalDateTime.now().plusMinutes(MINUTES_TO_BE_CONSIDERED_FUTURE_REQUEST)))
+        instantRequest = true
 }
 
 private fun validCustomer(customerId: Long) {
@@ -65,8 +70,8 @@ private fun validDetail(detail: String) {
     if(detail.isBlank()) throw DetailException("EL detalle no puede estar vacío")
 }
 
-private fun validDatetime(dateTime: LocalDateTime?) {
-    if(dateTime != null && dateTime.isBefore(LocalDateTime.now().minusMinutes(MINUTES_TO_BE_CONSIDERED_FUTURE_REQUEST))) {
+private fun validDatetime(dateTime: LocalDateTime) {
+    if(dateTime.isBefore(LocalDateTime.now().minusMinutes(MINUTES_TO_BE_CONSIDERED_FUTURE_REQUEST))) {
         throw IllegalDataException("La fecha y hora de solicitud de servicio no pueden ser anteriores a la fecha y hora actuales")
     }
 }
