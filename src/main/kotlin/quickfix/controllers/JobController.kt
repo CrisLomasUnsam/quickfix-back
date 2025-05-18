@@ -12,6 +12,7 @@ import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobRequest.CancelJobRequestDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
+import quickfix.dto.job.jobRequest.MyJobRequestDTO
 import quickfix.dto.job.toDto
 import quickfix.services.JobService
 
@@ -92,7 +93,7 @@ class JobController(
 
     @GetMapping("/myJobRequests")
     @Operation(summary = "Utilizado para que el customer pueda ver sus propias solicitudes activas")
-    fun getMyJobRequests(@ModelAttribute("currentUserId") currentCustomerId : Long) : List<JobRequestDTO> =
+    fun getMyJobRequests(@ModelAttribute("currentUserId") currentCustomerId : Long) : List<MyJobRequestDTO> =
         jobService.getMyJobRequests(currentCustomerId)
 
     @GetMapping("/jobRequests")
