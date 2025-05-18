@@ -15,6 +15,7 @@ import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.MessageResponseDTO
 import quickfix.dto.chat.toMessageResponseDTO
+import quickfix.dto.job.jobRequest.validate
 import quickfix.dto.professional.ProfessionalDTO
 import quickfix.models.Job
 import quickfix.models.Profession
@@ -23,6 +24,7 @@ import quickfix.utils.PAGE_SIZE
 import quickfix.utils.enums.JobStatus
 import quickfix.utils.exceptions.JobException
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Service
 class JobService(
@@ -78,7 +80,11 @@ class JobService(
      **************************/
 
     @Transactional(readOnly = true)
-    fun getJobRequests(professionalId : Long) : Set<JobRequestDTO> {
+    fun getMyJobRequests(customerId : Long) : List<JobRequestDTO> =
+        redisService.getMyJobRequests(customerId)
+
+    @Transactional(readOnly = true)
+    fun getJobRequests(professionalId : Long) : List<JobRequestDTO> {
         val professionIds : Set<Long> = professionalService.getActiveProfessionIds(professionalId)
         return redisService.getJobRequests(professionIds)
     }
@@ -87,7 +93,7 @@ class JobService(
 
         userService.assertUserExists(jobRequest.customerId)
         professionService.assertProfessionExists(jobRequest.professionId)
-        redisService.requestJob(jobRequest)
+        redisService.requestJob(jobRequest.apply{ validate() })
     }
 
     fun cancelJobRequest (cancelJobRequest : CancelJobRequestDTO) {

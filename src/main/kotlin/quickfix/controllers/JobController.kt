@@ -90,9 +90,14 @@ class JobController(
     JOB REQUESTS
      **************************/
 
+    @GetMapping("/myJobRequests")
+    @Operation(summary = "Utilizado para que el customer pueda ver sus propias solicitudes activas")
+    fun getMyJobRequests(@ModelAttribute("currentUserId") currentCustomerId : Long) : List<JobRequestDTO> =
+        jobService.getMyJobRequests(currentCustomerId)
+
     @GetMapping("/jobRequests")
     @Operation(summary = "Utilizado para el polling que devuelve los servicios solicitados por los usuarios")
-    fun getJobRequests(@ModelAttribute("currentUserId") currentProfessionalId : Long) : Set<JobRequestDTO> =
+    fun getJobRequests(@ModelAttribute("currentUserId") currentProfessionalId : Long) : List<JobRequestDTO> =
         jobService.getJobRequests(currentProfessionalId)
 
     @PostMapping("/requestJob")
