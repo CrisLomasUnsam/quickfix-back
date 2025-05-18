@@ -7,8 +7,8 @@ import quickfix.dto.chat.RedisMessageDTO
 import quickfix.dto.chat.toRedisMessage
 import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
+import quickfix.utils.INSTANT_REQUEST_LIVE_DAYS
 import quickfix.utils.MAX_CUSTOMER_REQUESTS_AT_TIME
-import quickfix.utils.MINUTES_TO_BE_CONSIDERED_FUTURE_REQUEST
 import quickfix.utils.exceptions.JobException
 import java.time.Duration
 import java.time.LocalDateTime
@@ -39,13 +39,13 @@ class RedisService(
         val key = getJobRequestKey(jobRequest.professionId, customerId)
         assertKeyDoesNotExist(key, "No es posible tener dos solicitudes activas de una misma categoría. Ya tiene una solicitud para la categoría: ${jobRequest.professionName}")
 
-        val durationUntilRequestIsNeeded = Duration.between(LocalDateTime.now(), jobRequest.neededDatetime).abs()
-        val isFutureRequest = durationUntilRequestIsNeeded.toMinutes() > MINUTES_TO_BE_CONSIDERED_FUTURE_REQUEST
-
         redisJobRequestStorage.opsForValue().set(key,jobRequest)
 
         //If it is a future request, we set a TTL to cancel it automatically as soon as the date and time of need for the service arrives.
-        if(isFutureRequest)
+        val durationUntilRequestIsNeeded = Duration.between(LocalDateTime.now(), jobRequest.neededDatetime).abs()
+        if(jobRequest.instantRequest)
+            redisJobRequestStorage.expire(key, Duration.ofDays(INSTANT_REQUEST_LIVE_DAYS))
+        else
             redisJobRequestStorage.expire(key, durationUntilRequestIsNeeded)
     }
 
@@ -55,9 +55,16 @@ class RedisService(
         return myJobRequests.toList().sortedBy { it.neededDatetime }
     }
 
-    fun getJobRequests(professionIds : Set<Long>) : List<JobRequestDTO> {
+    fun countOffersForRequest(jobRequest: JobRequestDTO) : Int {
+        val customerId = jobRequest.customerId
+        val professionId = jobRequest.professionId
+        val keyPattern = "JobOffer_${professionId}_${customerId}_*_"
+        return redisJobRequestStorage.keys(keyPattern).size
+    }
+
+    fun getJobRequests(activeProfessionIds : Set<Long>) : List<JobRequestDTO> {
         val jobRequests = mutableListOf<JobRequestDTO>()
-        professionIds.forEach { professionId ->
+        activeProfessionIds.forEach { professionId ->
             val tempKey = "JobRequest_${professionId}_*_"
             val requestsKeys = redisJobRequestStorage.keys(tempKey)
             val requestsValues = redisJobRequestStorage.opsForValue().multiGet(requestsKeys) ?: emptySet()
@@ -76,17 +83,17 @@ class RedisService(
         this.removeAllJobOffers(professionId, customerId)
     }
 
-    private fun assertKeyDoesNotExist(key: String, errorMessage: String){
-        if(redisJobRequestStorage.hasKey(key))
-            throw JobException(errorMessage)
-    }
-
     private fun assertCustomerCanCreateAJobRequest(customerId: Long) {
         val tempKey = "JobRequest_*_${customerId}_"
         val userRequestsCount = redisJobRequestStorage.keys(tempKey).size
 
         if (userRequestsCount >= MAX_CUSTOMER_REQUESTS_AT_TIME)
             throw JobException("Solo es posible tener hasta un máximo de $MAX_CUSTOMER_REQUESTS_AT_TIME solicitudes activas al mismo tiempo.")
+    }
+
+    private fun assertKeyDoesNotExist(key: String, errorMessage: String){
+        if(redisJobRequestStorage.hasKey(key))
+            throw JobException(errorMessage)
     }
 
     private fun assertCustomerHasAJobRequest(customerId : Long){
