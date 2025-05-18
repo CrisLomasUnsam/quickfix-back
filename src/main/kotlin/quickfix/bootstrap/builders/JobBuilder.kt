@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 
 class JobBuilder {
     companion object{
-        fun buildMock(customer: User, professional: User, profession: Profession, done : Boolean) =
+        fun buildMock(customer: User, professional: User, profession: Profession, done : Boolean = true) =
             Job().apply {
                 this.customer = customer
                 this.professional = professional
