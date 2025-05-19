@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Component
-import quickfix.dto.job.JobBasicInfoProjection
-import quickfix.dto.job.JobWithRatingProjection
+import quickfix.dto.job.JobProjection
+import quickfix.dto.job.MyJobProjection
 import quickfix.models.Job
 import quickfix.models.Rating
 import quickfix.utils.enums.JobStatus
@@ -41,9 +41,8 @@ interface JobRepository : JpaRepository<Job, Long> {
             where j.customer_id = :customerId
             order by j.date asc
         """,
-        countQuery = "select count(*) from jobs where customer_id = :customerId",
         nativeQuery = true)
-    fun findAllByCustomerId(@Param("customerId") customerId: Long, pageable: Pageable): Page<JobWithRatingProjection>
+    fun findAllByCustomerId(@Param("customerId") customerId: Long, pageable: Pageable): Page<MyJobProjection>
 
 
     @Query(
@@ -68,9 +67,8 @@ interface JobRepository : JpaRepository<Job, Long> {
             where j.professional_id = :professionalId
             order by j.date asc
         """,
-        countQuery = "select count(*) from jobs where professional_id = :professionalId",
         nativeQuery = true)
-    fun findAllByProfessionalId(@Param("professionalId") professionalId: Long, pageable: Pageable): Page<JobWithRatingProjection>
+    fun findAllByProfessionalId(@Param("professionalId") professionalId: Long, pageable: Pageable): Page<MyJobProjection>
 
     fun existsByIdAndCustomerId(jobId: Long, customerId: Long): Boolean
 
@@ -88,19 +86,22 @@ interface JobRepository : JpaRepository<Job, Long> {
 
     @Query(
         value = """
-        select 
-            j.id as id,
-            j.date as date,
-            u.name as userName,
-            pr.name as profession,
-            j.status as status,
-            j.price as price
-            from jobs j
+        select j.id,
+               j.date,
+               u.name AS userName,
+               u.last_name AS userLastName,
+               p.name AS profession,
+               j.status,
+               j.price,
+               r.score
+           from jobs j
             join users u
-                on u.id = j.customer_id
-            join professions pr
-                on pr.id = j.profession_id
-            where j.customer_id = :customerId
+                on u.id = j.professional_id
+            join professions p
+                on p.id = j.profession_id
+            left join ratings r 
+                on r.job_id = j.id
+           where j.customer_id = :customerId
             and (
                 :param is null
             or j.id::text              ILIKE CONCAT('%', :param, '%')
@@ -111,7 +112,7 @@ interface JobRepository : JpaRepository<Job, Long> {
         """,
         nativeQuery = true
     )
-    fun findJobByFilter(@Param("customerId") customerId: Long, @Param("param") param: String?) : List<JobBasicInfoProjection>
+    fun findJobByFilter(@Param("customerId") customerId: Long, @Param("param") param: String?) : List<JobProjection>
 
     @Query(value = """
         SELECT r.* FROM ratings r
