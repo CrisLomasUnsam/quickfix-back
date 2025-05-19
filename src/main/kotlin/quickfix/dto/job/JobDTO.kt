@@ -2,8 +2,7 @@ package quickfix.dto.job
 
 import java.time.LocalDate
 
-// Proyección para jobs que incluyen calificación
-interface JobWithRatingProjection {
+interface JobProjection {
     fun getId(): Long
     fun getDate(): LocalDate
     fun getUserName(): String
@@ -11,11 +10,10 @@ interface JobWithRatingProjection {
     fun getProfession(): String
     fun getStatus(): String
     fun getPrice(): Double
-    fun getScore(): Int
+    fun getScore(): Int?
 }
 
-// Mapper a DTO detallado con rating
-fun JobWithRatingProjection.toDto(): JobWithRatingDTO = JobWithRatingDTO(
+fun JobProjection.toDto(): JobDTO = JobDTO(
     id = getId(),
     date = getDate(),
     userName = getUserName(),
@@ -23,11 +21,9 @@ fun JobWithRatingProjection.toDto(): JobWithRatingDTO = JobWithRatingDTO(
     profession = getProfession(),
     status = getStatus(),
     price = getPrice(),
-    score = getScore()
+    score = getScore() ?: 0,
 )
-
-// DTO detallado con rating
-data class JobWithRatingDTO(
+data class JobDTO(
     val id: Long,
     val date: LocalDate,
     val userName: String,
@@ -39,33 +35,4 @@ data class JobWithRatingDTO(
 )
 
 
-// Proyección básica sin calificación
-interface JobBasicInfoProjection {
-    fun getId(): Long
-    fun getDate(): LocalDate
-    fun getUserName(): String
-    fun getProfession(): String
-    fun getStatus(): String
-    fun getPrice(): Double
-}
 
-// Mapper a DTO básico
-fun JobBasicInfoProjection.toDto() = JobBasicInfoDTO(
-    id                   = getId(),
-    date                 = getDate(),
-    userName             = getUserName(),
-    profession           = getProfession(),
-    status               = getStatus(),
-    price                = getPrice(),
-)
-
-
-// DTO básico sin rating
-data class JobBasicInfoDTO(
-    val id: Long,
-    val date: LocalDate,
-    val userName: String,
-    val profession: String,
-    val status: String,
-    val price: Double,
-)
