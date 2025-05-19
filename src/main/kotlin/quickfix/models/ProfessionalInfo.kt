@@ -15,13 +15,16 @@ class ProfessionalInfo : Identifier {
     @JoinColumn(name = "professional_id", nullable = false)
     var professionalProfessions: MutableSet<ProfessionalProfession> = mutableSetOf()
 
-    @OneToMany(cascade = [(CascadeType.REMOVE)], orphanRemoval = true)
+    @OneToMany(cascade = [(CascadeType.ALL)], orphanRemoval = true)
     var certificates: MutableSet<Certificate> = mutableSetOf()
 
     var balance: Double = 0.0
     var debt: Double = 0.0
 
     var hasVehicle: Boolean = false
+
+    fun getActiveProfessions() : Set<Profession> =
+        professionalProfessions.filter { it.active }.map { it.profession }.toSet()
 
     override fun validate() {
 
@@ -33,6 +36,11 @@ class ProfessionalInfo : Identifier {
                 throw ProfessionalException("El certificado '${cert.name}' pertenece a una profesión no asignada.")
             }
         }
+    }
+
+    fun setCertificateHasImage(certificateId: Long) {
+        val certificate : Certificate? = certificates.find { it.id == certificateId }
+        certificate?.setHasImage()
     }
 
     fun addProfession(profession: Profession) {
@@ -76,6 +84,11 @@ class ProfessionalInfo : Identifier {
         this.certificates.removeIf { it.profession.id == professionId }
     }
 
+    fun assertCertificateExists(certificateId: Long) {
+        if (certificates.none { it.id == certificateId })
+            throw ProfessionalException("Ha habido un error al intentar obtener los datos del certificado.")
+    }
+
     fun validateCertificateAlreadyExists(newCertificateName: String, profession: Profession) {
         if (certificates.any { certificate -> certificate.name.lowercase().replace(" ","") == newCertificateName.lowercase().replace(" ","") && certificate.profession == profession })
             throw ProfessionalException("Ya tiene un certificado con el mismo nombre en la profesión ${profession.name}.")
@@ -95,14 +108,9 @@ class ProfessionalInfo : Identifier {
         this.certificates.add(newCertificate)
     }
 
-    fun deleteCertificate(certificateName: String) {
-        val cert= certificates.find { it.name == certificateName }
-            ?: throw  ProfessionalException("no existe un certificado con ese nombre.")
-
-        if (!hasProfession(cert.profession.id))
-            throw ProfessionalException("No se puede eliminar un certificado de una profesión no asignada.")
-
-        this.certificates.removeIf { it.name == certificateName }
+    fun deleteCertificate(certificateId: Long) {
+        assertCertificateExists(certificateId)
+        this.certificates.removeIf { it.id == certificateId }
     }
 
     fun payDebt() {

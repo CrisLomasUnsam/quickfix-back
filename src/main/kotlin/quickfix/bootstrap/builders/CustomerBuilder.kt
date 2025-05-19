@@ -18,21 +18,20 @@ class CustomerBuilder {
                 (acc shl 8) or (byte.toInt() and 0xFF)
             }
 
-            // Aseguramos que esté dentro del rango de DNI argentino típico
-            return 10_000_000 + (hashInt % 90_000_000)
+            val dni = 10_000_000 + (hashInt % 90_000_000)
+            return if(dni < 0) dni * (-1) else dni
         }
 
-        fun buildMock(userName: String): User {
+        fun buildMock(userName: String, lastName: String = "Test"): User {
             val user = User().apply {
-                mail = "$userName@gmail.com"
-                name = userName
-                lastName = userName
-                avatar = ByteArray(1)
-                gender = Gender.OTHER
-                address = AddressBuilder.buildMock("$userName 123")
-                dateBirth = LocalDate.of(1990, 1, 1)
-                verified = true
-                dni = generateDniFromUserName(userName)
+                this.mail = "$userName@gmail.com".lowercase()
+                this.name = userName
+                this.lastName = lastName
+                this.gender = Gender.OTHER
+                this.address = AddressBuilder.buildMock("Siempre viva 123")
+                this.dateBirth = LocalDate.of(1990, 1, 1)
+                this.verified = true
+                this.dni = generateDniFromUserName(userName)
                 setNewPassword("password")
             }
             return user
