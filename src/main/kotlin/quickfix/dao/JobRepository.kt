@@ -16,6 +16,8 @@ import quickfix.utils.enums.JobStatus
 interface JobRepository : JpaRepository<Job, Long> {
 
 
+
+
     @Query(
         value = """
         select 
@@ -42,7 +44,7 @@ interface JobRepository : JpaRepository<Job, Long> {
             order by j.date asc
         """,
         nativeQuery = true)
-    fun findAllByCustomerId(@Param("customerId") customerId: Long, pageable: Pageable): Page<MyJobProjection>
+    fun findAllJobsByCustomer(@Param("customerId") customerId: Long, pageable: Pageable?): Page<MyJobProjection>
 
 
     @Query(
@@ -68,7 +70,7 @@ interface JobRepository : JpaRepository<Job, Long> {
             order by j.date asc
         """,
         nativeQuery = true)
-    fun findAllByProfessionalId(@Param("professionalId") professionalId: Long, pageable: Pageable): Page<MyJobProjection>
+    fun findAllJobsByProfessional(@Param("professionalId") professionalId: Long, pageable: Pageable?): Page<MyJobProjection>
 
     fun existsByIdAndCustomerId(jobId: Long, customerId: Long): Boolean
 
