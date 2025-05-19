@@ -35,9 +35,9 @@ class ProfessionalService(
         return financesDTO
     }
 
-    fun getActiveProfessions(proffesionalId: Long) : Set<Profession> {
-        userService.assertUserExists(proffesionalId)
-        val professionIds : Set<Long> = this.getActiveProfessionIds(proffesionalId)
+    fun getActiveProfessions(professionalId: Long) : Set<Profession> {
+        userService.assertUserExists(professionalId)
+        val professionIds : Set<Long> = this.getActiveProfessionIds(professionalId)
         return professionIds.map { professionService.getProfessionById(it) }.toSet()
     }
 
