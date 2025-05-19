@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile
 import quickfix.dto.user.UserDTO
 import quickfix.dto.user.UserModifiedInfoDTO
 import quickfix.dto.user.SeeUserProfileDTO
+import quickfix.dto.user.UserProfileInfoDto
 import quickfix.services.UserService
 
 @RestController
@@ -30,6 +31,10 @@ class UserController(
     @PatchMapping("/data/edit")
     fun updateUserInfo(@ModelAttribute("currentUserId") currentUserId : Long, @RequestBody modifiedInfo: UserModifiedInfoDTO) =
         userService.changeUserInfo(currentUserId, modifiedInfo)
+
+    @GetMapping("/userProfileInfo")
+    fun getUserProfileInfo(@ModelAttribute("currentUserId") currentUserId: Long): UserProfileInfoDto =
+        UserProfileInfoDto.toDTO(userService.getById(currentUserId))
 
     @PatchMapping("/avatar")
     fun updateAvatar(@ModelAttribute("currentUserId") currentUserId: Long, @RequestBody image: MultipartFile) =
