@@ -1,6 +1,8 @@
-package quickfix.dto.job
+package quickfix.dto.page
 
 import org.springframework.data.domain.Page
+import quickfix.dto.job.JobDTO
+import quickfix.dto.job.MyJobDTO
 
 data class PageDTO<T>(
     var content: MutableList<T>,
@@ -11,7 +13,7 @@ data class PageDTO<T>(
     var totalPages: Int
 ) {
     companion object{
-        fun toDTO(page: Page<JobWithRatingDTO>): PageDTO<JobWithRatingDTO> {
+        fun toDTO(page: Page<MyJobDTO>): PageDTO<MyJobDTO> {
             return PageDTO(
                 content = page.content,
                 first = page.isFirst,
