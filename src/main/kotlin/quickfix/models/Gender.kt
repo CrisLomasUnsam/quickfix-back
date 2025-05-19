@@ -4,7 +4,7 @@ import quickfix.utils.exceptions.IllegalDataException
 
 enum class Gender(val genderName: String, val altValue: String) {
     MALE(genderName = "MALE", altValue = "Masculino"),
-    FEMALE(genderName = "FEMALE", altValue = "Feminino"),
+    FEMALE(genderName = "FEMALE", altValue = "Femenino"),
     OTHER(genderName = "OTHER", altValue = "Otro");
 
     companion object {
