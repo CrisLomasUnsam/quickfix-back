@@ -34,12 +34,12 @@ class JobController(
     @GetMapping("/customer")
     @Operation(summary = "Obtiene todos los servicios pedidos por un usuario")
     fun findJobsByCustomerId(
-        @ModelAttribute("currentUserId") currentCustomerId : Long, @RequestParam pageNumber: Int) : PageDTO<MyJobDTO> =
+        @ModelAttribute("currentUserId") currentCustomerId : Long, @RequestParam(required = false) pageNumber: Int? ) : PageDTO<MyJobDTO> =
         PageDTO.toDTO(jobService.findJobsByCustomerId(currentCustomerId, pageNumber))
 
     @GetMapping("/professional")
     @Operation(summary = "Obtiene todos los servicios realizados por un profesional")
-    fun findJobsByProfessionalId(@ModelAttribute("currentUserId") currentProfessionalId : Long, @RequestParam pageNumber: Int) : PageDTO<MyJobDTO> =
+    fun findJobsByProfessionalId(@ModelAttribute("currentUserId") currentProfessionalId : Long, @RequestParam (required = false) pageNumber: Int? ) : PageDTO<MyJobDTO> =
         PageDTO.toDTO(jobService.findJobsByProfessionalId(currentProfessionalId, pageNumber))
 
     @PatchMapping("/complete/{jobId}")
