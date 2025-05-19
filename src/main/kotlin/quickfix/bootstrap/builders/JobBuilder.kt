@@ -1,6 +1,6 @@
 package quickfix.bootstrap.builders
 
-import quickfix.dto.job.jobRequest.JobRequestDTO
+import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
 import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.models.User
@@ -28,7 +28,7 @@ class JobBuilder {
 class JobRequestBuilder {
     companion object{
         fun buildMock(customer: User, profession: Profession, isInstantRequest: Boolean = false) =
-            JobRequestDTO(
+            ProfessionalJobRequestDTO(
                 customerId = customer.id,
                 name = customer.name,
                 lastName = customer.lastName,

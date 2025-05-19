@@ -6,7 +6,7 @@ import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.RedisMessageDTO
 import quickfix.dto.chat.toRedisMessage
 import quickfix.dto.job.jobOffer.CreateJobOfferDTO
-import quickfix.dto.job.jobRequest.JobRequestDTO
+import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
 import quickfix.utils.INSTANT_REQUEST_LIVE_DAYS
 import quickfix.utils.MAX_CUSTOMER_REQUESTS_AT_TIME
 import quickfix.utils.exceptions.JobException
@@ -16,7 +16,7 @@ import java.time.LocalDateTime
 @Service
 class RedisService(
 
-    private val redisJobRequestStorage: RedisTemplate<String, JobRequestDTO>,
+    private val redisJobRequestStorage: RedisTemplate<String, ProfessionalJobRequestDTO>,
     private val redisJobOfferStorage: RedisTemplate<String, CreateJobOfferDTO>,
     private val redisChatStorage: RedisTemplate<String, RedisMessageDTO>
 
@@ -31,7 +31,7 @@ class RedisService(
     private fun getJobRequestKey(professionId: Long, customerId: Long) : String =
         "JobRequest_${professionId}_${customerId}_"
 
-    fun requestJob(jobRequest : JobRequestDTO) {
+    fun requestJob(jobRequest : ProfessionalJobRequestDTO) {
 
         val customerId = jobRequest.customerId
         assertCustomerCanCreateAJobRequest(customerId)
@@ -49,21 +49,21 @@ class RedisService(
             redisJobRequestStorage.expire(key, durationUntilRequestIsNeeded)
     }
 
-    fun getMyJobRequests(customerId: Long) : List<JobRequestDTO> {
+    fun getMyJobRequests(customerId: Long) : List<ProfessionalJobRequestDTO> {
         val requestsKeys = redisJobRequestStorage.keys("JobRequest_*_${customerId}_")
         val myJobRequests = redisJobRequestStorage.opsForValue().multiGet(requestsKeys) ?: emptySet()
         return myJobRequests.toList().sortedBy { it.neededDatetime }
     }
 
-    fun countOffersForRequest(jobRequest: JobRequestDTO) : Int {
+    fun countOffersForRequest(jobRequest: ProfessionalJobRequestDTO) : Int {
         val customerId = jobRequest.customerId
         val professionId = jobRequest.professionId
         val keyPattern = "JobOffer_${professionId}_${customerId}_*_"
         return redisJobRequestStorage.keys(keyPattern).size
     }
 
-    fun getJobRequests(activeProfessionIds : Set<Long>) : List<JobRequestDTO> {
-        val jobRequests = mutableListOf<JobRequestDTO>()
+    fun getJobRequests(activeProfessionIds : Set<Long>) : List<ProfessionalJobRequestDTO> {
+        val jobRequests = mutableListOf<ProfessionalJobRequestDTO>()
         activeProfessionIds.forEach { professionId ->
             val tempKey = "JobRequest_${professionId}_*_"
             val requestsKeys = redisJobRequestStorage.keys(tempKey)

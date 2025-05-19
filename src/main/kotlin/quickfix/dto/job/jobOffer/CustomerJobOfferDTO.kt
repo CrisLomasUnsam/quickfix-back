@@ -9,7 +9,7 @@ import quickfix.dto.professional.ProfessionalDTO
 @SchemaProperty(name = "estimatedArriveTime", schema = Schema(description = "Tiempo de llegada estimado en minutos del profesional. Calculado en base a la distancia"))
 @SchemaProperty(name = "availability", schema = Schema(description = "Disponibilidad del professional en minutos para iniciar el trabajo."))
 
-data class JobOfferDTO (
+data class CustomerJobOfferDTO (
 
     var customerId : Long,
     var professionId : Long,

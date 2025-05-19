@@ -1,7 +1,6 @@
 package quickfix.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -11,7 +10,7 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer
 import org.springframework.data.redis.serializer.StringRedisSerializer
 import quickfix.dto.chat.RedisMessageDTO
 import quickfix.dto.job.jobOffer.CreateJobOfferDTO
-import quickfix.dto.job.jobRequest.JobRequestDTO
+import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
 
 @Configuration
 class RedisConfig {
@@ -30,15 +29,15 @@ class RedisConfig {
     }
 
     @Bean
-    fun redisJobRequestStorage(connectionFactory: RedisConnectionFactory): RedisTemplate<String, JobRequestDTO> {
-        val storage = RedisTemplate<String, JobRequestDTO>()
+    fun redisJobRequestStorage(connectionFactory: RedisConnectionFactory): RedisTemplate<String, ProfessionalJobRequestDTO> {
+        val storage = RedisTemplate<String, ProfessionalJobRequestDTO>()
         storage.connectionFactory = connectionFactory
         storage.keySerializer = StringRedisSerializer()
         val objectMapper = ObjectMapper().apply {
             registerModule(JavaTimeModule())
             deactivateDefaultTyping()
         }
-        val jacksonSerializer = Jackson2JsonRedisSerializer(objectMapper, JobRequestDTO::class.java)
+        val jacksonSerializer = Jackson2JsonRedisSerializer(objectMapper, ProfessionalJobRequestDTO::class.java)
         storage.valueSerializer = jacksonSerializer
         return storage
     }

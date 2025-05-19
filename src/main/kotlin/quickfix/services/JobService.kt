@@ -6,16 +6,14 @@ import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.JobRepository
-import quickfix.dto.job.jobOffer.AcceptedJobOfferDTO
-import quickfix.dto.job.jobOffer.CancelJobOfferDTO
+import quickfix.dto.job.jobOffer.AcceptJobOfferDTO
 import quickfix.dto.job.jobOffer.CreateJobOfferDTO
-import quickfix.dto.job.jobOffer.JobOfferDTO
-import quickfix.dto.job.jobRequest.CancelJobRequestDTO
-import quickfix.dto.job.jobRequest.JobRequestDTO
+import quickfix.dto.job.jobOffer.CustomerJobOfferDTO
+import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
 import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.MessageResponseDTO
 import quickfix.dto.chat.toMessageResponseDTO
-import quickfix.dto.job.jobRequest.MyJobRequestDTO
+import quickfix.dto.job.jobRequest.CustomerJobRequestDTO
 import quickfix.dto.job.jobRequest.validate
 import quickfix.dto.professional.ProfessionalDTO
 import quickfix.models.Job
@@ -80,26 +78,25 @@ class JobService(
      **************************/
 
     @Transactional(readOnly = true)
-    fun getMyJobRequests(customerId : Long) : List<MyJobRequestDTO> {
+    fun getMyJobRequests(customerId : Long) : List<CustomerJobRequestDTO> {
         val myJobRequests = redisService.getMyJobRequests(customerId)
-        return myJobRequests.map{ MyJobRequestDTO.fromJobRequest(it, redisService.countOffersForRequest(it)) }
+        return myJobRequests.map{ CustomerJobRequestDTO.fromJobRequest(it, redisService.countOffersForRequest(it)) }
     }
 
 
     @Transactional(readOnly = true)
-    fun getJobRequests(professionalId : Long) : List<JobRequestDTO> {
+    fun getJobRequests(professionalId : Long) : List<ProfessionalJobRequestDTO> {
         val professionIds : Set<Long> = professionalService.getActiveProfessionIds(professionalId)
         return redisService.getJobRequests(professionIds)
     }
 
-    fun requestJob(jobRequest : JobRequestDTO) {
+    fun requestJob(jobRequest : ProfessionalJobRequestDTO) {
         userService.assertUserExists(jobRequest.customerId)
         professionService.assertProfessionExists(jobRequest.professionId)
         redisService.requestJob(jobRequest.apply{ validate() })
     }
 
-    fun cancelJobRequest (cancelJobRequest : CancelJobRequestDTO) {
-        val (customerId, professionId) = cancelJobRequest
+    fun cancelJobRequest (customerId: Long, professionId: Long) {
         userService.assertUserExists(customerId)
         professionService.getProfessionById(professionId)
         redisService.removeJobRequest(customerId, professionId)
@@ -109,14 +106,33 @@ class JobService(
      JOB OFFER METHODS
      **************************/
 
-    fun getJobOffers(customerId : Long): List<JobOfferDTO> {
+    fun getJobOffers(customerId : Long): List<CustomerJobOfferDTO> {
         val createdJobOffers = redisService.getJobOffers(customerId)
 
         return createdJobOffers.map { createdJobOffer ->
             val professional = userService.getById(createdJobOffer.professionalId)
             val professionalRating = jobRepository.findRatingsByProfessionalId(createdJobOffer.professionalId).map { it.score }.average()
 
-            JobOfferDTO(
+            CustomerJobOfferDTO(
+                customerId = createdJobOffer.customerId,
+                professionId = createdJobOffer.professionId,
+                professional = ProfessionalDTO.fromUser(professional, professionalRating),
+                price = createdJobOffer.price,
+                distance = createdJobOffer.distance,
+                estimatedArriveTime = createdJobOffer.estimatedArriveTime,
+                availability = createdJobOffer.availability,
+            )
+        }
+    }
+
+    fun getMyJobOffers(customerId : Long): List<CustomerJobOfferDTO> {
+        val createdJobOffers = redisService.getJobOffers(customerId)
+
+        return createdJobOffers.map { createdJobOffer ->
+            val professional = userService.getById(createdJobOffer.professionalId)
+            val professionalRating = jobRepository.findRatingsByProfessionalId(createdJobOffer.professionalId).map { it.score }.average()
+
+            CustomerJobOfferDTO(
                 customerId = createdJobOffer.customerId,
                 professionId = createdJobOffer.professionId,
                 professional = ProfessionalDTO.fromUser(professional, professionalRating),
@@ -134,11 +150,13 @@ class JobService(
         redisService.offerJob(jobOffer)
     }
 
-    fun cancelJobOffer(cancelOfferJob: CancelJobOfferDTO) =
-        redisService.removeJobOffer(cancelOfferJob.professionId, cancelOfferJob.customerId, cancelOfferJob.professionalId)
+    fun cancelJobOffer(professionalId: Long, requestId: String) {
+        val (professionId, customerId) = requestId.split("_")
+        redisService.removeJobOffer(professionId.toLong(), customerId.toLong(), professionalId)
+    }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun acceptJobOffer(acceptedJob: AcceptedJobOfferDTO) {
+    fun acceptJobOffer(acceptedJob: AcceptJobOfferDTO) {
 
         val customer: User = userService.getById(acceptedJob.customerId)
         val professional : User = userService.getById(acceptedJob.professionalId)

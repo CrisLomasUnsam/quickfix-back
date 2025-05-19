@@ -1,7 +1,7 @@
 package quickfix.dto.job.jobOffer
 
 
-data class AcceptedJobOfferDTO (
+data class AcceptJobOfferDTO (
 
     val professionalId : Long,
     val customerId: Long ,

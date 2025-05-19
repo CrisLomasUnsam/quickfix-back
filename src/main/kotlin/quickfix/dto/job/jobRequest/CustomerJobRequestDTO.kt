@@ -2,7 +2,7 @@ package quickfix.dto.job.jobRequest
 
 import quickfix.utils.functions.DatetimeFormatter
 
-data class MyJobRequestDTO (
+data class CustomerJobRequestDTO (
     var professionId: Long,
     var jobDetails: String,
     var neededDatetime: String,
@@ -10,8 +10,8 @@ data class MyJobRequestDTO (
     var offersCount: Int
 ) {
     companion object {
-        fun fromJobRequest(jobRequest: JobRequestDTO, offersCount: Int): MyJobRequestDTO {
-            return MyJobRequestDTO(
+        fun fromJobRequest(jobRequest: ProfessionalJobRequestDTO, offersCount: Int): CustomerJobRequestDTO {
+            return CustomerJobRequestDTO(
                 professionId = jobRequest.professionId,
                 jobDetails = jobRequest.detail,
                 neededDatetime = jobRequest.neededDatetime.format(DatetimeFormatter),
@@ -20,8 +20,4 @@ data class MyJobRequestDTO (
             )
         }
     }
-}
-
-fun MyJobRequestDTO.fromJobRequest(jobRequest: JobRequestDTO){
-
 }
