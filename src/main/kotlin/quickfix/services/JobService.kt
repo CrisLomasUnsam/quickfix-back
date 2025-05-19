@@ -15,7 +15,6 @@ import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.MessageResponseDTO
 import quickfix.dto.chat.toMessageResponseDTO
-import quickfix.dto.job.JobDTO
 import quickfix.dto.job.JobProjection
 import quickfix.dto.job.MyJobDTO
 import quickfix.dto.job.jobRequest.MyJobRequestDTO
@@ -44,16 +43,21 @@ class JobService(
 
 
     @Transactional(readOnly = true)
-    fun findJobsByCustomerId(id: Long, pageNumber: Int): Page<MyJobDTO> {
-        val pageable = sortPage(pageNumber)
-        return jobRepository.findAllByCustomerId(id, pageable).map { it.toDto() }
+    fun findJobsByCustomerId(id: Long, pageNumber: Int?): Page<MyJobDTO> {
+    return if (pageNumber == null)
+        jobRepository.findAllJobsByCustomer(id, null).map { it.toDto() }
+
+    else
+        jobRepository.findAllJobsByCustomer(id, sortPage(pageNumber)).map { it.toDto() }
     }
 
 
     @Transactional(readOnly = true)
-    fun findJobsByProfessionalId(id: Long, pageNumber: Int): Page<MyJobDTO> {
-        val pageable = sortPage(pageNumber)
-        return jobRepository.findAllByProfessionalId(id, pageable).map { it.toDto() }
+    fun findJobsByProfessionalId(id: Long, pageNumber: Int?): Page<MyJobDTO> {
+        return if (pageNumber == null)
+            jobRepository.findAllJobsByProfessional(id, null).map { it.toDto() }
+        else
+            jobRepository.findAllJobsByProfessional(id, sortPage(pageNumber)).map { it.toDto() }
 
     }
     private fun sortPage(pageNumber: Int) : PageRequest {
