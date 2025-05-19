@@ -18,6 +18,8 @@ import quickfix.dto.chat.toMessageResponseDTO
 import quickfix.dto.job.JobDTO
 import quickfix.dto.job.JobProjection
 import quickfix.dto.job.MyJobDTO
+import quickfix.dto.job.jobRequest.MyJobRequestDTO
+import quickfix.dto.job.jobRequest.validate
 import quickfix.dto.job.toDto
 import quickfix.dto.professional.ProfessionalDTO
 import quickfix.models.Job
@@ -91,16 +93,20 @@ class JobService(
      JOB REQUEST METHODS
      **************************/
 
-    fun getJobRequests(professionalId : Long) : Set<JobRequestDTO> {
-        val professionIds : Set<Long> = professionalService.getProfessionIds(professionalId)
+    @Transactional(readOnly = true)
+    fun getMyJobRequests(customerId : Long) : List<MyJobRequestDTO> {
+        val myJobRequests = redisService.getMyJobRequests(customerId)
+        return myJobRequests.map{ MyJobRequestDTO.fromJobRequest(it, redisService.countOffersForRequest(it)) }
+    }
+    @Transactional(readOnly = true)
+    fun getJobRequests(professionalId : Long) : List<JobRequestDTO> {
+        val professionIds : Set<Long> = professionalService.getActiveProfessionIds(professionalId)
         return redisService.getJobRequests(professionIds)
     }
-
     fun requestJob(jobRequest : JobRequestDTO) {
-
         userService.assertUserExists(jobRequest.customerId)
         professionService.assertProfessionExists(jobRequest.professionId)
-        redisService.requestJob(jobRequest, jobRequest.professionId)
+        redisService.requestJob(jobRequest.apply{ validate() })
     }
 
     fun cancelJobRequest (cancelJobRequest : CancelJobRequestDTO) {
