@@ -15,8 +15,9 @@ import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.MessageResponseDTO
 import quickfix.dto.chat.toMessageResponseDTO
-import quickfix.dto.job.JobBasicInfoDTO
-import quickfix.dto.job.JobWithRatingDTO
+import quickfix.dto.job.JobDTO
+import quickfix.dto.job.JobProjection
+import quickfix.dto.job.MyJobDTO
 import quickfix.dto.job.toDto
 import quickfix.dto.professional.ProfessionalDTO
 import quickfix.models.Job
@@ -41,14 +42,14 @@ class JobService(
 
 
     @Transactional(readOnly = true)
-    fun findJobsByCustomerId(id: Long, pageNumber: Int): Page<JobWithRatingDTO> {
+    fun findJobsByCustomerId(id: Long, pageNumber: Int): Page<MyJobDTO> {
         val pageable = sortPage(pageNumber)
         return jobRepository.findAllByCustomerId(id, pageable).map { it.toDto() }
     }
 
 
     @Transactional(readOnly = true)
-    fun findJobsByProfessionalId(id: Long, pageNumber: Int): Page<JobWithRatingDTO> {
+    fun findJobsByProfessionalId(id: Long, pageNumber: Int): Page<MyJobDTO> {
         val pageable = sortPage(pageNumber)
         return jobRepository.findAllByProfessionalId(id, pageable).map { it.toDto() }
 
@@ -81,8 +82,9 @@ class JobService(
         job.status = status
     }
 
-    fun getJobsByParameter(id: Long, parameter: String?): List<JobBasicInfoDTO> =
-        jobRepository.findJobByFilter(id, parameter).map { it.toDto() }
+    @Transactional(readOnly = true)
+    fun getJobsByParameter(id: Long, parameter: String?): List<JobProjection> =
+        jobRepository.findJobByFilter(id, parameter)
 
 
     /*************************
