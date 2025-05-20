@@ -31,7 +31,7 @@ class JobController(
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtiene los detalles del Job")
-    fun getJobDetailsByJobId(@ModelAttribute currentCustomerId: Long, @PathVariable id: Long): JobDetailsDTO =
+    fun getJobDetailsByJobId(@ModelAttribute("currentUserId") currentCustomerId: Long, @PathVariable id: Long): JobDetailsDTO =
         jobService.getJobDetailsById(currentCustomerId, id)
 
 
