@@ -11,7 +11,7 @@ import quickfix.utils.exceptions.ProfessionException
 import java.time.LocalDateTime
 
 @Schema(description = "Solicitud de un Job por un customer")
-data class JobRequestDTO @JsonCreator constructor(
+data class ProfessionalJobRequestDTO @JsonCreator constructor(
 
     @JsonProperty("customerId")
     var customerId: Long,
@@ -45,7 +45,7 @@ data class JobRequestDTO @JsonCreator constructor(
 
 )
 
-fun JobRequestDTO.validate() {
+fun ProfessionalJobRequestDTO.validate() {
     validCustomer(customerId)
     validProfession(professionId)
     validDetail(detail)
@@ -53,7 +53,7 @@ fun JobRequestDTO.validate() {
     setInstantRequest()
 }
 
-private fun JobRequestDTO.setInstantRequest(){
+private fun ProfessionalJobRequestDTO.setInstantRequest(){
     if(neededDatetime.isBefore(LocalDateTime.now().plusMinutes(MINUTES_TO_BE_CONSIDERED_FUTURE_REQUEST)))
         instantRequest = true
 }

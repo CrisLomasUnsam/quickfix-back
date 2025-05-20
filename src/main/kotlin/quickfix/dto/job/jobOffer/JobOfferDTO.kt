@@ -1,22 +1,34 @@
 package quickfix.dto.job.jobOffer
 
-import io.swagger.v3.oas.annotations.media.Schema
-import io.swagger.v3.oas.annotations.media.SchemaProperty
-import quickfix.dto.professional.ProfessionalDTO
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import quickfix.dto.user.SeeUserBasicInfoDTO
+import quickfix.models.Profession
+import java.time.LocalDateTime
 
-@Schema(description = "Oferta enviada por un profesional como respuesta a un jobRequest")
-@SchemaProperty(name = "distance", schema = Schema(description = "Distancia en kilómetros a la que se encuentra el profesional del usuario que inició la búsqueda."))
-@SchemaProperty(name = "estimatedArriveTime", schema = Schema(description = "Tiempo de llegada estimado en minutos del profesional. Calculado en base a la distancia"))
-@SchemaProperty(name = "availability", schema = Schema(description = "Disponibilidad del professional en minutos para iniciar el trabajo."))
 
-data class JobOfferDTO (
+data class JobOfferDTO @JsonCreator constructor (
 
-    var customerId : Long,
-    var professionId : Long,
-    var professional: ProfessionalDTO,
-    var price: Double,
-    var distance: Double,
-    var estimatedArriveTime: Int,
-    var availability: Int,
+    @JsonProperty("customer") var customer : SeeUserBasicInfoDTO,
+
+    @JsonProperty("profession") var profession : Profession,
+
+    @JsonProperty("professional") var professional: SeeUserBasicInfoDTO,
+
+    @JsonProperty("price") var price: Double,
+
+    @JsonProperty("distance") var distance: Double,
+
+    @JsonProperty("estimatedArriveTime") var estimatedArriveTime: Int,
+
+    @JsonProperty("jobDuration") var jobDuration: Int,
+
+    @JsonProperty("jobDurationTimeUnit") var jobDurationTimeUnit: String, //Minute, Hour, Day, Week, Month
+
+    @JsonProperty("neededDatetime") var neededDatetime: LocalDateTime,
+
+    @JsonProperty("detail") var detail: String,
+
+    @JsonProperty("instantRequest") var instantRequest: Boolean
 
 )
