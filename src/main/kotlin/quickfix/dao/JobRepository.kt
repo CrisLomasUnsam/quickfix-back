@@ -6,46 +6,78 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Component
+import quickfix.dto.job.IJobWithRating
 import quickfix.models.Job
 
 @Component
 interface JobRepository : JpaRepository<Job, Long> {
 
-    fun findAllByCustomerId(customerId: Long, pageable: Pageable): Page<Job>
-
-    fun findAllByProfessionalId(professionalId: Long, pageable: Pageable): Page<Job>
-
     fun existsByIdAndCustomerId(jobId: Long, customerId: Long): Boolean
 
     fun existsByIdAndProfessionalId(jobId: Long, professionalId: Long): Boolean
 
-    @Query(value="""
-        select professional_id from jobs where id = :jobId fetch first 1 rows only
-    """, nativeQuery = true)
+    @Query(value="select professional_id from jobs where id = :jobId fetch first 1 rows only", nativeQuery = true)
     fun findProfessionalIdByJobId(@Param("jobId") jobId: Long): Long
 
-    @Query(value="""
-        select customer_id from jobs where id = :jobId fetch first 1 rows only
-    """, nativeQuery = true)
+    @Query(value="select customer_id from jobs where id = :jobId fetch first 1 rows only", nativeQuery = true)
     fun findCustomerIdByJobId(@Param("jobId") jobId: Long): Long
 
-    @Query(value="""
-        select * from jobs where professional_id = :professionalId and (status = 'PENDING' or status = 'IN_PROGRESS')
-    """, nativeQuery = true)
+    @Query(value="select * from jobs where professional_id = :professionalId and (status = 'PENDING' or status = 'IN_PROGRESS')", nativeQuery = true)
     fun findOpenJobsByProfessionalId(@Param("professionalId") professionalId: Long): Set<Job>
 
-    @Query(value = """
-        select *
-           from jobs j
-           where j.customer_id = :customerId
-            and (
-                :param is null
-                or j.id::text              ilike concat('%', :param, '%')
-                or j.status                ilike concat('%', :param, '%')
-                or j.profession_id::text   ilike concat('%', :param, '%')
-                or j.professional_id::text ilike concat('%', :param, '%')
-            )
-            """, nativeQuery = true)
-    fun findJobByFilter(@Param("customerId") customerId: Long, @Param("param") param: String?) : List<Job>
+    @Query(
+        value = """
+        select 
+            j.id as id,
+            j.date as date,
+            -- join a users como “profesional”
+            u_prof.name as userName,
+            u_prof.last_name as userLastName,
+            pr.name as profession,
+            j.status as status,
+            j.price as price,
+            coalesce(r.score, 0) as score
+            from jobs j
+            -- tabla de usuarios para el profesional
+            join users u_prof
+                on u_prof.id = j.professional_id
+            -- tabla de profesiones
+            join professions pr
+                on pr.id = j.profession_id
+             -- rating
+            left join ratings r 
+                on r.job_id = j.id
+            where j.customer_id = :customerId
+            order by j.date asc
+        """,
+        nativeQuery = true)
+    fun findAllJobsByCustomerId(@Param("customerId") customerId: Long, pageable: Pageable?): Page<IJobWithRating>
+
+
+    @Query(
+        value = """
+        select 
+            j.id as id,
+            j.date as date,
+            -- ahora la misma tabla users para el cliente”
+            u_cust.name as userName,
+            u_cust.last_name as userLastName,
+            pr.name as profession,
+            j.status as status,
+            j.price as price,
+            coalesce(r.score, 0) as score
+            from jobs j
+            join users u_cust
+                on u_cust.id = j.customer_id
+            join professions pr
+                on pr.id = j.profession_id
+            left join ratings r 
+                on r.job_id = j.id
+            where j.professional_id = :professionalId
+            order by j.date asc
+        """,
+        nativeQuery = true)
+    fun findAllJobsByProfessionalId(@Param("professionalId") professionalId: Long, pageable: Pageable?): Page<IJobWithRating>
+
 }
 
