@@ -14,9 +14,10 @@ import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.MessageResponseDTO
 import quickfix.dto.chat.toMessageResponseDTO
 import quickfix.dto.job.JobDetailsDTO
+import quickfix.dto.job.JobWithRatingDTO
+import quickfix.dto.job.jobRequest.validate
 import quickfix.dto.job.jobOffer.ProfessionalJobOfferDTO
 import quickfix.dto.job.jobRequest.CustomerJobRequestDTO
-import quickfix.dto.job.jobRequest.validate
 import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.models.User
@@ -40,16 +41,13 @@ class JobService(
     fun getJobById(id: Long): Job =
         jobRepository.findById(id).orElseThrow { throw JobException("Ha habido un error al recuperar la información del trabajo.") }
 
-    fun findJobsByCustomerId(id: Long, pageNumber: Int): Page<Job>  =
-         jobRepository.findAllByCustomerId(id, sortPage(pageNumber))
+    @Transactional(readOnly = true)
+    fun findMyJobsByCustomerId(customerId: Long, pageNumber: Int?): Page<JobWithRatingDTO> =
+        jobRepository.findAllJobsByCustomerId(customerId, sortMyJobsPageByDate(pageNumber)).map { JobWithRatingDTO.fromProjection(it) }
 
-    fun findJobsByProfessionalId(id: Long, pageNumber: Int): Page<Job> =
-         jobRepository.findAllByProfessionalId(id, sortPage(pageNumber))
-
-    private fun sortPage(pageNumber: Int) : PageRequest {
-        val sort: Sort = Sort.by("date").ascending()
-        return PageRequest.of(pageNumber, PAGE_SIZE, sort)
-    }
+    @Transactional(readOnly = true)
+    fun findMyJobsByProfessionalId(professionalId: Long, pageNumber: Int?): Page<JobWithRatingDTO> =
+        jobRepository.findAllJobsByProfessionalId(professionalId, sortMyJobsPageByDate(pageNumber)).map { JobWithRatingDTO.fromProjection(it) }
 
     @Transactional(rollbackFor = [Exception::class])
     fun setJobAsDone(professionalId: Long, jobId: Long) {
@@ -73,8 +71,11 @@ class JobService(
         job.status = status
     }
 
-    fun getJobsByParameter(id: Long, parameter: String?): List<Job> =
-        jobRepository.findJobByFilter(id, parameter)
+    private fun sortMyJobsPageByDate(pageNumber: Int?) : PageRequest? {
+        if(pageNumber == null) return null
+        val sort: Sort = Sort.by("date").ascending()
+        return PageRequest.of(pageNumber, PAGE_SIZE, sort)
+    }
 
     fun getJobDetailsById(currentCustomerId: Long, id: Long): JobDetailsDTO {
         val job = getJobById(id)
@@ -90,7 +91,6 @@ class JobService(
         val myJobRequests = redisService.getMyJobRequests(customerId)
         return myJobRequests.map{ CustomerJobRequestDTO.fromJobRequest(it, redisService.countOffersForRequest(it)) }
     }
-
 
     @Transactional(readOnly = true)
     fun getJobRequests(professionalId : Long) : List<ProfessionalJobRequestDTO> {
@@ -178,7 +178,6 @@ class JobService(
         jobRepository.save(job)
         redisService.removeJobRequest(profession.id, customerId)
     }
-
 
     /*************************
         CHAT METHODS

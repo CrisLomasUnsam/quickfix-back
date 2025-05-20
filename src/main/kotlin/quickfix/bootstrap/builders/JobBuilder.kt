@@ -19,6 +19,8 @@ class JobBuilder {
                 this.status = if(done) JobStatus.DONE else JobStatus.PENDING
                 this.price = 19999.0
                 this.description = "Lorem ipsum dolor sit amet consectetur adipiscing elit aliquam, morbi ad ornare pharetra posuere ut fringilla molestie tristique."
+                this.duration = 10
+                this.durationUnit = "Minutos"
             }
     }
 }
