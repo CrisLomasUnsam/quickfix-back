@@ -8,8 +8,8 @@ class AddressBuilder {
             return Address().apply {
                 street = streetName
                 optional = "PB 1ºA"
-                city = "Buenos Aires"
-                state = "CABA"
+                city = "Belgrano"
+                state = "Ciudad Autónoma de Buenos Aires"
                 zipCode = "9999"
             }
         }

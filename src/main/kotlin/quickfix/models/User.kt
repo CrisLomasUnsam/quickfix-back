@@ -3,6 +3,7 @@ package quickfix.models
 import jakarta.persistence.*
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import quickfix.dto.address.AddressDTO
 import quickfix.dto.user.UserModifiedInfoDTO
 import quickfix.utils.exceptions.IllegalDataException
 import quickfix.utils.exceptions.InvalidCredentialsException
@@ -82,18 +83,23 @@ class User : Identifier {
             ?.let { Gender.fromName(it) }
             ?.let { this.gender = it }
 
-        modifiedInfoDTO.address
-            ?.takeIf {
-                it.street?.isNotBlank() == true ||
-                it.optional?.isNotBlank() == true ||
+        modifiedInfoDTO
+            .takeIf {
+                it.streetAddress1?.isNotBlank() == true ||
+                it.streetAddress2?.isNotBlank() == true ||
                 it.zipCode?.isNotBlank() == true ||
-                it.state?.isNotBlank() == true ||
-                it.city?.isNotBlank() == true
+                it.city?.isNotBlank() == true ||
+                it.state?.isNotBlank() == true
             }
-            ?.let { addressDTO ->
+            ?.let { val addressDTO = AddressDTO(
+                        street = it.streetAddress1,
+                        optional = it.streetAddress2,
+                        zipCode = it.zipCode,
+                        city = it.city,
+                        state = it.state
+            )
                 this.address.updateAddressInfo(addressDTO)
             }
-
     }
 
     private fun getDefaultEncoder(): PasswordEncoder =
