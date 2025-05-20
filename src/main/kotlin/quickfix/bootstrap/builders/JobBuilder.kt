@@ -18,6 +18,7 @@ class JobBuilder {
                 this.profession = profession
                 this.status = if(done) JobStatus.DONE else JobStatus.PENDING
                 this.price = 19999.0
+                this.description = "Lorem ipsum dolor sit amet consectetur adipiscing elit aliquam, morbi ad ornare pharetra posuere ut fringilla molestie tristique."
             }
     }
 }
@@ -32,7 +33,7 @@ class JobRequestBuilder {
                 avatar = getAvatarUrl(customer.id),
                 professionId = profession.id,
                 professionName = profession.name,
-                detail = "Lorem ipsum dolor em sit amet lo gump samar ipsum it.",
+                detail = "Lorem ipsum dolor sit amet consectetur adipiscing elit aliquam, morbi ad ornare pharetra posuere ut fringilla molestie tristique.",
                 rating = (Math.random() % 5) + 1.0,
                 neededDatetime = if(isInstantRequest) LocalDateTime.now() else LocalDateTime.now().plusDays(1),
                 instantRequest = isInstantRequest
