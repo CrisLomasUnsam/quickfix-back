@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.TokenRepository
 import quickfix.dto.register.RegisterRequestDTO
 import quickfix.dto.register.toUser
-import quickfix.dto.user.NewCredentialRequestDTO
+import quickfix.dto.register.NewCredentialRequestDTO
 import quickfix.models.Token
 import quickfix.models.User
 import quickfix.utils.FRONTEND_URL

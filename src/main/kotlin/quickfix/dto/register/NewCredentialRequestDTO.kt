@@ -1,4 +1,4 @@
-package quickfix.dto.user
+package quickfix.dto.register
 
 data class NewCredentialRequestDTO(
     val newRawPassword: String,

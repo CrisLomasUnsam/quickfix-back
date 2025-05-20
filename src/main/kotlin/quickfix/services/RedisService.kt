@@ -5,11 +5,13 @@ import org.springframework.stereotype.Service
 import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.RedisMessageDTO
 import quickfix.dto.chat.toRedisMessage
-import quickfix.dto.job.jobOffer.CreateJobOfferDTO
+import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
 import quickfix.utils.INSTANT_REQUEST_LIVE_DAYS
 import quickfix.utils.MAX_CUSTOMER_REQUESTS_AT_TIME
 import quickfix.utils.exceptions.JobException
+import quickfix.utils.jobs.dateTimesCollides
+import quickfix.utils.jobs.getJobOfferEndtime
 import java.time.Duration
 import java.time.LocalDateTime
 
@@ -17,7 +19,7 @@ import java.time.LocalDateTime
 class RedisService(
 
     private val redisJobRequestStorage: RedisTemplate<String, ProfessionalJobRequestDTO>,
-    private val redisJobOfferStorage: RedisTemplate<String, CreateJobOfferDTO>,
+    private val redisJobOfferStorage: RedisTemplate<String, JobOfferDTO>,
     private val redisChatStorage: RedisTemplate<String, RedisMessageDTO>
 
 ) {
@@ -75,10 +77,6 @@ class RedisService(
 
     fun removeJobRequest(professionId : Long, customerId: Long) {
         val key = getJobRequestKey(professionId, customerId)
-
-        if (!redisJobRequestStorage.hasKey(key))
-            throw JobException("No existe una solicitud activa para el usuario $customerId en la profesión $professionId")
-
         redisJobRequestStorage.delete(key)
         this.removeAllJobOffers(professionId, customerId)
     }
@@ -120,20 +118,39 @@ class RedisService(
     private fun getJobOfferKey(professionId: Long, customerId: Long, professionalId: Long) : String =
         "JobOffer_${professionId}_${customerId}_${professionalId}_"
 
-    fun getJobOffers(customerId : Long) : Set<CreateJobOfferDTO> {
+    fun getJobOffers(customerId : Long, professionId: Long) : List<JobOfferDTO> {
         assertCustomerHasAJobRequest(customerId)
-        val keyPattern = "JobOffer_*_${customerId}_*_"
+        val keyPattern = "JobOffer_${professionId}_${customerId}_*_"
         val jobOfferKeys = redisJobOfferStorage.keys(keyPattern)
-        return redisJobOfferStorage.opsForValue().multiGet(jobOfferKeys)?.toSet() ?: emptySet()
+        val offers = redisJobOfferStorage.opsForValue().multiGet(jobOfferKeys)?.toList() ?: emptySet()
+        return offers.sortedBy { it.neededDatetime }
     }
 
-    fun offerJob(jobOffer : CreateJobOfferDTO) {
-        val keyPattern = "JobOffer_*_*_${jobOffer.professionalId}_"
-        val professionalHasActiveOffer = redisJobOfferStorage.keys(keyPattern).isNotEmpty()
-        if(professionalHasActiveOffer)
-            throw JobException("No puede realizar más de una oferta simultáneamente.")
-        val key = getJobOfferKey(jobOffer.professionId, jobOffer.customerId, jobOffer.professionalId)
+    fun getMyJobOffers(professionalId : Long) : List<JobOfferDTO> {
+        val keyPattern = "JobOffer_*_*_${professionalId}_"
+        val jobOfferKeys = redisJobOfferStorage.keys(keyPattern)
+        val offers = redisJobOfferStorage.opsForValue().multiGet(jobOfferKeys)?.toList() ?: emptySet()
+        return offers.sortedBy { it.neededDatetime }
+    }
+
+    fun offerJob(jobOffer : JobOfferDTO) {
+        assertJobOffersDoNotCollide(jobOffer)
+        val key = getJobOfferKey(jobOffer.profession.id, jobOffer.customer.id, jobOffer.professional.id)
         redisJobOfferStorage.opsForValue().set(key,jobOffer)
+    }
+
+    private fun assertJobOffersDoNotCollide(newOffer : JobOfferDTO){
+        val keyPattern = "JobOffer_*_*_${newOffer.professional.id}_"
+        val activeOffersKeys = redisJobOfferStorage.keys(keyPattern)
+        val activeOffers = redisJobOfferStorage.opsForValue().multiGet(activeOffersKeys)?.toList() ?: emptySet()
+        val newOfferEndDatetime = getJobOfferEndtime(newOffer)
+
+        activeOffers.forEach { activeOffer ->
+            val activeOfferStartDatetime = activeOffer.neededDatetime
+            val activeOfferEndDatetime = getJobOfferEndtime(activeOffer)
+            if(dateTimesCollides(newOffer.neededDatetime, newOfferEndDatetime, activeOfferStartDatetime, activeOfferEndDatetime))
+                throw JobException("Usted ya tiene una oferta activa en este rango de tiempo.")
+        }
     }
 
     fun removeJobOffer(professionId : Long, customerId: Long, professionalId: Long) {

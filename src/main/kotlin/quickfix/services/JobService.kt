@@ -7,22 +7,25 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.JobRepository
 import quickfix.dto.job.jobOffer.AcceptJobOfferDTO
-import quickfix.dto.job.jobOffer.CreateJobOfferDTO
+import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobOffer.CustomerJobOfferDTO
 import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
 import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.MessageResponseDTO
 import quickfix.dto.chat.toMessageResponseDTO
+import quickfix.dto.job.jobOffer.ProfessionalJobOfferDTO
 import quickfix.dto.job.jobRequest.CustomerJobRequestDTO
 import quickfix.dto.job.jobRequest.validate
-import quickfix.dto.professional.ProfessionalDTO
 import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.models.User
 import quickfix.utils.PAGE_SIZE
 import quickfix.utils.enums.JobStatus
 import quickfix.utils.exceptions.JobException
-import java.time.LocalDate
+import quickfix.utils.jobs.dateTimesCollides
+import quickfix.utils.jobs.getJobEndtime
+import quickfix.utils.jobs.getJobOfferEndtime
+import java.time.LocalDateTime
 
 @Service
 class JobService(
@@ -51,7 +54,7 @@ class JobService(
     fun setJobAsDone(professionalId: Long, jobId: Long) {
         if(!jobRepository.existsByIdAndProfessionalId(jobId, professionalId))
             throw JobException("Ha habido un error al modificar el estado de este trabajo.")
-        updateJobStatus(jobId,  true,  JobStatus.DONE)
+        updateJobStatus(jobId, JobStatus.DONE)
     }
 
     @Transactional(rollbackFor = [Exception::class])
@@ -61,12 +64,11 @@ class JobService(
 
         if(!userIsProfessional && !userIsCustomer)
             throw JobException("Ha habido un error al modificar el estado de este trabajo.")
-        updateJobStatus(jobId,  false, JobStatus.CANCELED)
+        updateJobStatus(jobId, JobStatus.CANCELED)
     }
 
-    private fun updateJobStatus(id: Long, done: Boolean, status: JobStatus) {
+    private fun updateJobStatus(id: Long, status: JobStatus) {
         val job = this.getJobById(id)
-        job.done = done
         job.status = status
     }
 
@@ -106,48 +108,38 @@ class JobService(
      JOB OFFER METHODS
      **************************/
 
-    fun getJobOffers(customerId : Long): List<CustomerJobOfferDTO> {
-        val createdJobOffers = redisService.getJobOffers(customerId)
-
-        return createdJobOffers.map { createdJobOffer ->
-            val professional = userService.getById(createdJobOffer.professionalId)
-            val professionalRating = jobRepository.findRatingsByProfessionalId(createdJobOffer.professionalId).map { it.score }.average()
-
-            CustomerJobOfferDTO(
-                customerId = createdJobOffer.customerId,
-                professionId = createdJobOffer.professionId,
-                professional = ProfessionalDTO.fromUser(professional, professionalRating),
-                price = createdJobOffer.price,
-                distance = createdJobOffer.distance,
-                estimatedArriveTime = createdJobOffer.estimatedArriveTime,
-                availability = createdJobOffer.availability,
-            )
-        }
+    fun getJobOffers(customerId : Long, professionId: Long): List<CustomerJobOfferDTO> {
+        val jobOffers = redisService.getJobOffers(customerId, professionId)
+        return jobOffers.map { CustomerJobOfferDTO.fromDto(it) }
     }
 
-    fun getMyJobOffers(customerId : Long): List<CustomerJobOfferDTO> {
-        val createdJobOffers = redisService.getJobOffers(customerId)
-
-        return createdJobOffers.map { createdJobOffer ->
-            val professional = userService.getById(createdJobOffer.professionalId)
-            val professionalRating = jobRepository.findRatingsByProfessionalId(createdJobOffer.professionalId).map { it.score }.average()
-
-            CustomerJobOfferDTO(
-                customerId = createdJobOffer.customerId,
-                professionId = createdJobOffer.professionId,
-                professional = ProfessionalDTO.fromUser(professional, professionalRating),
-                price = createdJobOffer.price,
-                distance = createdJobOffer.distance,
-                estimatedArriveTime = createdJobOffer.estimatedArriveTime,
-                availability = createdJobOffer.availability,
-            )
-        }
+    fun getMyJobOffers(professionalId : Long): List<ProfessionalJobOfferDTO> {
+        val myJobOffers = redisService.getMyJobOffers(professionalId)
+        return myJobOffers.map { ProfessionalJobOfferDTO.fromDto(it) }
     }
 
-    fun offerJob(jobOffer : CreateJobOfferDTO) {
-        val professional = userService.getById(jobOffer.professionalId).professionalInfo
-        professional.validateCanOfferJob()
+    fun offerJob(professionalId: Long, jobOffer : JobOfferDTO) {
+        if(professionalId != jobOffer.professional.id)
+            throw JobException("Ha habido un error al intentar realizar esta oferta de trabajo.")
+        assertProfessionalCanOfferJob(jobOffer)
         redisService.offerJob(jobOffer)
+    }
+
+    private fun assertProfessionalCanOfferJob(offerJob: JobOfferDTO) {
+        val professional = userService.getProfessionalInfo(offerJob.professional.id)
+        professional.validateCanOfferJob()
+        assertPendingJobsDoNotCollide(offerJob)
+    }
+
+    private fun assertPendingJobsDoNotCollide(jobOffer: JobOfferDTO) {
+        val openJobs = jobRepository.findOpenJobsByProfessionalId(jobOffer.professional.id)
+        val jobOfferEndDatetime = getJobOfferEndtime(jobOffer)
+        openJobs.forEach { openJob ->
+            val openJobStartDatetime = openJob.initDateTime
+            val openJobEndDatetime = getJobEndtime(openJob)
+            if(dateTimesCollides(jobOffer.neededDatetime, jobOfferEndDatetime, openJobStartDatetime, openJobEndDatetime))
+                throw JobException("Usted ya tiene un trabajo activo en este rango de tiempo.")
+        }
     }
 
     fun cancelJobOffer(professionalId: Long, requestId: String) {
@@ -156,26 +148,28 @@ class JobService(
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun acceptJobOffer(acceptedJob: AcceptJobOfferDTO) {
+    fun acceptJobOffer(customerId: Long, acceptedJob: AcceptJobOfferDTO) {
 
-        val customer: User = userService.getById(acceptedJob.customerId)
+        val jobOffers : List<JobOfferDTO> = redisService.getJobOffers(customerId, acceptedJob.professionId)
+        val jobOffer = jobOffers.firstOrNull { it.professional.id == acceptedJob.professionalId }
+            ?: throw JobException("La oferta ha expirado.")
+
+        val customer: User = userService.getById(customerId)
         val professional : User = userService.getById(acceptedJob.professionalId)
         val profession: Profession = professionService.getProfessionById(acceptedJob.professionId)
-
-        val jobOffers : Set<CreateJobOfferDTO> = redisService.getJobOffers(acceptedJob.customerId)
-        val jobOffer = jobOffers.firstOrNull { it.professionalId == acceptedJob.professionalId }
-            ?: throw JobException("No existe oferta de este profesional para el usuario.")
 
         val job = Job().apply {
             this.professional = professional
             this.customer = customer
-            this.date = LocalDate.now()
             this.profession = profession
             this.price = jobOffer.price
+            this.initDateTime = if(jobOffer.instantRequest) LocalDateTime.now() else jobOffer.neededDatetime
+            this.duration = jobOffer.jobDuration
+            this.durationUnit = jobOffer.jobDurationTimeUnit
         }
 
         jobRepository.save(job)
-        redisService.removeJobRequest(profession.id, acceptedJob.customerId)
+        redisService.removeJobRequest(profession.id, customerId)
     }
 
 
@@ -210,13 +204,13 @@ class JobService(
 
     fun getCustomerChatInfo(customerId: Long, jobId: Long): User {
         if (!jobRepository.existsByIdAndCustomerId(jobId, customerId)) throw JobException("Ha habido un error al obtener los datos solicitados.")
-        val professionalId = jobRepository.getProfessionalIdByJobId(jobId)
+        val professionalId = jobRepository.findProfessionalIdByJobId(jobId)
         return userService.getById(professionalId)
     }
 
     fun getProfessionalChatInfo(professionalId: Long, jobId: Long): User {
         if (!jobRepository.existsByIdAndProfessionalId(jobId, professionalId)) throw JobException("Ha habido un error al obtener los datos solicitados.")
-        val customerId = jobRepository.getCustomerIdByJobId(jobId)
+        val customerId = jobRepository.findCustomerIdByJobId(jobId)
         return userService.getById(customerId)
     }
 

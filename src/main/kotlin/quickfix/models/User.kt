@@ -36,6 +36,7 @@ class User : Identifier {
     lateinit var lastName : String
     lateinit var dateBirth : LocalDate
     var verified : Boolean = false
+    var averageRating : Double = 0.0
 
     companion object {
         const val EDAD_REQUERIDA = 18

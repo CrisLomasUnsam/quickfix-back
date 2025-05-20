@@ -6,7 +6,6 @@ import quickfix.models.Profession
 import quickfix.models.User
 import quickfix.utils.enums.JobStatus
 import quickfix.utils.functions.getAvatarUrl
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 class JobBuilder {
@@ -15,11 +14,9 @@ class JobBuilder {
             Job().apply {
                 this.customer = customer
                 this.professional = professional
-                this.date = if(done) LocalDate.now().minusDays(1) else LocalDate.now().plusDays(1)
-                this.done = done
+                this.initDateTime = if(done) LocalDateTime.now().minusDays(1) else LocalDateTime.now().plusDays(1)
                 this.profession = profession
                 this.status = if(done) JobStatus.DONE else JobStatus.PENDING
-                this.initDateTime = LocalDate.now().minusDays(2)
                 this.price = 19999.0
             }
     }
