@@ -18,9 +18,9 @@ class ProfessionalInfo : Identifier {
     @OneToMany(cascade = [(CascadeType.ALL)], orphanRemoval = true)
     var certificates: MutableSet<Certificate> = mutableSetOf()
 
+    var averageRating: Double = 0.0
     var balance: Double = 0.0
     var debt: Double = 0.0
-
     var hasVehicle: Boolean = false
 
     fun getActiveProfessions() : Set<Profession> =
