@@ -2,6 +2,7 @@ package quickfix.dto.user
 
 import quickfix.models.User
 import quickfix.utils.functions.getAvatarUrl
+import kotlin.math.roundToInt
 
 data class UserInfoDTO(
     val id: Long,
@@ -23,7 +24,7 @@ data class UserInfoDTO(
                 lastName = user.lastName,
                 avatar = getAvatarUrl(user.id),
                 verified = user.verified,
-                averageRating = user.averageRating,
+                averageRating = (user.averageRating * 100).roundToInt() / 100.0,
                 totalEarnings = user.professionalInfo.balance
             )
         }

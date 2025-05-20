@@ -24,8 +24,8 @@ data class JobDetailsDTO (
 
         ): JobDetailsDTO {
             val user = when (currentCustomerId) {
-                job.customer.id -> job.customer
-                job.professional.id -> job.professional
+                job.customer.id -> job.professional
+                job.professional.id -> job.customer
                 else -> throw IllegalArgumentException("Invalid job id")
             }
             return JobDetailsDTO(
