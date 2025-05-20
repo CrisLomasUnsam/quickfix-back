@@ -29,11 +29,11 @@ interface JobRepository : JpaRepository<Job, Long> {
         value = """
         select 
             j.id as id,
-            j.date as date,
+            j.init_date_time as initDateTime,
             -- join a users como “profesional”
             u_prof.name as userName,
             u_prof.last_name as userLastName,
-            pr.name as profession,
+            pr.name as professionName,
             j.status as status,
             j.price as price,
             coalesce(r.score, 0) as score
@@ -48,7 +48,7 @@ interface JobRepository : JpaRepository<Job, Long> {
             left join ratings r 
                 on r.job_id = j.id
             where j.customer_id = :customerId
-            order by j.date asc
+            order by j.init_date_time asc
         """,
         nativeQuery = true)
     fun findAllJobsByCustomerId(@Param("customerId") customerId: Long, pageable: Pageable?): Page<IJobWithRating>
@@ -58,11 +58,11 @@ interface JobRepository : JpaRepository<Job, Long> {
         value = """
         select 
             j.id as id,
-            j.date as date,
+            j.init_date_time as initDateTime,
             -- ahora la misma tabla users para el cliente”
             u_cust.name as userName,
             u_cust.last_name as userLastName,
-            pr.name as profession,
+            pr.name as professionName,
             j.status as status,
             j.price as price,
             coalesce(r.score, 0) as score
@@ -74,7 +74,7 @@ interface JobRepository : JpaRepository<Job, Long> {
             left join ratings r 
                 on r.job_id = j.id
             where j.professional_id = :professionalId
-            order by j.date asc
+            order by j.init_date_time asc
         """,
         nativeQuery = true)
     fun findAllJobsByProfessionalId(@Param("professionalId") professionalId: Long, pageable: Pageable?): Page<IJobWithRating>
