@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import quickfix.dto.job.JobDTO
+import quickfix.dto.job.JobDetailsDTO
 import quickfix.dto.job.PageDTO
 import quickfix.dto.job.jobOffer.AcceptJobOfferDTO
 import quickfix.dto.job.jobOffer.JobOfferDTO
@@ -27,6 +28,12 @@ class JobController(
         val usernamePAT = SecurityContextHolder.getContext().authentication
         return usernamePAT.principal.toString().toLong()
     }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Obtiene los detalles del Job")
+    fun getJobDetailsByJobId(@ModelAttribute currentCustomerId: Long, @PathVariable id: Long): JobDetailsDTO =
+        jobService.getJobDetailsById(currentCustomerId, id)
+
 
     @GetMapping("/customer")
     @Operation(summary = "Obtiene todos los servicios pedidos por un usuario")
