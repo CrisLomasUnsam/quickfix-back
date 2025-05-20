@@ -31,6 +31,9 @@ class Job : Identifier {
     var duration: Int = 0
     var price: Double = 0.0
 
+    @Column(length = 150)
+    var description : String = ""
+
     fun calculateDistance() : Number = -1
 
     private fun validPrice(): Boolean = this.price > 0
