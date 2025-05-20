@@ -4,8 +4,7 @@ import quickfix.dto.job.jobRequest.PendingJobDetails
 import quickfix.dto.user.UserInfoDTO
 import quickfix.models.Job
 import quickfix.utils.enums.JobStatus
-import quickfix.utils.functions.DatetimeFormatter
-import quickfix.utils.functions.stringifyDate
+import quickfix.utils.functions.stringifyDateWithHours
 
 data class JobDetailsDTO (
     val id : Long,
@@ -35,7 +34,7 @@ data class JobDetailsDTO (
                 description = job.description,
                 price = job.price,
                 rated = false ,
-                date = stringifyDate(job.initDateTime, DatetimeFormatter),
+                date = stringifyDateWithHours(job.initDateTime),
                 userInfo = UserInfoDTO.toDTO(user),
                 status = job.status,
                 pendingJobDetails = PendingJobDetails.toDTO()
