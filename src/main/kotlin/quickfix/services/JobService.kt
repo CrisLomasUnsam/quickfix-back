@@ -13,6 +13,7 @@ import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
 import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.MessageResponseDTO
 import quickfix.dto.chat.toMessageResponseDTO
+import quickfix.dto.job.JobDetailsDTO
 import quickfix.dto.job.jobOffer.ProfessionalJobOfferDTO
 import quickfix.dto.job.jobRequest.CustomerJobRequestDTO
 import quickfix.dto.job.jobRequest.validate
@@ -74,6 +75,11 @@ class JobService(
 
     fun getJobsByParameter(id: Long, parameter: String?): List<Job> =
         jobRepository.findJobByFilter(id, parameter)
+
+    fun getJobDetailsById(currentCustomerId: Long, id: Long): JobDetailsDTO {
+        val job = getJobById(id)
+        return JobDetailsDTO.toDTO(currentCustomerId, job)
+    }
 
     /*************************
      JOB REQUEST METHODS
@@ -166,6 +172,7 @@ class JobService(
             this.initDateTime = if(jobOffer.instantRequest) LocalDateTime.now() else jobOffer.neededDatetime
             this.duration = jobOffer.jobDuration
             this.durationUnit = jobOffer.jobDurationTimeUnit
+            this.description = jobOffer.detail
         }
 
         jobRepository.save(job)
@@ -213,5 +220,4 @@ class JobService(
         val customerId = jobRepository.findCustomerIdByJobId(jobId)
         return userService.getById(customerId)
     }
-
 }
