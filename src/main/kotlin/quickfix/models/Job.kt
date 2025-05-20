@@ -1,9 +1,10 @@
 package quickfix.models
 
 import jakarta.persistence.*
+import quickfix.utils.MINUTES_TO_BE_CONSIDERED_FUTURE_REQUEST
 import quickfix.utils.enums.JobStatus
 import quickfix.utils.exceptions.JobException
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "jobs")
@@ -18,11 +19,6 @@ class Job : Identifier {
     @ManyToOne
     lateinit var customer: User
 
-    @Column(columnDefinition = "DATE")
-    lateinit var date: LocalDate
-
-    var done: Boolean = false
-
     @ManyToOne(cascade = [(CascadeType.MERGE)])
     @JoinColumn(name = "profession_id", nullable = false)
     lateinit var profession : Profession
@@ -30,20 +26,20 @@ class Job : Identifier {
     @Enumerated(EnumType.STRING)
     var status : JobStatus = JobStatus.PENDING
 
-    //Esto va a ser la fecha y hora actual + los minutos definidos en availability
-    lateinit var initDateTime: LocalDate
-
+    lateinit var initDateTime: LocalDateTime
+    lateinit var durationUnit : String
+    var duration: Int = 0
     var price: Double = 0.0
 
     fun calculateDistance() : Number = -1
 
-    private fun validPrice(): Boolean = this.price > 0.0
+    private fun validPrice(): Boolean = this.price > 0
 
-    private fun validDate(): Boolean = this.date.isBefore(LocalDate.now()) || this.date.isEqual(LocalDate.now())
+    private fun validDate(): Boolean = this.initDateTime.isAfter(LocalDateTime.now().minusMinutes(MINUTES_TO_BE_CONSIDERED_FUTURE_REQUEST))
 
     override fun validate() {
         if (!validPrice()) throw JobException("El precio debe ser mayor a cero")
-        if (!validDate()) throw JobException("La fecha no puede ser en el futuro")
+        if (!validDate()) throw JobException("No se puede elegir una fecha del pasado")
     }
 
 }
