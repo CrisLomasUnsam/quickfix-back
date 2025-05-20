@@ -1,14 +1,45 @@
 package quickfix.dto.job
 
+import quickfix.dto.job.jobRequest.PendingJobDetails
+import quickfix.dto.user.UserInfoDTO
+import quickfix.models.Job
 import quickfix.utils.enums.JobStatus
-import java.time.LocalDateTime
+import quickfix.utils.functions.DatetimeFormatter
+import quickfix.utils.functions.stringifyDate
 
-data class JobDetailsDTO(
-    val professionalName : String,
-    val verified : Boolean,
-    val profession: String,
-    val details: String,
-    val initDateTime: LocalDateTime,
+data class JobDetailsDTO (
+    val id : Long,
+    val professionName: String,
+    val description: String,
     val price: Double,
-    val status: JobStatus
-)
+    val rated: Boolean,
+    val date: String,
+    val userInfo: UserInfoDTO,
+    val status: JobStatus,
+    val pendingJobDetails: PendingJobDetails?
+) {
+    companion object {
+        fun toDTO(
+            currentCustomerId: Long,
+            job: Job,
+
+        ): JobDetailsDTO {
+            val user = when (currentCustomerId) {
+                job.customer.id -> job.customer
+                job.professional.id -> job.professional
+                else -> throw IllegalArgumentException("Invalid job id")
+            }
+            return JobDetailsDTO(
+                id = job.id,
+                professionName = job.profession.name,
+                description = job.description,
+                price = job.price,
+                rated = false ,
+                date = stringifyDate(job.initDateTime, DatetimeFormatter),
+                userInfo = UserInfoDTO.toDTO(user),
+                status = job.status,
+                pendingJobDetails = PendingJobDetails.toDTO()
+            )
+        }
+    }
+}
