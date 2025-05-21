@@ -77,9 +77,9 @@ class JobService(
         return PageRequest.of(pageNumber, PAGE_SIZE, sort)
     }
 
-    fun getJobDetailsById(currentCustomerId: Long, id: Long): JobDetails {
+    fun getJobDetailsById(currentCustomerId: Long, id: Long, requesterIsCustomer: Boolean): JobDetails {
         val job = getJobById(id)
-        return JobDetails.toDTO(currentCustomerId, job)
+        return JobDetails.toDTO(currentCustomerId, job, requesterIsCustomer)
     }
 
     /*************************

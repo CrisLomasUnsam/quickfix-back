@@ -16,6 +16,7 @@ data class UserInfo(
     companion object {
         fun toDTO(
             user: User,
+            requesterIsCustomer: Boolean
 
         ): UserInfo{
             return UserInfo (
@@ -24,7 +25,7 @@ data class UserInfo(
                 lastName = user.lastName,
                 avatar = getAvatarUrl(user.id),
                 verified = user.verified,
-                averageRating = (user.averageRating * 100).roundToInt() / 100.0,
+                averageRating = if (!requesterIsCustomer) { user.professionalInfo.averageRating } else { user.averageRating }.let { (it * 100).roundToInt() / 100.0 },
                 totalEarnings = user.professionalInfo.balance
             )
         }

@@ -21,7 +21,7 @@ data class JobDetails (
         fun toDTO(
             currentCustomerId: Long,
             job: Job,
-
+            requesterIsCustomer: Boolean
         ): JobDetails {
             val user = when (currentCustomerId) {
                 job.customer.id -> job.professional
@@ -35,7 +35,7 @@ data class JobDetails (
                 price = job.price,
                 rated = false ,
                 date = stringifyDateWithHours(job.initDateTime),
-                userInfo = UserInfo.toDTO(user),
+                userInfo = UserInfo.toDTO(user, requesterIsCustomer),
                 status = job.status,
                 pendingJobDetails = PendingJobDetails.toDTO()
             )
