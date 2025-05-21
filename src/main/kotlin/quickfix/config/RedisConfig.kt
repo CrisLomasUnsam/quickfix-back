@@ -2,6 +2,7 @@ package quickfix.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.RedisConnectionFactory
@@ -21,6 +22,7 @@ class RedisConfig {
         storage.connectionFactory = connectionFactory
         storage.keySerializer = StringRedisSerializer()
         val objectMapper = ObjectMapper().apply {
+            registerModule(KotlinModule.Builder().build())
             deactivateDefaultTyping()
         }
         val jacksonSerializer = Jackson2JsonRedisSerializer(objectMapper, RedisMessageDTO::class.java)
@@ -34,6 +36,7 @@ class RedisConfig {
         storage.connectionFactory = connectionFactory
         storage.keySerializer = StringRedisSerializer()
         val objectMapper = ObjectMapper().apply {
+            registerModule(KotlinModule.Builder().build())
             registerModule(JavaTimeModule())
             deactivateDefaultTyping()
         }
@@ -48,6 +51,8 @@ class RedisConfig {
         storage.connectionFactory = connectionFactory
         storage.keySerializer = StringRedisSerializer()
         val objectMapper = ObjectMapper().apply {
+            registerModule(KotlinModule.Builder().build())
+            registerModule(JavaTimeModule())
             deactivateDefaultTyping()
         }
         val jacksonSerializer = Jackson2JsonRedisSerializer(objectMapper, JobOfferDTO::class.java)
