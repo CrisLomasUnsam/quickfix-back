@@ -1,8 +1,10 @@
 package quickfix.dto.job
 
+import quickfix.utils.enums.JobStatus
 import quickfix.utils.functions.DateWithDayFormatter
 import quickfix.utils.functions.getAvatarUrl
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 interface IJobWithRating {
     fun getId(): Long
@@ -10,10 +12,10 @@ interface IJobWithRating {
     fun getUserName(): String
     fun getUserLastName(): String
     fun getProfessionName(): String
-    fun getStatus(): String
+    fun getStatus(): JobStatus
     fun getPrice(): Double
     fun getScore(): Int?
-    fun getUserId(): Long?
+    fun getUserId(): Long
 }
 
 data class JobWithRatingDTO(
@@ -22,23 +24,24 @@ data class JobWithRatingDTO(
     val userName: String,
     val userLastName: String,
     val professionName: String,
-    val status: String,
+    val status: JobStatus,
     val price: Double,
     val score: Int?,
     val avatar: String
 ) {
     companion object {
+        private val IsoFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         fun fromProjection(job : IJobWithRating) : JobWithRatingDTO =
             JobWithRatingDTO(
                 id = job.getId(),
-                initDateTime = job.getInitDateTime().format(DateWithDayFormatter),
+                initDateTime = job.getInitDateTime().format(IsoFormatter),
                 userName = job.getUserName(),
                 userLastName = job.getUserLastName(),
                 professionName = job.getProfessionName(),
                 status = job.getStatus(),
                 price = job.getPrice(),
                 score = job.getScore(),
-                avatar = job.getUserId()?.let { getAvatarUrl(it) } ?: ""
+                avatar = getAvatarUrl(job.getUserId())
             )
     }
 }
