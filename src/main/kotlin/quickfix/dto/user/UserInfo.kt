@@ -25,7 +25,7 @@ data class UserInfo(
                 lastName = user.lastName,
                 avatar = getAvatarUrl(user.id),
                 verified = user.verified,
-                averageRating = if (!requesterIsCustomer) { user.professionalInfo.averageRating } else { user.averageRating },
+                averageRating = if (requesterIsCustomer) { user.professionalInfo.averageRating } else { user.averageRating },
                 totalRatings = totalRatings
             )
         }
