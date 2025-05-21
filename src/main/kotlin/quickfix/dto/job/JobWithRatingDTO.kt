@@ -4,7 +4,6 @@ import quickfix.utils.enums.JobStatus
 import quickfix.utils.functions.DateWithDayFormatter
 import quickfix.utils.functions.getAvatarUrl
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 interface IJobWithRating {
     fun getId(): Long
@@ -30,11 +29,10 @@ data class JobWithRatingDTO(
     val avatar: String
 ) {
     companion object {
-        private val IsoFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         fun fromProjection(job : IJobWithRating) : JobWithRatingDTO =
             JobWithRatingDTO(
                 id = job.getId(),
-                initDateTime = job.getInitDateTime().format(IsoFormatter),
+                initDateTime = job.getInitDateTime().format(DateWithDayFormatter),
                 userName = job.getUserName(),
                 userLastName = job.getUserLastName(),
                 professionName = job.getProfessionName(),
