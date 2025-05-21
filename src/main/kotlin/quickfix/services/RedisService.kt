@@ -42,7 +42,7 @@ class RedisService(
     fun getMyJobRequests(customerId: Long) : List<JobRequestDTO> {
         val requestsKeys = redisJobRequestStorage.keys("JobRequest_*_${customerId}_")
         val myJobRequests = redisJobRequestStorage.opsForValue().multiGet(requestsKeys) ?: emptySet()
-        return myJobRequests.toList().sortedBy { it.neededDatetime }
+        return myJobRequests.toList().sortedWith( compareBy<JobRequestDTO> {it.neededDatetime}.thenBy { it.professionId })
     }
 
     fun countOffersForRequest(jobRequest: JobRequestDTO) : Int {
@@ -60,7 +60,7 @@ class RedisService(
             val requestsValues = redisJobRequestStorage.opsForValue().multiGet(requestsKeys) ?: emptySet()
             jobRequests.addAll(requestsValues)
         }
-        return jobRequests.sortedBy { it.neededDatetime }
+        return jobRequests.sortedWith( compareBy<JobRequestDTO> {it.neededDatetime}.thenBy { it.professionId }.thenBy { it.customer.averageRating })
     }
 
     fun removeJobRequest(professionId : Long, customerId: Long) {
@@ -82,10 +82,8 @@ class RedisService(
             throw JobException(errorMessage)
     }
 
-    private fun assertCustomerHasAJobRequest(customerId : Long){
-        val tempKey = "JobRequest_*_${customerId}_"
-        val requestsKeys = redisJobRequestStorage.keys(tempKey)
-        if(requestsKeys.isEmpty())
+    private fun assertCustomerHasJobRequest(customerId : Long, professionId: Long){
+        if(!redisJobRequestStorage.hasKey(getJobRequestKey(customerId, professionId)))
             throw JobException("No hay ninguna solicitud activa para este usuario.")
     }
     /* CLEANUP */
@@ -104,18 +102,20 @@ class RedisService(
      *******************************************************/
 
     fun getJobOffers(customerId : Long, professionId: Long) : List<JobOfferDTO> {
-        assertCustomerHasAJobRequest(customerId)
+        assertCustomerHasJobRequest(customerId, professionId)
         val keyPattern = "JobOffer_${professionId}_${customerId}_*_"
-        val jobOfferKeys = redisJobOfferStorage.keys(keyPattern)
-        val offers = redisJobOfferStorage.opsForValue().multiGet(jobOfferKeys)?.toList() ?: emptySet()
-        return offers.sortedBy { it.neededDatetime }
+        return getSortedJobOffers(keyPattern)
     }
 
     fun getMyJobOffers(professionalId : Long) : List<JobOfferDTO> {
         val keyPattern = "JobOffer_*_*_${professionalId}_"
+        return getSortedJobOffers(keyPattern)
+    }
+
+    private fun getSortedJobOffers(keyPattern: String) : List<JobOfferDTO> {
         val jobOfferKeys = redisJobOfferStorage.keys(keyPattern)
         val offers = redisJobOfferStorage.opsForValue().multiGet(jobOfferKeys)?.toList() ?: emptySet()
-        return offers.sortedBy { it.neededDatetime }
+        return offers.sortedWith( compareBy<JobOfferDTO> {it.neededDatetime}.thenBy{ it.profession.name }.thenBy {it.distance})
     }
 
     fun offerJob(jobOffer : JobOfferDTO) {
