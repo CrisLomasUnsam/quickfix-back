@@ -77,8 +77,9 @@ class JobService(
         return PageRequest.of(pageNumber, PAGE_SIZE, sort)
     }
 
-    fun getJobDetailsById(currentUserId: Long, jobId: Long, requesterIsCustomer: Boolean): JobDetails {
+    fun getJobDetailsById(currentUserId: Long, jobId: Long): JobDetails {
         val job = getJobById(jobId)
+        val requesterIsCustomer = currentUserId == job.customer.id
         val totalRatings =
             if (requesterIsCustomer) { userService.getSeeCustomerProfileInfo(currentUserId).getTotalRatings() }
             else { userService.getSeeProfessionalProfileInfo(currentUserId).getTotalRatings() }

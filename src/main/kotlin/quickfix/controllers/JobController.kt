@@ -29,17 +29,10 @@ class JobController(
         return usernamePAT.principal.toString().toLong()
     }
 
-    @GetMapping("customer/{jobId}")
+    @GetMapping("/{jobId}")
     @Operation(summary = "Obtiene los detalles de jobs aceptados por customer")
-    fun getJobDetailsForCustomerByJobId(@ModelAttribute("currentUserId") currentCustomerId: Long, @PathVariable jobId: Long): JobDetails {
-        return jobService.getJobDetailsById(currentCustomerId, jobId, true)
-    }
-
-    @GetMapping("professional/{jobId}")
-    @Operation(summary = "Obtiene los detalles de jobs aceptados por professional")
-    fun getJobDetailsForProfessionalByJobId(@ModelAttribute("currentUserId") currentProfessionalId: Long, @PathVariable jobId: Long): JobDetails {
-        return jobService.getJobDetailsById(currentProfessionalId, jobId, false)
-    }
+    fun getJobDetailsForCustomerByJobId(@ModelAttribute("currentUserId") currentUserId: Long, @PathVariable jobId: Long): JobDetails =
+        jobService.getJobDetailsById(currentUserId, jobId)
 
     @GetMapping("/customer")
     @Operation(summary = "Obtiene todos los servicios pedidos por un usuario")
