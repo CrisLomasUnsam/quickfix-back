@@ -1,6 +1,7 @@
 package quickfix.dto.chat
 
 import quickfix.models.User
+import quickfix.utils.functions.getAvatarUrl
 
 data class ChatUserInfoDTO(
     val name: String,
@@ -13,7 +14,7 @@ data class ChatUserInfoDTO(
             return ChatUserInfoDTO(
                 name =  user.name,
                 lastName = user.lastName,
-                avatar = "https://www.psicologiamadrid.es/wp-content/uploads/2020/02/personas-autoritarias.jpg"
+                avatar = getAvatarUrl(user.id)
             )
         }
     }
