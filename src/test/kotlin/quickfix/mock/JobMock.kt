@@ -4,7 +4,7 @@ import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.models.User
 import quickfix.utils.enums.JobStatus
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class JobMock(
     val job: Job,
@@ -24,11 +24,10 @@ fun createJobMock (
         this.customer = customer
         this.professional = professional
         this.price = price
-        this.date = LocalDate.now().minusDays(1)
-        this.initDateTime = LocalDate.now()
+        this.initDateTime = LocalDateTime.now()
         this.status = JobStatus.DONE
-        this.done = true
         this.profession = profession
+        this.description = ""
     }
 
 

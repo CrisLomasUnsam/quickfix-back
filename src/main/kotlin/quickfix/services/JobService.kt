@@ -13,6 +13,7 @@ import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
 import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.MessageResponseDTO
 import quickfix.dto.chat.toMessageResponseDTO
+import quickfix.dto.job.JobDetails
 import quickfix.dto.job.JobWithRatingDTO
 import quickfix.dto.job.jobRequest.validate
 import quickfix.dto.job.jobOffer.ProfessionalJobOfferDTO
@@ -76,6 +77,15 @@ class JobService(
         return PageRequest.of(pageNumber, PAGE_SIZE, sort)
     }
 
+    fun getJobDetailsById(currentUserId: Long, jobId: Long): JobDetails {
+        val job = getJobById(jobId)
+        val requesterIsCustomer = currentUserId == job.customer.id
+        val totalRatings =
+            if (requesterIsCustomer) { userService.getSeeCustomerProfileInfo(currentUserId).getTotalRatings() }
+            else { userService.getSeeProfessionalProfileInfo(currentUserId).getTotalRatings() }
+        return JobDetails.toDTO(currentUserId, job, requesterIsCustomer, totalRatings)
+    }
+
     /*************************
      JOB REQUEST METHODS
      **************************/
@@ -85,6 +95,7 @@ class JobService(
         val myJobRequests = redisService.getMyJobRequests(customerId)
         return myJobRequests.map{ CustomerJobRequestDTO.fromJobRequest(it, redisService.countOffersForRequest(it)) }
     }
+
     @Transactional(readOnly = true)
     fun getJobRequests(professionalId : Long) : List<ProfessionalJobRequestDTO> {
         val professionIds : Set<Long> = professionalService.getActiveProfessionIds(professionalId)
@@ -165,6 +176,7 @@ class JobService(
             this.initDateTime = if(jobOffer.instantRequest) LocalDateTime.now() else jobOffer.neededDatetime
             this.duration = jobOffer.jobDuration
             this.durationUnit = jobOffer.jobDurationTimeUnit
+            this.description = jobOffer.detail
         }
 
         jobRepository.save(job)
@@ -211,5 +223,4 @@ class JobService(
         val customerId = jobRepository.findCustomerIdByJobId(jobId)
         return userService.getById(customerId)
     }
-
 }
