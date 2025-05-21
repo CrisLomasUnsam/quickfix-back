@@ -1,19 +1,20 @@
 package quickfix.dto.job
 
 import quickfix.dto.job.jobRequest.PendingJobDetails
-import quickfix.dto.user.UserInfoDTO
+import quickfix.dto.user.UserInfo
 import quickfix.models.Job
 import quickfix.utils.enums.JobStatus
+import quickfix.utils.exceptions.JobException
 import quickfix.utils.functions.stringifyDateWithHours
 
-data class JobDetailsDTO (
+data class JobDetails (
     val id : Long,
     val professionName: String,
     val description: String,
     val price: Double,
     val rated: Boolean,
     val date: String,
-    val userInfo: UserInfoDTO,
+    val userInfo: UserInfo,
     val status: JobStatus,
     val pendingJobDetails: PendingJobDetails?
 ) {
@@ -22,20 +23,20 @@ data class JobDetailsDTO (
             currentCustomerId: Long,
             job: Job,
 
-        ): JobDetailsDTO {
+        ): JobDetails {
             val user = when (currentCustomerId) {
                 job.customer.id -> job.professional
                 job.professional.id -> job.customer
-                else -> throw IllegalArgumentException("Invalid job id")
+                else -> throw JobException("No existe el Job")
             }
-            return JobDetailsDTO(
+            return JobDetails(
                 id = job.id,
                 professionName = job.profession.name,
                 description = job.description,
                 price = job.price,
                 rated = false ,
                 date = stringifyDateWithHours(job.initDateTime),
-                userInfo = UserInfoDTO.toDTO(user),
+                userInfo = UserInfo.toDTO(user),
                 status = job.status,
                 pendingJobDetails = PendingJobDetails.toDTO()
             )

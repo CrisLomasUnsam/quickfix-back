@@ -4,7 +4,7 @@ import quickfix.models.User
 import quickfix.utils.functions.getAvatarUrl
 import kotlin.math.roundToInt
 
-data class UserInfoDTO(
+data class UserInfo(
     val id: Long,
     val name: String,
     val lastName: String,
@@ -17,8 +17,8 @@ data class UserInfoDTO(
         fun toDTO(
             user: User,
 
-        ): UserInfoDTO{
-            return UserInfoDTO (
+        ): UserInfo{
+            return UserInfo (
                 id = user.id,
                 name = user.name,
                 lastName = user.lastName,

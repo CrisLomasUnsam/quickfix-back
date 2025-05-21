@@ -13,7 +13,7 @@ import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
 import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.MessageResponseDTO
 import quickfix.dto.chat.toMessageResponseDTO
-import quickfix.dto.job.JobDetailsDTO
+import quickfix.dto.job.JobDetails
 import quickfix.dto.job.JobWithRatingDTO
 import quickfix.dto.job.jobRequest.validate
 import quickfix.dto.job.jobOffer.ProfessionalJobOfferDTO
@@ -77,9 +77,9 @@ class JobService(
         return PageRequest.of(pageNumber, PAGE_SIZE, sort)
     }
 
-    fun getJobDetailsById(currentCustomerId: Long, id: Long): JobDetailsDTO {
+    fun getJobDetailsById(currentCustomerId: Long, id: Long): JobDetails {
         val job = getJobById(id)
-        return JobDetailsDTO.toDTO(currentCustomerId, job)
+        return JobDetails.toDTO(currentCustomerId, job)
     }
 
     /*************************
