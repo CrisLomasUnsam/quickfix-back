@@ -1,6 +1,6 @@
 package quickfix.dto.job
 
-import quickfix.dto.user.UserInfo
+import quickfix.dto.user.SeeBasicUserInfoDTO
 import quickfix.models.Job
 import quickfix.utils.enums.JobStatus
 import quickfix.utils.exceptions.JobException
@@ -13,7 +13,7 @@ data class JobDetails (
     val price: Double,
     val rated: Boolean,
     val date: String,
-    val userInfo: UserInfo,
+    val userInfo: SeeBasicUserInfoDTO,
     val status: JobStatus,
     val pendingJobDetails: PendingJobDetails?
 ) {
@@ -21,7 +21,7 @@ data class JobDetails (
         fun toDTO(
             currentUserId: Long,
             job: Job,
-            requesterIsCustomer: Boolean,
+            seeCustomerInfo: Boolean,
             totalRatings: Int
 
         ): JobDetails {
@@ -37,7 +37,7 @@ data class JobDetails (
                 price = job.price,
                 rated = false ,
                 date = stringifyDateWithHours(job.initDateTime),
-                userInfo = UserInfo.toDTO(user, requesterIsCustomer, totalRatings),
+                userInfo = SeeBasicUserInfoDTO.toDto(user, seeCustomerInfo, totalRatings),
                 status = job.status,
                 pendingJobDetails = null
             )

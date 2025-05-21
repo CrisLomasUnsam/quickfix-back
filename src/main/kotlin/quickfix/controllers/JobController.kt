@@ -10,6 +10,7 @@ import quickfix.dto.job.jobOffer.AcceptJobOfferDTO
 import quickfix.dto.job.jobOffer.CustomerJobOfferDTO
 import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobOffer.ProfessionalJobOfferDTO
+import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.job.jobRequest.CustomerJobRequestDTO
 import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
 import quickfix.dto.page.PageDTO
@@ -98,7 +99,7 @@ class JobController(
 
     @PostMapping("/requestJob")
     @Operation(summary = "Buscar profesionales disponibles para el job seleccionado por el customer")
-    fun requestJob(@RequestBody jobRequest : ProfessionalJobRequestDTO) =
+    fun requestJob(@RequestBody jobRequest : JobRequestDTO) =
         jobService.requestJob(jobRequest)
 
     @DeleteMapping("/requestJob")

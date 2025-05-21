@@ -49,7 +49,7 @@ dependencies {
 
     // Redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     // Security
     implementation("org.springframework.boot:spring-boot-starter-security")

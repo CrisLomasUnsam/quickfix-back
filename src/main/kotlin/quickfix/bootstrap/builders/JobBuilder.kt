@@ -1,11 +1,12 @@
 package quickfix.bootstrap.builders
 
-import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
+import quickfix.dto.job.jobOffer.JobOfferDTO
+import quickfix.dto.job.jobRequest.JobRequestDTO
+import quickfix.dto.user.SeeBasicUserInfoDTO
 import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.models.User
 import quickfix.utils.enums.JobStatus
-import quickfix.utils.functions.getAvatarUrl
 import java.time.LocalDateTime
 
 class JobBuilder {
@@ -28,17 +29,31 @@ class JobBuilder {
 class JobRequestBuilder {
     companion object{
         fun buildMock(customer: User, profession: Profession, isInstantRequest: Boolean = false) =
-            ProfessionalJobRequestDTO(
-                customerId = customer.id,
-                name = customer.name,
-                lastName = customer.lastName,
-                avatar = getAvatarUrl(customer.id),
+            JobRequestDTO(
+                customer = SeeBasicUserInfoDTO.toDto(customer, seeCustomerInfo = true),
                 professionId = profession.id,
-                professionName = profession.name,
-                detail = "Lorem ipsum dolor sit amet consectetur adipiscing elit aliquam, morbi ad ornare pharetra posuere ut fringilla molestie tristique.",
-                rating = (Math.random() % 5) + 1.0,
-                neededDatetime = if(isInstantRequest) LocalDateTime.now() else LocalDateTime.now().plusDays(1),
-                instantRequest = isInstantRequest
+                detail = "Lorem ipsum dolor em sit amet lo gump samar ipsum it.",
+                neededDatetime = if (isInstantRequest) LocalDateTime.now() else LocalDateTime.now().plusDays(1),
+                instantRequest = isInstantRequest,
+            )
+    }
+}
+
+class JobOfferBuilder {
+    companion object{
+        fun buildMock(customer: User, professional: User, profession: Profession, dayOffset: Long) =
+            JobOfferDTO(
+                customer = SeeBasicUserInfoDTO.toDto(customer, seeCustomerInfo = true),
+                profession = profession,
+                professional = SeeBasicUserInfoDTO.toDto(professional, seeCustomerInfo = false),
+                price = 10900.99,
+                distance = 10.2,
+                estimatedArriveTime = 35,
+                jobDuration = 50,
+                jobDurationTimeUnit = "Minutos",
+                neededDatetime = LocalDateTime.now().plusDays(10 + dayOffset),
+                detail = "Mock de job offer. Lorem ipsum dolorem et ni hus tar",
+                instantRequest = false
             )
     }
 }

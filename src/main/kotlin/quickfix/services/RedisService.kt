@@ -6,19 +6,15 @@ import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.RedisMessageDTO
 import quickfix.dto.chat.toRedisMessage
 import quickfix.dto.job.jobOffer.JobOfferDTO
-import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
-import quickfix.utils.INSTANT_REQUEST_LIVE_DAYS
+import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.utils.MAX_CUSTOMER_REQUESTS_AT_TIME
 import quickfix.utils.exceptions.JobException
-import quickfix.utils.jobs.dateTimesCollides
-import quickfix.utils.jobs.getJobOfferEndtime
-import java.time.Duration
-import java.time.LocalDateTime
+import quickfix.utils.jobs.*
 
 @Service
 class RedisService(
 
-    private val redisJobRequestStorage: RedisTemplate<String, ProfessionalJobRequestDTO>,
+    private val redisJobRequestStorage: RedisTemplate<String, JobRequestDTO>,
     private val redisJobOfferStorage: RedisTemplate<String, JobOfferDTO>,
     private val redisChatStorage: RedisTemplate<String, RedisMessageDTO>
 
@@ -29,46 +25,38 @@ class RedisService(
     JobRequest_ProfessionId_CustomerId_
      *******************************************************/
 
+    fun requestJob(jobRequest : JobRequestDTO) {
 
-    private fun getJobRequestKey(professionId: Long, customerId: Long) : String =
-        "JobRequest_${professionId}_${customerId}_"
-
-    fun requestJob(jobRequest : ProfessionalJobRequestDTO) {
-
-        val customerId = jobRequest.customerId
+        val customerId = jobRequest.customer.id
         assertCustomerCanCreateAJobRequest(customerId)
 
         val key = getJobRequestKey(jobRequest.professionId, customerId)
-        assertKeyDoesNotExist(key, "No es posible tener dos solicitudes activas de una misma categoría. Ya tiene una solicitud para la categoría: ${jobRequest.professionName}")
+        assertKeyDoesNotExist(key, "No es posible tener dos solicitudes activas de una misma categoría. Ya tiene una solicitud para la categoría de ID: ${jobRequest.professionId}")
 
         redisJobRequestStorage.opsForValue().set(key,jobRequest)
-
         //If it is a future request, we set a TTL to cancel it automatically as soon as the date and time of need for the service arrives.
-        val durationUntilRequestIsNeeded = Duration.between(LocalDateTime.now(), jobRequest.neededDatetime).abs()
-        if(jobRequest.instantRequest)
-            redisJobRequestStorage.expire(key, Duration.ofDays(INSTANT_REQUEST_LIVE_DAYS))
-        else
-            redisJobRequestStorage.expire(key, durationUntilRequestIsNeeded)
+        val ttl = getJobRequestTTLForRedis(jobRequest.neededDatetime, jobRequest.instantRequest)
+        redisJobRequestStorage.expire(key, ttl)
     }
 
-    fun getMyJobRequests(customerId: Long) : List<ProfessionalJobRequestDTO> {
+    fun getMyJobRequests(customerId: Long) : List<JobRequestDTO> {
         val requestsKeys = redisJobRequestStorage.keys("JobRequest_*_${customerId}_")
         val myJobRequests = redisJobRequestStorage.opsForValue().multiGet(requestsKeys) ?: emptySet()
         return myJobRequests.toList().sortedBy { it.neededDatetime }
     }
 
-    fun countOffersForRequest(jobRequest: ProfessionalJobRequestDTO) : Int {
-        val customerId = jobRequest.customerId
+    fun countOffersForRequest(jobRequest: JobRequestDTO) : Int {
+        val customerId = jobRequest.customer.id
         val professionId = jobRequest.professionId
         val keyPattern = "JobOffer_${professionId}_${customerId}_*_"
         return redisJobRequestStorage.keys(keyPattern).size
     }
 
-    fun getJobRequests(activeProfessionIds : Set<Long>) : List<ProfessionalJobRequestDTO> {
-        val jobRequests = mutableListOf<ProfessionalJobRequestDTO>()
+    fun getJobRequests(activeProfessionIds : Set<Long>, excludeOfferedKeys : Set<String>) : List<JobRequestDTO> {
+        val jobRequests = mutableListOf<JobRequestDTO>()
         activeProfessionIds.forEach { professionId ->
             val tempKey = "JobRequest_${professionId}_*_"
-            val requestsKeys = redisJobRequestStorage.keys(tempKey)
+            val requestsKeys = redisJobRequestStorage.keys(tempKey) - excludeOfferedKeys
             val requestsValues = redisJobRequestStorage.opsForValue().multiGet(requestsKeys) ?: emptySet()
             jobRequests.addAll(requestsValues)
         }
@@ -103,7 +91,7 @@ class RedisService(
     /* CLEANUP */
 
     fun cleanupJobRequestsForTesting() {
-        val keys = redisJobRequestStorage.keys("JobRequest_*_*")
+        val keys = redisJobRequestStorage.keys("JobRequest_*_*_")
         keys.forEach { key ->
             redisJobRequestStorage.delete(key)
         }
@@ -114,9 +102,6 @@ class RedisService(
     JOB_OFFERS WILL HAVE THE FOLLOWING KEY PATTERN:
     JobOffer_ProfessionId_CustomerId_ProfessionalId_
      *******************************************************/
-
-    private fun getJobOfferKey(professionId: Long, customerId: Long, professionalId: Long) : String =
-        "JobOffer_${professionId}_${customerId}_${professionalId}_"
 
     fun getJobOffers(customerId : Long, professionId: Long) : List<JobOfferDTO> {
         assertCustomerHasAJobRequest(customerId)
@@ -137,6 +122,9 @@ class RedisService(
         assertJobOffersDoNotCollide(jobOffer)
         val key = getJobOfferKey(jobOffer.profession.id, jobOffer.customer.id, jobOffer.professional.id)
         redisJobOfferStorage.opsForValue().set(key,jobOffer)
+        //If it is a future request, we set a TTL to cancel it automatically as soon as the date and time of need for the service arrives.
+        val ttl = getJobOfferTTLForRedis(jobOffer.neededDatetime, jobOffer.instantRequest)
+        redisJobRequestStorage.expire(key, ttl)
     }
 
     private fun assertJobOffersDoNotCollide(newOffer : JobOfferDTO){
@@ -162,6 +150,15 @@ class RedisService(
         val keyPattern = "JobOffer_${professionId}_${customerId}_*_"
         val jobOfferKeys = redisJobOfferStorage.keys(keyPattern)
         redisJobOfferStorage.delete(jobOfferKeys)
+    }
+
+    /* CLEANUP */
+
+    fun cleanupJobOffersForTesting() {
+        val keys = redisJobRequestStorage.keys("JobOffer_*_*_*_")
+        keys.forEach { key ->
+            redisJobRequestStorage.delete(key)
+        }
     }
 
     /******************************************************

@@ -1,19 +1,11 @@
 package quickfix.dto.chat
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonProperty
 import quickfix.utils.functions.dateTimeFromTimestamp
 import quickfix.utils.functions.stringifyDateTimeWithoutYear
 
-data class RedisMessageDTO @JsonCreator constructor(
-
-    @JsonProperty("message")
+data class RedisMessageDTO (
     val message: String,
-
-    @JsonProperty("senderIsCustomer")
     val senderIsCustomer: Boolean,
-
-    @JsonProperty("timestamp")
     val timestamp: Long
 )
 

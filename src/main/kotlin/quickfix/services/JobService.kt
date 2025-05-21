@@ -9,7 +9,7 @@ import quickfix.dao.JobRepository
 import quickfix.dto.job.jobOffer.AcceptJobOfferDTO
 import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobOffer.CustomerJobOfferDTO
-import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
+import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.MessageResponseDTO
 import quickfix.dto.chat.toMessageResponseDTO
@@ -18,6 +18,7 @@ import quickfix.dto.job.JobWithRatingDTO
 import quickfix.dto.job.jobRequest.validate
 import quickfix.dto.job.jobOffer.ProfessionalJobOfferDTO
 import quickfix.dto.job.jobRequest.CustomerJobRequestDTO
+import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
 import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.models.User
@@ -51,18 +52,13 @@ class JobService(
 
     @Transactional(rollbackFor = [Exception::class])
     fun setJobAsDone(professionalId: Long, jobId: Long) {
-        if(!jobRepository.existsByIdAndProfessionalId(jobId, professionalId))
-            throw JobException("Ha habido un error al modificar el estado de este trabajo.")
+        assertUserExistsInJob(professionalId, jobId)
         updateJobStatus(jobId, JobStatus.DONE)
     }
 
     @Transactional(rollbackFor = [Exception::class])
     fun setJobAsCancelled(userId: Long, jobId: Long) {
-        val userIsProfessional = jobRepository.existsByIdAndProfessionalId(jobId, userId)
-        val userIsCustomer = jobRepository.existsByIdAndProfessionalId(jobId, userId)
-
-        if(!userIsProfessional && !userIsCustomer)
-            throw JobException("Ha habido un error al modificar el estado de este trabajo.")
+        assertUserExistsInJob(userId, jobId)
         updateJobStatus(jobId, JobStatus.CANCELED)
     }
 
@@ -78,12 +74,24 @@ class JobService(
     }
 
     fun getJobDetailsById(currentUserId: Long, jobId: Long): JobDetails {
+
+        assertUserExistsInJob(currentUserId, jobId)
+
         val job = getJobById(jobId)
-        val requesterIsCustomer = currentUserId == job.customer.id
+        val seeCustomerInfo = currentUserId == job.professional.id
         val totalRatings =
-            if (requesterIsCustomer) { userService.getSeeCustomerProfileInfo(currentUserId).getTotalRatings() }
+            if (seeCustomerInfo) { userService.getSeeCustomerProfileInfo(currentUserId).getTotalRatings() }
             else { userService.getSeeProfessionalProfileInfo(currentUserId).getTotalRatings() }
-        return JobDetails.toDTO(currentUserId, job, requesterIsCustomer, totalRatings)
+
+        return JobDetails.toDTO(currentUserId, job, seeCustomerInfo, totalRatings)
+    }
+
+    fun assertUserExistsInJob(userId: Long, jobId: Long){
+        val userIsProfessional = jobRepository.existsByIdAndProfessionalId(jobId, userId)
+        val userIsCustomer = jobRepository.existsByIdAndProfessionalId(jobId, userId)
+
+        if(!userIsProfessional && !userIsCustomer)
+            throw JobException("El usuario actual no corresponde a este trabajo.")
     }
 
     /*************************
@@ -98,12 +106,13 @@ class JobService(
 
     @Transactional(readOnly = true)
     fun getJobRequests(professionalId : Long) : List<ProfessionalJobRequestDTO> {
-        val professionIds : Set<Long> = professionalService.getActiveProfessionIds(professionalId)
-        return redisService.getJobRequests(professionIds)
+        val myProfessionIds : Set<Long> = professionalService.getActiveProfessionIds(professionalId)
+        val myJobOfferKeys = getMyJobOffers(professionalId).map{ it.requestId }.toSet()
+        return redisService.getJobRequests(myProfessionIds, myJobOfferKeys).map { ProfessionalJobRequestDTO.fromJobRequest(it) }
     }
 
-    fun requestJob(jobRequest : ProfessionalJobRequestDTO) {
-        userService.assertUserExists(jobRequest.customerId)
+    fun requestJob(jobRequest : JobRequestDTO) {
+        userService.assertUserExists(jobRequest.customer.id)
         professionService.assertProfessionExists(jobRequest.professionId)
         redisService.requestJob(jobRequest.apply{ validate() })
     }
