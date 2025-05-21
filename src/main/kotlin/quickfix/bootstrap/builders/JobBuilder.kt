@@ -1,6 +1,8 @@
 package quickfix.bootstrap.builders
 
+import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
+import quickfix.dto.user.SeeBasicUserInfoDTO
 import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.models.User
@@ -38,6 +40,25 @@ class JobRequestBuilder {
                 rating = (Math.random() % 5) + 1.0,
                 neededDatetime = if(isInstantRequest) LocalDateTime.now() else LocalDateTime.now().plusDays(1),
                 instantRequest = isInstantRequest
+            )
+    }
+}
+
+class JobOfferBuilder {
+    companion object{
+        fun buildMock(customer: User, professional: User, profession: Profession, dayOffset: Long) =
+            JobOfferDTO(
+                customer = SeeBasicUserInfoDTO.toDto(customer, seeCustomerInfo = true),
+                profession = profession,
+                professional = SeeBasicUserInfoDTO.toDto(professional, seeCustomerInfo = false),
+                price = 10900.99,
+                distance = 10.2,
+                estimatedArriveTime = 35,
+                jobDuration = 50,
+                jobDurationTimeUnit = "Minutos",
+                neededDatetime = LocalDateTime.now().plusDays(10 + dayOffset),
+                detail = "Mock de job offer. Lorem ipsum dolorem et ni hus tar",
+                instantRequest = false
             )
     }
 }
