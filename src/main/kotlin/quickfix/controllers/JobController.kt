@@ -4,15 +4,16 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
+import quickfix.dto.job.JobDetails
 import quickfix.dto.job.JobWithRatingDTO
-import quickfix.dto.page.PageDTO
 import quickfix.dto.job.jobOffer.AcceptJobOfferDTO
-import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobOffer.CustomerJobOfferDTO
+import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobOffer.ProfessionalJobOfferDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.job.jobRequest.CustomerJobRequestDTO
 import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
+import quickfix.dto.page.PageDTO
 import quickfix.services.JobService
 
 @RestController
@@ -20,7 +21,7 @@ import quickfix.services.JobService
 @Tag(name = "Jobs", description = "Operaciones relacionadas a los Jobs")
 
 class JobController(
-    val jobService: JobService
+    val jobService: JobService,
 ){
 
     @ModelAttribute("currentUserId")
@@ -28,6 +29,11 @@ class JobController(
         val usernamePAT = SecurityContextHolder.getContext().authentication
         return usernamePAT.principal.toString().toLong()
     }
+
+    @GetMapping("/{jobId}")
+    @Operation(summary = "Obtiene los detalles de jobs aceptados por customer")
+    fun getJobDetailsForCustomerByJobId(@ModelAttribute("currentUserId") currentUserId: Long, @PathVariable jobId: Long): JobDetails =
+        jobService.getJobDetailsById(currentUserId, jobId)
 
     @GetMapping("/customer")
     @Operation(summary = "Obtiene todos los servicios pedidos por un usuario")

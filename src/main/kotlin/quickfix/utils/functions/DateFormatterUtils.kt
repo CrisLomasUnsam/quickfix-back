@@ -16,6 +16,8 @@ fun stringifyDate(date: LocalDate, format: DateTimeFormatter): String = date.for
 
 fun stringifyDateTimeWithoutYear(dateTime: LocalDateTime): String = dateTime.format(CustomDateTimeWithoutYearFormatter)
 
+fun stringifyDateWithHours(dateTime: LocalDateTime): String = dateTime.format(DatetimeFormatter)
+
 fun dateTimeFromTimestamp(timestamp : Long) : LocalDateTime =
     Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDateTime()
 

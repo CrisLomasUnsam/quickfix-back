@@ -13,6 +13,7 @@ import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.MessageResponseDTO
 import quickfix.dto.chat.toMessageResponseDTO
+import quickfix.dto.job.JobDetails
 import quickfix.dto.job.JobWithRatingDTO
 import quickfix.dto.job.jobRequest.validate
 import quickfix.dto.job.jobOffer.ProfessionalJobOfferDTO
@@ -51,18 +52,13 @@ class JobService(
 
     @Transactional(rollbackFor = [Exception::class])
     fun setJobAsDone(professionalId: Long, jobId: Long) {
-        if(!jobRepository.existsByIdAndProfessionalId(jobId, professionalId))
-            throw JobException("Ha habido un error al modificar el estado de este trabajo.")
+        assertUserExistsInJob(professionalId, jobId)
         updateJobStatus(jobId, JobStatus.DONE)
     }
 
     @Transactional(rollbackFor = [Exception::class])
     fun setJobAsCancelled(userId: Long, jobId: Long) {
-        val userIsProfessional = jobRepository.existsByIdAndProfessionalId(jobId, userId)
-        val userIsCustomer = jobRepository.existsByIdAndProfessionalId(jobId, userId)
-
-        if(!userIsProfessional && !userIsCustomer)
-            throw JobException("Ha habido un error al modificar el estado de este trabajo.")
+        assertUserExistsInJob(userId, jobId)
         updateJobStatus(jobId, JobStatus.CANCELED)
     }
 
@@ -77,6 +73,27 @@ class JobService(
         return PageRequest.of(pageNumber, PAGE_SIZE, sort)
     }
 
+    fun getJobDetailsById(currentUserId: Long, jobId: Long): JobDetails {
+
+        assertUserExistsInJob(currentUserId, jobId)
+
+        val job = getJobById(jobId)
+        val seeCustomerInfo = currentUserId == job.professional.id
+        val totalRatings =
+            if (seeCustomerInfo) { userService.getSeeCustomerProfileInfo(currentUserId).getTotalRatings() }
+            else { userService.getSeeProfessionalProfileInfo(currentUserId).getTotalRatings() }
+
+        return JobDetails.toDTO(currentUserId, job, seeCustomerInfo, totalRatings)
+    }
+
+    fun assertUserExistsInJob(userId: Long, jobId: Long){
+        val userIsProfessional = jobRepository.existsByIdAndProfessionalId(jobId, userId)
+        val userIsCustomer = jobRepository.existsByIdAndProfessionalId(jobId, userId)
+
+        if(!userIsProfessional && !userIsCustomer)
+            throw JobException("El usuario actual no corresponde a este trabajo.")
+    }
+
     /*************************
      JOB REQUEST METHODS
      **************************/
@@ -86,6 +103,7 @@ class JobService(
         val myJobRequests = redisService.getMyJobRequests(customerId)
         return myJobRequests.map{ CustomerJobRequestDTO.fromJobRequest(it, redisService.countOffersForRequest(it)) }
     }
+
     @Transactional(readOnly = true)
     fun getJobRequests(professionalId : Long) : List<ProfessionalJobRequestDTO> {
         val professionIds : Set<Long> = professionalService.getActiveProfessionIds(professionalId)
@@ -166,6 +184,7 @@ class JobService(
             this.initDateTime = if(jobOffer.instantRequest) LocalDateTime.now() else jobOffer.neededDatetime
             this.duration = jobOffer.jobDuration
             this.durationUnit = jobOffer.jobDurationTimeUnit
+            this.description = jobOffer.detail
         }
 
         jobRepository.save(job)
@@ -212,5 +231,4 @@ class JobService(
         val customerId = jobRepository.findCustomerIdByJobId(jobId)
         return userService.getById(customerId)
     }
-
 }
