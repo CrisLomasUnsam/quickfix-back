@@ -39,7 +39,7 @@ data class JobDetails (
                 date = stringifyDateWithHours(job.initDateTime),
                 userInfo = UserInfo.toDTO(user, requesterIsCustomer, totalRatings),
                 status = job.status,
-                pendingJobDetails = PendingJobDetails.toDTO()
+                pendingJobDetails = null
             )
         }
     }
