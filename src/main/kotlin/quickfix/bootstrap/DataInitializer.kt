@@ -25,6 +25,7 @@ class DataInitializer : InitializingBean {
         initJobs()
         initRatings()
         loadJobRequestsToRedis()
+        loadJobOffersToRedis()
     }
 
     fun initProfessions() {
@@ -111,6 +112,37 @@ class DataInitializer : InitializingBean {
         jobService.requestJob(jobRequest8)
         jobService.requestJob(jobRequest9)
         jobService.requestJob(jobRequest10)
+
+    }
+
+    fun loadJobOffersToRedis() {
+
+        redisService.cleanupJobOffersForTesting()
+
+        val users = userRepository.findAll().associateBy { it.name }
+        val professions = professionRepository.findAll().associateBy { it.name }
+
+        val jobOffer1 = JobOfferBuilder.buildMock(users["Valentino"]!!, users["Mariano"]!!, professions["Electricidad"]!!, 1)
+        val jobOffer2 = JobOfferBuilder.buildMock(users["Valentino"]!!, users["Mariano"]!!, professions["Mecánica"]!!, 2)
+        val jobOffer3 = JobOfferBuilder.buildMock(users["Valentino"]!!, users["Mariano"]!!, professions["Albañilería"]!!, 3)
+        val jobOffer4 = JobOfferBuilder.buildMock(users["Valentino"]!!, users["Mariano"]!!, professions["Plomería"]!!, 4)
+        val jobOffer5 = JobOfferBuilder.buildMock(users["Valentino"]!!, users["Mariano"]!!, professions["Carpintería"]!!, 5)
+        val jobOffer6 = JobOfferBuilder.buildMock(users["Tomas"]!!, users["Mariano"]!!, professions["Jardinería"]!!, 6)
+        val jobOffer7 = JobOfferBuilder.buildMock(users["Tomas"]!!, users["Mariano"]!!, professions["Pintorería"]!!, 7)
+        val jobOffer8 = JobOfferBuilder.buildMock(users["Tomas"]!!, users["Mariano"]!!, professions["Gasfitería"]!!, 8)
+        val jobOffer9 = JobOfferBuilder.buildMock(users["Tomas"]!!, users["Mariano"]!!, professions["Plomería"]!!, 9)
+        val jobOffer10 = JobOfferBuilder.buildMock(users["Tomas"]!!, users["Pablo"]!!, professions["Mecánica"]!!, 1)
+
+        jobService.offerJob(users["Mariano"]!!.id, jobOffer1)
+        jobService.offerJob(users["Mariano"]!!.id, jobOffer2)
+        jobService.offerJob(users["Mariano"]!!.id, jobOffer3)
+        jobService.offerJob(users["Mariano"]!!.id, jobOffer4)
+        jobService.offerJob(users["Mariano"]!!.id, jobOffer5)
+        jobService.offerJob(users["Mariano"]!!.id, jobOffer6)
+        jobService.offerJob(users["Mariano"]!!.id, jobOffer7)
+        jobService.offerJob(users["Mariano"]!!.id, jobOffer8)
+        jobService.offerJob(users["Mariano"]!!.id, jobOffer9)
+        jobService.offerJob(users["Pablo"]!!.id, jobOffer10)
 
     }
 
