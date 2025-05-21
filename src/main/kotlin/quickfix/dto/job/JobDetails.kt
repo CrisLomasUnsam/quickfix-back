@@ -1,6 +1,5 @@
 package quickfix.dto.job
 
-import quickfix.dto.job.jobRequest.PendingJobDetails
 import quickfix.dto.user.UserInfo
 import quickfix.models.Job
 import quickfix.utils.enums.JobStatus
