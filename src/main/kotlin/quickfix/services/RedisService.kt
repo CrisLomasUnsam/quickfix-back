@@ -52,11 +52,11 @@ class RedisService(
         return redisJobRequestStorage.keys(keyPattern).size
     }
 
-    fun getJobRequests(activeProfessionIds : Set<Long>) : List<JobRequestDTO> {
+    fun getJobRequests(activeProfessionIds : Set<Long>, excludeOfferedKeys : Set<String>) : List<JobRequestDTO> {
         val jobRequests = mutableListOf<JobRequestDTO>()
         activeProfessionIds.forEach { professionId ->
             val tempKey = "JobRequest_${professionId}_*_"
-            val requestsKeys = redisJobRequestStorage.keys(tempKey)
+            val requestsKeys = redisJobRequestStorage.keys(tempKey) - excludeOfferedKeys
             val requestsValues = redisJobRequestStorage.opsForValue().multiGet(requestsKeys) ?: emptySet()
             jobRequests.addAll(requestsValues)
         }

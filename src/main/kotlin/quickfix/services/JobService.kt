@@ -106,8 +106,9 @@ class JobService(
 
     @Transactional(readOnly = true)
     fun getJobRequests(professionalId : Long) : List<ProfessionalJobRequestDTO> {
-        val professionIds : Set<Long> = professionalService.getActiveProfessionIds(professionalId)
-        return redisService.getJobRequests(professionIds).map { ProfessionalJobRequestDTO.fromJobRequest(it) }
+        val myProfessionIds : Set<Long> = professionalService.getActiveProfessionIds(professionalId)
+        val myJobOfferKeys = getMyJobOffers(professionalId).map{ it.requestId }.toSet()
+        return redisService.getJobRequests(myProfessionIds, myJobOfferKeys).map { ProfessionalJobRequestDTO.fromJobRequest(it) }
     }
 
     fun requestJob(jobRequest : JobRequestDTO) {
