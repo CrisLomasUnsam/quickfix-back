@@ -77,7 +77,7 @@ interface JobRepository : JpaRepository<Job, Long> {
                 
             left join ratings r
                 on r.job_id = j.id
-                and r.user_from_id = j.customer_id
+                and r.user_to_id = j.customer_id
             where j.professional_id = :professionalId
             order by j.init_date_time asc
         """,
