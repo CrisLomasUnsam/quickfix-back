@@ -8,7 +8,7 @@ import java.time.format.TextStyle
 import java.util.*
 
 val YearAndMonthformatter: DateTimeFormatter = DateTimeFormatter.ofPattern("MM/yyyy")
-val DateWithDayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+val DateWithDayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 val CustomDateTimeWithoutYearFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM HH:mm")
 val DatetimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
 
