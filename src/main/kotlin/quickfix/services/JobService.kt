@@ -9,7 +9,7 @@ import quickfix.dao.JobRepository
 import quickfix.dto.job.jobOffer.AcceptJobOfferDTO
 import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobOffer.CustomerJobOfferDTO
-import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
+import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.MessageResponseDTO
 import quickfix.dto.chat.toMessageResponseDTO
@@ -17,6 +17,7 @@ import quickfix.dto.job.JobWithRatingDTO
 import quickfix.dto.job.jobRequest.validate
 import quickfix.dto.job.jobOffer.ProfessionalJobOfferDTO
 import quickfix.dto.job.jobRequest.CustomerJobRequestDTO
+import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
 import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.models.User
@@ -88,11 +89,11 @@ class JobService(
     @Transactional(readOnly = true)
     fun getJobRequests(professionalId : Long) : List<ProfessionalJobRequestDTO> {
         val professionIds : Set<Long> = professionalService.getActiveProfessionIds(professionalId)
-        return redisService.getJobRequests(professionIds)
+        return redisService.getJobRequests(professionIds).map { ProfessionalJobRequestDTO.fromJobRequest(it) }
     }
 
-    fun requestJob(jobRequest : ProfessionalJobRequestDTO) {
-        userService.assertUserExists(jobRequest.customerId)
+    fun requestJob(jobRequest : JobRequestDTO) {
+        userService.assertUserExists(jobRequest.customer.id)
         professionService.assertProfessionExists(jobRequest.professionId)
         redisService.requestJob(jobRequest.apply{ validate() })
     }

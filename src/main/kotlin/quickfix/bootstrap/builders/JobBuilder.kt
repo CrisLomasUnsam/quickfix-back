@@ -1,13 +1,12 @@
 package quickfix.bootstrap.builders
 
 import quickfix.dto.job.jobOffer.JobOfferDTO
-import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
+import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.user.SeeBasicUserInfoDTO
 import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.models.User
 import quickfix.utils.enums.JobStatus
-import quickfix.utils.functions.getAvatarUrl
 import java.time.LocalDateTime
 
 class JobBuilder {
@@ -29,17 +28,12 @@ class JobBuilder {
 class JobRequestBuilder {
     companion object{
         fun buildMock(customer: User, profession: Profession, isInstantRequest: Boolean = false) =
-            ProfessionalJobRequestDTO(
-                customerId = customer.id,
-                name = customer.name,
-                lastName = customer.lastName,
-                avatar = getAvatarUrl(customer.id),
+            JobRequestDTO(
+                customer = SeeBasicUserInfoDTO.toDto(customer, seeCustomerInfo = true),
                 professionId = profession.id,
-                professionName = profession.name,
                 detail = "Lorem ipsum dolor em sit amet lo gump samar ipsum it.",
-                rating = (Math.random() % 5) + 1.0,
-                neededDatetime = if(isInstantRequest) LocalDateTime.now() else LocalDateTime.now().plusDays(1),
-                instantRequest = isInstantRequest
+                neededDatetime = if (isInstantRequest) LocalDateTime.now() else LocalDateTime.now().plusDays(1),
+                instantRequest = isInstantRequest,
             )
     }
 }
