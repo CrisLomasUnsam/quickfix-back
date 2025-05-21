@@ -1,6 +1,7 @@
 package quickfix.dto.job
 
 import quickfix.utils.functions.DateWithDayFormatter
+import quickfix.utils.functions.getAvatarUrl
 import java.time.LocalDate
 
 interface IJobWithRating {
@@ -12,6 +13,7 @@ interface IJobWithRating {
     fun getStatus(): String
     fun getPrice(): Double
     fun getScore(): Int?
+    fun getUserId(): Long?
 }
 
 data class JobWithRatingDTO(
@@ -23,6 +25,7 @@ data class JobWithRatingDTO(
     val status: String,
     val price: Double,
     val score: Int?,
+    val avatar: String
 ) {
     companion object {
         fun fromProjection(job : IJobWithRating) : JobWithRatingDTO =
@@ -34,7 +37,8 @@ data class JobWithRatingDTO(
                 professionName = job.getProfessionName(),
                 status = job.getStatus(),
                 price = job.getPrice(),
-                score = job.getScore()
+                score = job.getScore(),
+                avatar = job.getUserId()?.let { getAvatarUrl(it) } ?: ""
             )
     }
 }
