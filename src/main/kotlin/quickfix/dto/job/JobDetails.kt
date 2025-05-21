@@ -19,11 +19,13 @@ data class JobDetails (
 ) {
     companion object {
         fun toDTO(
-            currentCustomerId: Long,
+            currentUserId: Long,
             job: Job,
-            requesterIsCustomer: Boolean
+            requesterIsCustomer: Boolean,
+            totalRatings: Int
+
         ): JobDetails {
-            val user = when (currentCustomerId) {
+            val user = when (currentUserId) {
                 job.customer.id -> job.professional
                 job.professional.id -> job.customer
                 else -> throw JobException("No existe el Job")
@@ -35,7 +37,7 @@ data class JobDetails (
                 price = job.price,
                 rated = false ,
                 date = stringifyDateWithHours(job.initDateTime),
-                userInfo = UserInfo.toDTO(user, requesterIsCustomer),
+                userInfo = UserInfo.toDTO(user, requesterIsCustomer, totalRatings),
                 status = job.status,
                 pendingJobDetails = PendingJobDetails.toDTO()
             )

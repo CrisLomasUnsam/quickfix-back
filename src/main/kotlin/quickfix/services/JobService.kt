@@ -77,9 +77,12 @@ class JobService(
         return PageRequest.of(pageNumber, PAGE_SIZE, sort)
     }
 
-    fun getJobDetailsById(currentCustomerId: Long, id: Long, requesterIsCustomer: Boolean): JobDetails {
-        val job = getJobById(id)
-        return JobDetails.toDTO(currentCustomerId, job, requesterIsCustomer)
+    fun getJobDetailsById(currentUserId: Long, jobId: Long, requesterIsCustomer: Boolean): JobDetails {
+        val job = getJobById(jobId)
+        val totalRatings =
+            if (requesterIsCustomer) { userService.getSeeCustomerProfileInfo(currentUserId).getTotalRatings() }
+            else { userService.getSeeProfessionalProfileInfo(currentUserId).getTotalRatings() }
+        return JobDetails.toDTO(currentUserId, job, requesterIsCustomer, totalRatings)
     }
 
     /*************************

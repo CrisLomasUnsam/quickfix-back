@@ -10,12 +10,13 @@ data class UserInfo(
     val avatar: String,
     val verified: Boolean,
     val averageRating: Double,
-    val totalEarnings: Double?
+    val totalRatings: Int
 ) {
     companion object {
         fun toDTO(
             user: User,
-            requesterIsCustomer: Boolean
+            requesterIsCustomer: Boolean,
+            totalRatings: Int
 
         ): UserInfo{
             return UserInfo (
@@ -25,7 +26,7 @@ data class UserInfo(
                 avatar = getAvatarUrl(user.id),
                 verified = user.verified,
                 averageRating = if (!requesterIsCustomer) { user.professionalInfo.averageRating } else { user.averageRating },
-                totalEarnings = user.professionalInfo.balance
+                totalRatings = totalRatings
             )
         }
     }

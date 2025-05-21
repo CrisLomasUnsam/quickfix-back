@@ -20,7 +20,7 @@ import quickfix.services.JobService
 @Tag(name = "Jobs", description = "Operaciones relacionadas a los Jobs")
 
 class JobController(
-    val jobService: JobService
+    val jobService: JobService,
 ){
 
     @ModelAttribute("currentUserId")
@@ -31,13 +31,15 @@ class JobController(
 
     @GetMapping("customer/{jobId}")
     @Operation(summary = "Obtiene los detalles de jobs aceptados por customer")
-    fun getJobDetailsForCustomerByJobId(@ModelAttribute("currentUserId") currentCustomerId: Long, @PathVariable jobId: Long): JobDetails =
-        jobService.getJobDetailsById(currentCustomerId, jobId, true)
+    fun getJobDetailsForCustomerByJobId(@ModelAttribute("currentUserId") currentCustomerId: Long, @PathVariable jobId: Long): JobDetails {
+        return jobService.getJobDetailsById(currentCustomerId, jobId, true)
+    }
 
     @GetMapping("professional/{jobId}")
     @Operation(summary = "Obtiene los detalles de jobs aceptados por professional")
-    fun getJobDetailsForProfessionalByJobId(@ModelAttribute("currentUserId") currentCustomerId: Long, @PathVariable jobId: Long): JobDetails =
-        jobService.getJobDetailsById(currentCustomerId, jobId, false)
+    fun getJobDetailsForProfessionalByJobId(@ModelAttribute("currentUserId") currentProfessionalId: Long, @PathVariable jobId: Long): JobDetails {
+        return jobService.getJobDetailsById(currentProfessionalId, jobId, false)
+    }
 
     @GetMapping("/customer")
     @Operation(summary = "Obtiene todos los servicios pedidos por un usuario")
