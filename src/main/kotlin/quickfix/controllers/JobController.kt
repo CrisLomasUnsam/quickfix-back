@@ -10,6 +10,7 @@ import quickfix.dto.job.jobOffer.AcceptJobOfferDTO
 import quickfix.dto.job.jobOffer.CustomerJobOfferDTO
 import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobOffer.ProfessionalJobOfferDTO
+import quickfix.dto.job.jobRequest.CreateJobRequestDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.job.jobRequest.CustomerJobRequestDTO
 import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
@@ -99,8 +100,8 @@ class JobController(
 
     @PostMapping("/requestJob")
     @Operation(summary = "Buscar profesionales disponibles para el job seleccionado por el customer")
-    fun requestJob(@RequestBody jobRequest : JobRequestDTO) =
-        jobService.requestJob(jobRequest)
+    fun requestJob(@ModelAttribute("currentUserId") currentProfessionalId : Long, @RequestBody jobRequest : CreateJobRequestDTO) =
+        jobService.requestJob(currentProfessionalId, jobRequest)
 
     @DeleteMapping("/requestJob")
     @Operation(summary = "Cancelar un job request")
