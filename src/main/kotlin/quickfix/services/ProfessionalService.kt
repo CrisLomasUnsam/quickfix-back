@@ -10,7 +10,6 @@ import quickfix.dto.professional.NewCertificateDTO
 import quickfix.models.Certificate
 import quickfix.models.Profession
 import quickfix.models.ProfessionalInfo
-import quickfix.models.ProfessionalProfession
 import quickfix.utils.commission
 import quickfix.utils.exceptions.ProfessionalException
 import quickfix.utils.functions.datifyStringMonthAndYear
