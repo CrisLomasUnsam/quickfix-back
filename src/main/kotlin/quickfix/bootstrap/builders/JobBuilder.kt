@@ -1,6 +1,7 @@
 package quickfix.bootstrap.builders
 
 import quickfix.dto.job.jobOffer.JobOfferDTO
+import quickfix.dto.job.jobRequest.CreateJobRequestDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.user.SeeBasicUserInfoDTO
 import quickfix.models.Job
@@ -28,14 +29,15 @@ class JobBuilder {
 
 class JobRequestBuilder {
     companion object{
-        fun buildMock(customer: User, profession: Profession, isInstantRequest: Boolean = false) =
-            JobRequestDTO(
-                customer = SeeBasicUserInfoDTO.toDto(customer, seeCustomerInfo = true),
-                professionId = profession.id,
+        fun buildMock(customer: User, profession: Profession, isInstantRequest: Boolean = false): CreateJobRequestDTO {
+            return CreateJobRequestDTO(
+                userId = customer.id,
+                serviceId = profession.id,
                 detail = "Lorem ipsum dolor em sit amet lo gump samar ipsum it.",
                 neededDatetime = if (isInstantRequest) LocalDateTime.now() else LocalDateTime.now().plusDays(1),
-                instantRequest = isInstantRequest,
+                instantRequest = isInstantRequest
             )
+        }
     }
 }
 
