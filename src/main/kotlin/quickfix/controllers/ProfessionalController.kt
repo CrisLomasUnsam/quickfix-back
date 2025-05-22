@@ -73,13 +73,11 @@ class ProfessionalController(
     fun addCertificate(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long, @RequestBody certificateDto: NewCertificateDTO) =
         professionalService.addCertificate(currentProfessionalId, certificateDto)
 
-    //TODO: Valen refactorizó esto y ya le agregó el model attribute. Corregir cuando se mergee
     @PostMapping("/certificates/{certificateId}")
     @Operation(summary = "Agregar certificado")
     fun uploadCertificateImg(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long, @PathVariable certificateId : Long, @RequestBody image: MultipartFile) =
         professionalService.uploadCertificateImg(currentProfessionalId, certificateId, image)
 
-    //TODO: Valen refactorizó esto y ya le agregó el model attribute. Corregir cuando se mergee
     @DeleteMapping("/certificates/{certificateId}")
     @Operation(summary = "Borrar un certificado")
     fun deleteCertificate(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long, @PathVariable certificateId : Long) =
