@@ -102,16 +102,16 @@ class DataInitializer : InitializingBean {
         val jobRequest9 = JobRequestBuilder.buildMock(users["Tomas"]!!, professions["Plomería"]!!)
         val jobRequest10 = JobRequestBuilder.buildMock(users["Tomas"]!!, professions["Mecánica"]!!)
 
-        jobService.requestJob(jobRequest1)
-        jobService.requestJob(jobRequest2)
-        jobService.requestJob(jobRequest3)
-        jobService.requestJob(jobRequest4)
-        jobService.requestJob(jobRequest5)
-        jobService.requestJob(jobRequest6)
-        jobService.requestJob(jobRequest7)
-        jobService.requestJob(jobRequest8)
-        jobService.requestJob(jobRequest9)
-        jobService.requestJob(jobRequest10)
+        jobService.requestJob(jobRequest1.userId, jobRequest1)
+        jobService.requestJob(jobRequest2.userId,jobRequest2)
+        jobService.requestJob(jobRequest3.userId, jobRequest3)
+        jobService.requestJob(jobRequest4.userId, jobRequest4)
+        jobService.requestJob(jobRequest5.userId, jobRequest5)
+        jobService.requestJob(jobRequest6.userId, jobRequest6)
+        jobService.requestJob(jobRequest7.userId,jobRequest7)
+        jobService.requestJob(jobRequest8.userId,jobRequest8)
+        jobService.requestJob(jobRequest9.userId,jobRequest9)
+        jobService.requestJob(jobRequest10.userId, jobRequest10)
 
     }
 
