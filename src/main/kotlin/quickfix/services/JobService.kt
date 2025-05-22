@@ -69,7 +69,7 @@ class JobService(
 
     private fun sortMyJobsPageByDate(pageNumber: Int?) : PageRequest? {
         if(pageNumber == null) return null
-        val sort: Sort = Sort.by("date").ascending()
+        val sort: Sort = Sort.by("initDateTime").ascending()
         return PageRequest.of(pageNumber, PAGE_SIZE, sort)
     }
 
