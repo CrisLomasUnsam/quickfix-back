@@ -8,8 +8,17 @@ import quickfix.models.ProfessionalProfession
 import java.util.*
 
 @Component
-interface ProfessionalProfessionRepository: CrudRepository<ProfessionalProfession , Long> {
+interface ProfessionalProfessionRepository : CrudRepository<ProfessionalProfession, Long> {
 
-    @Query("select * from professional_professions where profession_id = :professionId and professional_id = :professionalId", nativeQuery = true)
-    fun findByProfessionalIdAndProfessionId(@Param("professionId") professionId: Long,@Param("professionalId") professionalId: Long): Optional<ProfessionalProfession>
+    @Query(
+        """
+            select * from professional_professions
+                where profession_id = :professionId and professional_id = :professionalId
+        """,
+        nativeQuery = true
+    )
+    fun findByProfessionalIdAndProfessionId(
+        @Param("professionId") professionId: Long,
+        @Param("professionalId") professionalId: Long
+    ): Optional<ProfessionalProfession>
 }
