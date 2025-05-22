@@ -3,12 +3,14 @@ package quickfix.services
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
+import quickfix.dao.ProfessionalProfessionRepository
 import quickfix.dao.UserRepository
 import quickfix.dto.professional.FinancesDTO
 import quickfix.dto.professional.NewCertificateDTO
 import quickfix.models.Certificate
 import quickfix.models.Profession
 import quickfix.models.ProfessionalInfo
+import quickfix.models.ProfessionalProfession
 import quickfix.utils.commission
 import quickfix.utils.exceptions.ProfessionalException
 import quickfix.utils.functions.datifyStringMonthAndYear
@@ -19,6 +21,7 @@ class ProfessionalService(
     val professionService: ProfessionService,
     private val userRepository: UserRepository,
     private val imageService: ImageService,
+    private val professionalProfessionRepository: ProfessionalProfessionRepository
 )  {
 
     fun getActiveProfessionIds(professionalId : Long) : Set<Long> {
@@ -35,10 +38,10 @@ class ProfessionalService(
         return financesDTO
     }
 
-    fun getActiveProfessions(professionalId: Long) : Set<Profession> {
+    fun getActiveProfessions(professionalId: Long) : List<Profession> {
         userService.assertUserExists(professionalId)
         val professionIds : Set<Long> = this.getActiveProfessionIds(professionalId)
-        return professionIds.map { professionService.getProfessionById(it) }.toSet()
+        return professionIds.map { professionService.getProfessionById(it) }.sortedBy { it.name }
     }
 
     @Transactional(rollbackFor = [Exception::class])
@@ -56,7 +59,8 @@ class ProfessionalService(
     fun deleteProfession(professionalId: Long, professionName: String) {
         val professional = userService.getById(professionalId)
         val professionId = professionService.getByNameIgnoreCase(professionName).id
-
+        val relation = professionalProfessionRepository.findByProfessionalIdAndProfessionId(professionId, professionalId)
+        professionalProfessionRepository.delete(relation.get())
         if (!professional.professionalInfo.hasActiveProfession(professionId))
             throw ProfessionalException("La profesión no forma parte de sus servicios")
 
