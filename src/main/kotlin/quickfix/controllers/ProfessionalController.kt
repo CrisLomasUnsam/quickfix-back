@@ -44,14 +44,14 @@ class ProfessionalController(
 
     @GetMapping("/professions")
     @Operation(summary = "Obtener los servicios que puede brindar el profesional")
-    fun getActiveProfessions(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long) : Set<Profession> =
+    fun getActiveProfessions(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long) : List<Profession> =
         professionalService.getActiveProfessions(currentProfessionalId)
 
     @PostMapping("/professions")
     @Operation(summary = "Agregar servicio brindado")
     fun addProfession(
         @ModelAttribute("currentProfessionalId") currentProfessionalId: Long,
-        @RequestBody profession: String
+        @RequestParam profession: String
     ) =
         professionalService.addProfession(currentProfessionalId, profession)
 
@@ -59,7 +59,7 @@ class ProfessionalController(
     @Operation(summary = "Eliminar servicio brindado")
     fun deleteProfession(
         @ModelAttribute("currentProfessionalId") currentProfessionalId: Long,
-        @RequestBody profession: String
+        @RequestParam profession: String
     ) =
         professionalService.deleteProfession(currentProfessionalId, profession)
 
