@@ -1,14 +1,28 @@
 package quickfix.utils.professions
 
 val ProfessionNames = listOf(
-    "Gasfitería",
-    "Carpintería",
     "Albañilería",
-    "Pintorería",
-    "Jardinería",
-    "Plomería",
     "Arquitectura",
-    "Mecánica",
+    "Carpintería",
+    "Cerrajería",
     "Electricidad",
-    "Otros"
+    "Fletes",
+    "Fumigación",
+    "Jardinería",
+    "lavanderia",
+    "Limpieza",
+    "mascotas",
+    "Mayores",
+    "Mecánica",
+    "Mudanzas",
+    "niños",
+    "Otros",
+    "Pintura",
+    "Plomería",
+    "Reparaciones",
+    "Seguridad",
+    "Techos",
+    "tecnología",
+
+
 )
