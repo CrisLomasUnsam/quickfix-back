@@ -33,6 +33,7 @@ interface JobRepository : JpaRepository<Job, Long> {
             -- join a users como “profesional”
             u_prof.name as userName,
             u_prof.last_name as userLastName,
+            u_prof.id as userId,
             pr.name as professionName,
             j.status as status,
             j.price as price,
@@ -47,6 +48,7 @@ interface JobRepository : JpaRepository<Job, Long> {
              -- rating
             left join ratings r 
                 on r.job_id = j.id
+                and r.user_to_id = j.professional_id
             where j.customer_id = :customerId
             order by j.init_date_time asc
         """,
@@ -62,6 +64,7 @@ interface JobRepository : JpaRepository<Job, Long> {
             -- ahora la misma tabla users para el cliente”
             u_cust.name as userName,
             u_cust.last_name as userLastName,
+            u_cust.id as userId,
             pr.name as professionName,
             j.status as status,
             j.price as price,
@@ -71,8 +74,10 @@ interface JobRepository : JpaRepository<Job, Long> {
                 on u_cust.id = j.customer_id
             join professions pr
                 on pr.id = j.profession_id
-            left join ratings r 
+                
+            left join ratings r
                 on r.job_id = j.id
+                and r.user_to_id = j.customer_id
             where j.professional_id = :professionalId
             order by j.init_date_time asc
         """,
