@@ -139,7 +139,7 @@ class JobService(
         userService.assertUserExists(currentCustomerId)
         professionService.assertProfessionExists(jobRequest.professionId)
 
-        val customerDto = SeeBasicUserInfoDTO.toDto(userService.getById(currentCustomerId), seeCustomerInfo = true)
+        val customerDto = SeeBasicUserInfoDTO.toDTO(userService.getById(currentCustomerId), seeCustomerInfo = true)
         val jobRequestDto = jobRequest.toJobRequestDTO(customerDto).apply { validate() }
 
         redisService.requestJob(jobRequestDto)

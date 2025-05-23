@@ -14,7 +14,7 @@ data class SeeBasicUserInfoDTO  (
     var hasVehicle: Boolean? = null
 ) {
     companion object {
-        fun toDto(user: User, seeCustomerInfo: Boolean, totalRatings: Int? = null): SeeBasicUserInfoDTO {
+        fun toDTO(user: User, seeCustomerInfo: Boolean, totalRatings: Int? = null): SeeBasicUserInfoDTO {
 
             val userAverageRating =
                 if(seeCustomerInfo) user.averageRating else user.professionalInfo.averageRating

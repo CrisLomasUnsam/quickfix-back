@@ -37,7 +37,7 @@ data class JobDetailsDTO (
                 price = job.price,
                 rated = false ,
                 date = stringifyDateTime(job.initDateTime),
-                userInfo = SeeBasicUserInfoDTO.toDto(user, seeCustomerInfo, totalRatings),
+                userInfo = SeeBasicUserInfoDTO.toDTO(user, seeCustomerInfo, totalRatings),
                 status = job.status,
                 pendingJobDetails = null
             )

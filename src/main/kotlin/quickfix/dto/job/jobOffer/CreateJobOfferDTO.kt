@@ -13,7 +13,7 @@ data class CreateJobOfferDTO(
     companion object {
         fun toJobOffer(offer: CreateJobOfferDTO, jobRequest: JobRequestDTO, professional: User) : JobOfferDTO {
             return JobOfferDTO(
-                professional = SeeBasicUserInfoDTO.toDto(professional, false),
+                professional = SeeBasicUserInfoDTO.toDTO(professional, false),
                 price = offer.price,
                 distance = 10.1, //TODO: Crear servicio o singleton que calcule estos datos
                 estimatedArriveTime = 20, //TODO: Crear servicio o singleton que calcule estos datos

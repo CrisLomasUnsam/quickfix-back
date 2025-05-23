@@ -22,7 +22,6 @@ interface  ISeeUserProfile{
 }
 
 data class SeeUserProfileDTO(
-    val id: Long,
     val name: String,
     val lastName: String,
     val avatar: String,
@@ -45,7 +44,6 @@ data class SeeUserProfileDTO(
                 ratingsPerValue = ratingsPerValue
             )
             return SeeUserProfileDTO(
-                id = seeUserProfileInfo.getId(),
                 name = seeUserProfileInfo.getName(),
                 lastName = seeUserProfileInfo.getLastName(),
                 avatar = getAvatarUrl(seeUserProfileInfo.getId()),

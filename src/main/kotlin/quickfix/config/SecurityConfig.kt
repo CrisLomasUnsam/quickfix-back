@@ -18,9 +18,6 @@ import quickfix.models.Role
 import quickfix.security.JwtAuthFilter
 import quickfix.utils.FRONTEND_URL
 
-//import org.springframework.security.web.csrf.CookieCsrfTokenRepository
-//import quickfix.security.CsrfTokenRequestHandler
-
 @Configuration
 @EnableWebSecurity
 class SecurityConfig {
@@ -87,6 +84,7 @@ class SecurityConfig {
                 it.requestMatchers(HttpMethod.DELETE, "/job/jobOffer").hasAuthority(Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.GET, "/job/jobRequests").hasAuthority(Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.GET, "/job/jobRequest").hasAuthority(Role.PROFESSIONAL.name)
+
                 it.requestMatchers(HttpMethod.GET, "/professional/**").hasAuthority(Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.POST, "/professional/**").hasAuthority(Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.PATCH, "/professional/**").hasAuthority(Role.PROFESSIONAL.name)
@@ -95,13 +93,21 @@ class SecurityConfig {
                 it.requestMatchers(HttpMethod.GET, "/job/jobDetails/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.PATCH, "/job/complete/**", "/job/cancel/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
 
+                it.requestMatchers(HttpMethod.GET, "/rating/customer/**").hasAuthority(Role.CUSTOMER.name)
+                it.requestMatchers(HttpMethod.GET, "/rating/seeProfessionalRatings/**").hasAuthority(Role.CUSTOMER.name)
+
+                it.requestMatchers(HttpMethod.GET, "/rating/professional/**").hasAuthority(Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.GET, "/rating/seeCustomerRatings/**").hasAuthority(Role.PROFESSIONAL.name)
+
                 it.requestMatchers(HttpMethod.GET, "/rating/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.POST, "/rating/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.PATCH, "/rating/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
 
 
                 it.requestMatchers(HttpMethod.GET, "/user/seeCustomerProfile/**").hasAuthority(Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.GET, "/user/seeBasicCustomerInfo/**").hasAuthority(Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.GET, "/user/seeProfessionalProfile/**").hasAuthority(Role.CUSTOMER.name)
+                it.requestMatchers(HttpMethod.GET, "/user/seeBasicProfessionalInfo/**").hasAuthority(Role.CUSTOMER.name)
                 it.requestMatchers(HttpMethod.GET, "/user/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.PATCH, "/user/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
 
