@@ -48,12 +48,12 @@ class RatingController(val ratingService: RatingService) {
 
     @GetMapping("/professional/jobRating/{jobId}")
     @Operation(summary = "Obtener la calificación realizada a un cliente en un trabajo en particular")
-    fun findJobRatingAsProfessional(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long, @PathVariable jobId: Long): RateUserPageDTO =
+    fun findJobRatingAsProfessional(@ModelAttribute("currentUserId") currentProfessionalId: Long, @PathVariable("jobId") jobId: Long): RateUserPageDTO =
         ratingService.getJobRatingAsProfessional(currentProfessionalId, jobId)
 
     @GetMapping("/customer/jobRating/{jobId}")
     @Operation(summary = "Obtener la calificación realizada a un profesional en un trabajo en particular")
-    fun findJobRatingAsCustomer(@ModelAttribute("currentCustomerId") currentCustomerId: Long, @PathVariable jobId: Long): RateUserPageDTO =
+    fun findJobRatingAsCustomer(@ModelAttribute("currentUserId") currentCustomerId: Long, @PathVariable("jobId") jobId: Long): RateUserPageDTO =
         ratingService.getJobRatingAsCustomer(currentCustomerId, jobId)
 
     @GetMapping("/seeCustomerRatings/{customerId}")
