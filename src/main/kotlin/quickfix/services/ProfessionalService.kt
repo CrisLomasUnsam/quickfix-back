@@ -7,8 +7,8 @@ import quickfix.dao.UserRepository
 import quickfix.dto.professional.FinancesDTO
 import quickfix.dto.professional.NewCertificateDTO
 import quickfix.models.Certificate
-import quickfix.models.Profession
 import quickfix.models.ProfessionalInfo
+import quickfix.models.ProfessionalProfession
 import quickfix.utils.commission
 import quickfix.utils.exceptions.ProfessionalException
 import quickfix.utils.functions.datifyStringMonthAndYear
@@ -18,7 +18,7 @@ class ProfessionalService(
     val userService: UserService,
     val professionService: ProfessionService,
     private val userRepository: UserRepository,
-    private val imageService: ImageService,
+    private val imageService: ImageService
 )  {
 
     fun getActiveProfessionIds(professionalId : Long) : Set<Long> {
@@ -35,32 +35,36 @@ class ProfessionalService(
         return financesDTO
     }
 
-    fun getActiveProfessions(proffesionalId: Long) : Set<Profession> {
-        userService.assertUserExists(proffesionalId)
-        val professionIds : Set<Long> = this.getActiveProfessionIds(proffesionalId)
-        return professionIds.map { professionService.getProfessionById(it) }.toSet()
+    fun getProfessionalProfessions(professionalId: Long) : Set<ProfessionalProfession> {
+        val professional = userService.getById(professionalId)
+        return professional.professionalInfo.professionalProfessions
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun addProfession(professionalId: Long, professionName: String) {
-        val professional = userService.getById(professionalId)
-        val profession = professionService.getByNameIgnoreCase(professionName)
+    fun addProfession(professionalId: Long, professionId: Long) {
+        val professional = userService.getProfessionalInfo(professionalId)
+        val profession = professionService.getProfessionById(professionId)
 
-        if (professional.professionalInfo.hasActiveProfession(profession.id))
+        if (professional.hasProfession(profession.id))
             throw ProfessionalException("La profesión ya forma parte de sus servicios")
 
-        professional.professionalInfo.addProfession(profession)
+        professional.addProfession(profession)
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun deleteProfession(professionalId: Long, professionName: String) {
-        val professional = userService.getById(professionalId)
-        val professionId = professionService.getByNameIgnoreCase(professionName).id
-
-        if (!professional.professionalInfo.hasActiveProfession(professionId))
+    fun deleteProfession(professionalId: Long, professionId: Long) {
+        val professional = userService.getProfessionalInfo(professionalId)
+        if (!professional.hasProfession(professionId))
             throw ProfessionalException("La profesión no forma parte de sus servicios")
+        professional.removeProfession(professionId)
+    }
 
-        professional.professionalInfo.removeProfession(professionId)
+    @Transactional(rollbackFor = [Exception::class])
+    fun switchProfessionStatus(professionalId: Long, professionId: Long, activate : Boolean) {
+        val professional = userService.getProfessionalInfo(professionalId)
+        if (!professional.hasProfession(professionId))
+            throw ProfessionalException("La profesión no forma parte de sus servicios")
+        professional.setProfessionStatus(professionId, activate)
     }
 
     @Transactional(readOnly = true)
