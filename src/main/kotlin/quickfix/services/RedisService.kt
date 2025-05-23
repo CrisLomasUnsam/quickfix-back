@@ -7,9 +7,11 @@ import quickfix.dto.chat.RedisMessageDTO
 import quickfix.dto.chat.toRedisMessage
 import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
+import quickfix.utils.INSTANT_REQUEST_LIVE_DAYS
 import quickfix.utils.MAX_CUSTOMER_REQUESTS_AT_TIME
 import quickfix.utils.exceptions.JobException
 import quickfix.utils.jobs.*
+import java.time.Duration
 
 @Service
 class RedisService(
@@ -30,12 +32,12 @@ class RedisService(
         val customerId = jobRequest.customer.id
         assertCustomerCanCreateAJobRequest(customerId)
 
-        val key = getJobRequestKey(jobRequest.professionId, customerId)
+        val key = getJobRequestKey(professionId = jobRequest.professionId, customerId = customerId)
         assertKeyDoesNotExist(key, "No es posible tener dos solicitudes activas de una misma categoría. Ya tiene una solicitud para la categoría de ID: ${jobRequest.professionId}")
 
-        redisJobRequestStorage.opsForValue().set(key,jobRequest)
+        redisJobRequestStorage.opsForValue().set(key, jobRequest)
         //If it is a future request, we set a TTL to cancel it automatically as soon as the date and time of need for the service arrives.
-        val ttl = getJobRequestTTLForRedis(jobRequest.neededDatetime, jobRequest.instantRequest)
+        val ttl = getJobRequestTTLForRedis(jobRequest)
         redisJobRequestStorage.expire(key, ttl)
     }
 
@@ -63,8 +65,14 @@ class RedisService(
         return jobRequests.sortedWith( compareBy<JobRequestDTO> {it.neededDatetime}.thenBy { it.professionId }.thenBy { it.customer.averageRating })
     }
 
+    fun getJobRequest(jobRequestId: String) : JobRequestDTO? {
+        return redisJobRequestStorage.opsForValue().get(jobRequestId)
+    }
+
     fun removeJobRequest(professionId : Long, customerId: Long) {
         val key = getJobRequestKey(professionId, customerId)
+        println("Key: ${key}")
+        assertCustomerHasJobRequest(professionId, customerId)
         redisJobRequestStorage.delete(key)
         this.removeAllJobOffers(professionId, customerId)
     }
@@ -82,9 +90,9 @@ class RedisService(
             throw JobException(errorMessage)
     }
 
-    private fun assertCustomerHasJobRequest(customerId : Long, professionId: Long){
-        if(!redisJobRequestStorage.hasKey(getJobRequestKey(customerId, professionId)))
-            throw JobException("No hay ninguna solicitud activa para este usuario.")
+    private fun assertCustomerHasJobRequest(professionId: Long, customerId : Long){
+        if(!redisJobRequestStorage.hasKey(getJobRequestKey(professionId, customerId)))
+            throw JobException("La solicitud ha expirado.")
     }
     /* CLEANUP */
 
@@ -101,8 +109,8 @@ class RedisService(
     JobOffer_ProfessionId_CustomerId_ProfessionalId_
      *******************************************************/
 
-    fun getJobOffers(customerId : Long, professionId: Long) : List<JobOfferDTO> {
-        assertCustomerHasJobRequest(customerId, professionId)
+    fun getJobOffers(professionId: Long, customerId : Long, ) : List<JobOfferDTO> {
+        assertCustomerHasJobRequest(professionId, customerId)
         val keyPattern = "JobOffer_${professionId}_${customerId}_*_"
         return getSortedJobOffers(keyPattern)
     }
@@ -115,15 +123,16 @@ class RedisService(
     private fun getSortedJobOffers(keyPattern: String) : List<JobOfferDTO> {
         val jobOfferKeys = redisJobOfferStorage.keys(keyPattern)
         val offers = redisJobOfferStorage.opsForValue().multiGet(jobOfferKeys)?.toList() ?: emptySet()
-        return offers.sortedWith( compareBy<JobOfferDTO> {it.neededDatetime}.thenBy{ it.profession.name }.thenBy {it.distance})
+        return offers.sortedWith( compareBy<JobOfferDTO> {it.request.neededDatetime}.thenBy{ it.request.professionId }.thenBy {it.distance})
     }
 
     fun offerJob(jobOffer : JobOfferDTO) {
         assertJobOffersDoNotCollide(jobOffer)
-        val key = getJobOfferKey(jobOffer.profession.id, jobOffer.customer.id, jobOffer.professional.id)
+        val request = jobOffer.request
+        val key = getJobOfferKey(request.professionId, request.customer.id, jobOffer.professional.id)
         redisJobOfferStorage.opsForValue().set(key,jobOffer)
         //If it is a future request, we set a TTL to cancel it automatically as soon as the date and time of need for the service arrives.
-        val ttl = getJobOfferTTLForRedis(jobOffer.neededDatetime, jobOffer.instantRequest)
+        val ttl = getJobOfferTTLForRedis(jobOffer)
         redisJobRequestStorage.expire(key, ttl)
     }
 
@@ -134,9 +143,9 @@ class RedisService(
         val newOfferEndDatetime = getJobOfferEndtime(newOffer)
 
         activeOffers.forEach { activeOffer ->
-            val activeOfferStartDatetime = activeOffer.neededDatetime
+            val activeOfferStartDatetime = activeOffer.request.neededDatetime
             val activeOfferEndDatetime = getJobOfferEndtime(activeOffer)
-            if(dateTimesCollides(newOffer.neededDatetime, newOfferEndDatetime, activeOfferStartDatetime, activeOfferEndDatetime))
+            if(dateTimesCollides(newOffer.request.neededDatetime, newOfferEndDatetime, activeOfferStartDatetime, activeOfferEndDatetime))
                 throw JobException("Usted ya tiene una oferta activa en este rango de tiempo.")
         }
     }
@@ -156,9 +165,7 @@ class RedisService(
 
     fun cleanupJobOffersForTesting() {
         val keys = redisJobRequestStorage.keys("JobOffer_*_*_*_")
-        keys.forEach { key ->
-            redisJobRequestStorage.delete(key)
-        }
+        keys.forEach { key -> redisJobRequestStorage.delete(key) }
     }
 
     /******************************************************
@@ -170,7 +177,10 @@ class RedisService(
 
     fun sendChatMessage(senderIsCustomer: Boolean, message: MessageDTO) {
         val key = getChatKey(message.jobId)
+        val hasToSetTTL = !redisChatStorage.hasKey(key)
         redisChatStorage.opsForList().rightPush(key, message.toRedisMessage(senderIsCustomer))
+        if(hasToSetTTL)
+            redisChatStorage.expire(key, Duration.ofDays(INSTANT_REQUEST_LIVE_DAYS))
     }
 
     fun getChatMessages(jobId: Long) : List<RedisMessageDTO> {
