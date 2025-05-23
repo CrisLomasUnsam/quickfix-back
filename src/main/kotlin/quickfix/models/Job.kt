@@ -26,13 +26,13 @@ class Job : Identifier {
     @Enumerated(EnumType.STRING)
     var status : JobStatus = JobStatus.PENDING
 
+    @Column(length = 150)
+    var detail : String = ""
+
     lateinit var initDateTime: LocalDateTime
     lateinit var durationUnit : String
     var duration: Int = 0
     var price: Double = 0.0
-
-    @Column(length = 150)
-    var description : String = ""
 
     fun calculateDistance() : Number = -1
 

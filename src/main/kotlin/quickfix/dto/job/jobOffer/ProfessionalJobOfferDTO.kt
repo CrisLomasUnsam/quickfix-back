@@ -1,38 +1,30 @@
 package quickfix.dto.job.jobOffer
 
-import quickfix.dto.user.SeeBasicUserInfoDTO
-import quickfix.utils.functions.DatetimeFormatter
+import quickfix.dto.job.jobRequest.JobRequestDTO
+import quickfix.utils.jobs.getJobRequestKey
 
 data class ProfessionalJobOfferDTO (
     var requestId: String,
-    var professionId : Long,
-    var customer: SeeBasicUserInfoDTO,
     var price: Double,
     var distance: Double,
-    var detail: String,
     var estimatedArriveTime: Int,
-    var jobDuration: Int,
-    var jobDurationTimeUnit: String,
-    var neededDatetime: String,
-    var instantRequest: Boolean
-
+    var duration: Int,
+    var durationUnit: String,
+    var request: JobRequestDTO
     )
 {
     companion object {
         fun fromDto(jobOfferDTO: JobOfferDTO): ProfessionalJobOfferDTO {
-            val requestId = "${jobOfferDTO.profession.id}_${jobOfferDTO.customer.id}"
+            val request = jobOfferDTO.request
+            val professionId = request.professionId
             return ProfessionalJobOfferDTO(
-                requestId = requestId,
-                professionId = jobOfferDTO.profession.id,
-                customer = jobOfferDTO.customer,
+                requestId = getJobRequestKey(professionId, request.customer.id),
                 price = jobOfferDTO.price,
                 distance = jobOfferDTO.distance,
-                detail = jobOfferDTO.detail,
                 estimatedArriveTime = jobOfferDTO.estimatedArriveTime,
-                jobDuration = jobOfferDTO.jobDuration,
-                jobDurationTimeUnit = jobOfferDTO.jobDurationTimeUnit,
-                neededDatetime = jobOfferDTO.neededDatetime.format(DatetimeFormatter),
-                instantRequest = jobOfferDTO.instantRequest
+                duration = jobOfferDTO.duration,
+                durationUnit = jobOfferDTO.durationUnit,
+                request = request,
             )
         }
     }
