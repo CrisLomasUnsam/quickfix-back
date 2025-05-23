@@ -1,5 +1,6 @@
 package quickfix.dto.job.jobRequest
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import io.swagger.v3.oas.annotations.media.Schema
 import quickfix.dto.user.SeeBasicUserInfoDTO
 import quickfix.utils.MINUTES_TO_BE_CONSIDERED_FUTURE_REQUEST
@@ -14,6 +15,7 @@ data class JobRequestDTO (
     var customer: SeeBasicUserInfoDTO,
     var professionId: Long,
     var detail: String,
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     var neededDatetime: LocalDateTime,
     var instantRequest: Boolean = false
 )
