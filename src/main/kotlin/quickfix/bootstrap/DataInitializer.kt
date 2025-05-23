@@ -57,7 +57,7 @@ class DataInitializer : InitializingBean {
         val job4 = JobBuilder.buildMock(users["Valentino"]!!, users["Pablo"]!!, professions["Mecánica"]!!)
 
         val job5 = JobBuilder.buildMock(users["Tomas"]!!, users["Pablo"]!!, professions["Albañilería"]!!)
-        val job6 = JobBuilder.buildMock(users["Tomas"]!!, users["Mariano"]!!, professions["Gasfitería"]!!)
+        val job6 = JobBuilder.buildMock(users["Tomas"]!!, users["Mariano"]!!, professions["Fletes"]!!)
         val job7 = JobBuilder.buildMock(users["Tomas"]!!, users["Mariano"]!!, professions["Plomería"]!!)
         val job8 = JobBuilder.buildMock(users["Tomas"]!!, users["Pablo"]!!, professions["Jardinería"]!!)
 
