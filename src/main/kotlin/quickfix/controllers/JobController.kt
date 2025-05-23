@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
-import quickfix.dto.job.JobDetails
+import quickfix.dto.job.JobDetailsDTO
 import quickfix.dto.job.JobWithRatingDTO
 import quickfix.dto.job.jobOffer.*
 import quickfix.dto.job.jobRequest.JobRequestDTO
@@ -29,7 +29,7 @@ class JobController(
 
     @GetMapping("/jobDetails/{jobId}")
     @Operation(summary = "Obtiene los detalles de jobs aceptados por customer")
-    fun getJobDetailsForCustomerByJobId(@ModelAttribute("currentUserId") currentUserId: Long, @PathVariable jobId: Long): JobDetails =
+    fun getJobDetailsForCustomerByJobId(@ModelAttribute("currentUserId") currentUserId: Long, @PathVariable jobId: Long): JobDetailsDTO =
         jobService.getJobDetailsById(currentUserId, jobId)
 
     @GetMapping("/customer")
