@@ -91,16 +91,16 @@ class DataInitializer : InitializingBean {
         val users = userRepository.findAll().associateBy { it.name }
         val professions = professionRepository.findAll().associateBy { it.name }
 
-        val jobRequest1 = JobRequestBuilder.buildMock(users["Valentino"]!!, professions["Electricidad"]!!, isInstantRequest = true)
-        val jobRequest2 = JobRequestBuilder.buildMock(users["Valentino"]!!, professions["Mecánica"]!!)
-        val jobRequest3 = JobRequestBuilder.buildMock(users["Valentino"]!!, professions["Albañilería"]!!)
-        val jobRequest4 = JobRequestBuilder.buildMock(users["Valentino"]!!, professions["Plomería"]!!)
-        val jobRequest5 = JobRequestBuilder.buildMock(users["Valentino"]!!, professions["Carpintería"]!!)
-        val jobRequest6 = JobRequestBuilder.buildMock(users["Tomas"]!!, professions["Jardinería"]!!, isInstantRequest = true)
-        val jobRequest7 = JobRequestBuilder.buildMock(users["Tomas"]!!, professions["Pintorería"]!!)
-        val jobRequest8 = JobRequestBuilder.buildMock(users["Tomas"]!!, professions["Gasfitería"]!!)
-        val jobRequest9 = JobRequestBuilder.buildMock(users["Tomas"]!!, professions["Plomería"]!!)
-        val jobRequest10 = JobRequestBuilder.buildMock(users["Tomas"]!!, professions["Mecánica"]!!)
+        val jobRequest1 = JobRequestBuilder.buildMock(users["Valentino"]!!, professions["Electricidad"]!!, 0, isInstantRequest = true)
+        val jobRequest2 = JobRequestBuilder.buildMock(users["Valentino"]!!, professions["Mecánica"]!!, 1)
+        val jobRequest3 = JobRequestBuilder.buildMock(users["Valentino"]!!, professions["Albañilería"]!!, 2)
+        val jobRequest4 = JobRequestBuilder.buildMock(users["Valentino"]!!, professions["Plomería"]!!, 3)
+        val jobRequest5 = JobRequestBuilder.buildMock(users["Valentino"]!!, professions["Carpintería"]!!, 4)
+        val jobRequest6 = JobRequestBuilder.buildMock(users["Tomas"]!!, professions["Jardinería"]!!, 5)
+        val jobRequest7 = JobRequestBuilder.buildMock(users["Tomas"]!!, professions["Pintorería"]!!, 6)
+        val jobRequest8 = JobRequestBuilder.buildMock(users["Tomas"]!!, professions["Gasfitería"]!!, 7)
+        val jobRequest9 = JobRequestBuilder.buildMock(users["Tomas"]!!, professions["Plomería"]!!, 8)
+        val jobRequest10 = JobRequestBuilder.buildMock(users["Tomas"]!!, professions["Mecánica"]!!, 9)
 
         jobService.requestJob(jobRequest1)
         jobService.requestJob(jobRequest2)
@@ -122,16 +122,16 @@ class DataInitializer : InitializingBean {
         val users = userRepository.findAll().associateBy { it.name }
         val professions = professionRepository.findAll().associateBy { it.name }
 
-        val jobOffer1 = JobOfferBuilder.buildMock(users["Valentino"]!!, users["Mariano"]!!, professions["Electricidad"]!!, 1)
-        val jobOffer2 = JobOfferBuilder.buildMock(users["Valentino"]!!, users["Mariano"]!!, professions["Mecánica"]!!, 2)
-        val jobOffer3 = JobOfferBuilder.buildMock(users["Valentino"]!!, users["Mariano"]!!, professions["Albañilería"]!!, 3)
-        val jobOffer4 = JobOfferBuilder.buildMock(users["Valentino"]!!, users["Mariano"]!!, professions["Plomería"]!!, 4)
-        val jobOffer5 = JobOfferBuilder.buildMock(users["Valentino"]!!, users["Mariano"]!!, professions["Carpintería"]!!, 5)
-        val jobOffer6 = JobOfferBuilder.buildMock(users["Tomas"]!!, users["Mariano"]!!, professions["Jardinería"]!!, 6)
-        val jobOffer7 = JobOfferBuilder.buildMock(users["Tomas"]!!, users["Mariano"]!!, professions["Pintorería"]!!, 7)
-        val jobOffer8 = JobOfferBuilder.buildMock(users["Tomas"]!!, users["Mariano"]!!, professions["Gasfitería"]!!, 8)
-        val jobOffer9 = JobOfferBuilder.buildMock(users["Tomas"]!!, users["Mariano"]!!, professions["Plomería"]!!, 9)
-        val jobOffer10 = JobOfferBuilder.buildMock(users["Tomas"]!!, users["Pablo"]!!, professions["Mecánica"]!!, 1)
+        val jobOffer1 = JobOfferBuilder.buildMock(users["Valentino"]!!, professions["Electricidad"]!!)
+        val jobOffer2 = JobOfferBuilder.buildMock(users["Valentino"]!!, professions["Mecánica"]!!)
+        val jobOffer3 = JobOfferBuilder.buildMock(users["Valentino"]!!, professions["Albañilería"]!!)
+        val jobOffer4 = JobOfferBuilder.buildMock(users["Valentino"]!!, professions["Plomería"]!!)
+        val jobOffer5 = JobOfferBuilder.buildMock(users["Valentino"]!!, professions["Carpintería"]!!)
+        val jobOffer6 = JobOfferBuilder.buildMock(users["Tomas"]!!, professions["Jardinería"]!!)
+        val jobOffer7 = JobOfferBuilder.buildMock(users["Tomas"]!!, professions["Pintorería"]!!)
+        val jobOffer8 = JobOfferBuilder.buildMock(users["Tomas"]!!, professions["Gasfitería"]!!)
+        val jobOffer9 = JobOfferBuilder.buildMock(users["Tomas"]!!, professions["Plomería"]!!)
+        val jobOffer10 = JobOfferBuilder.buildMock(users["Tomas"]!!, professions["Mecánica"]!!)
 
         jobService.offerJob(users["Mariano"]!!.id, jobOffer1)
         jobService.offerJob(users["Mariano"]!!.id, jobOffer2)

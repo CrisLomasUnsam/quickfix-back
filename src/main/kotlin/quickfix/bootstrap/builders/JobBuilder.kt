@@ -1,12 +1,13 @@
 package quickfix.bootstrap.builders
 
-import quickfix.dto.job.jobOffer.JobOfferDTO
+import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.user.SeeBasicUserInfoDTO
 import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.models.User
 import quickfix.utils.enums.JobStatus
+import quickfix.utils.jobs.getJobRequestKey
 import java.time.LocalDateTime
 
 class JobBuilder {
@@ -19,7 +20,7 @@ class JobBuilder {
                 this.profession = profession
                 this.status = if(done) JobStatus.DONE else JobStatus.PENDING
                 this.price = 19999.0
-                this.description = "Lorem ipsum dolor sit amet consectetur adipiscing elit aliquam, morbi ad ornare pharetra posuere ut fringilla molestie tristique."
+                this.detail = "Lorem ipsum dolor sit amet consectetur adipiscing elit aliquam, morbi ad ornare pharetra posuere ut fringilla molestie tristique."
                 this.duration = 10
                 this.durationUnit = "Minutos"
             }
@@ -28,12 +29,13 @@ class JobBuilder {
 
 class JobRequestBuilder {
     companion object{
-        fun buildMock(customer: User, profession: Profession, isInstantRequest: Boolean = false) =
+        fun buildMock(customer: User, profession: Profession, dayOffset: Long, isInstantRequest: Boolean = false) =
             JobRequestDTO(
                 customer = SeeBasicUserInfoDTO.toDto(customer, seeCustomerInfo = true),
                 professionId = profession.id,
                 detail = "Lorem ipsum dolor em sit amet lo gump samar ipsum it.",
-                neededDatetime = if (isInstantRequest) LocalDateTime.now() else LocalDateTime.now().plusDays(1),
+                //Le pongo un dayOffset para que no falle el dataInitializer por detectar que el profesional ya tiene una oferta activa ese día
+                neededDatetime = if (isInstantRequest) LocalDateTime.now() else LocalDateTime.now().plusDays(1 + dayOffset),
                 instantRequest = isInstantRequest,
             )
     }
@@ -41,19 +43,12 @@ class JobRequestBuilder {
 
 class JobOfferBuilder {
     companion object{
-        fun buildMock(customer: User, professional: User, profession: Profession, dayOffset: Long) =
-            JobOfferDTO(
-                customer = SeeBasicUserInfoDTO.toDto(customer, seeCustomerInfo = true),
-                profession = profession,
-                professional = SeeBasicUserInfoDTO.toDto(professional, seeCustomerInfo = false),
-                price = 10900.99,
-                distance = 10.2,
-                estimatedArriveTime = 35,
-                jobDuration = 50,
-                jobDurationTimeUnit = "Minutos",
-                neededDatetime = LocalDateTime.now().plusDays(10 + dayOffset),
-                detail = "Mock de job offer. Lorem ipsum dolorem et ni hus tar",
-                instantRequest = false
+        fun buildMock(customer: User, profession: Profession) =
+            CreateJobOfferDTO(
+                requestId = getJobRequestKey(profession.id, customer.id),
+                duration = 45,
+                durationUnit = "Minutos",
+                price = 10.999
             )
     }
 }
