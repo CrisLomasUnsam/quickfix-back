@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import quickfix.dto.professional.FinancesDTO
 import quickfix.dto.professional.NewCertificateDTO
+import quickfix.dto.professional.ProfessionDTO
 import quickfix.models.Certificate
-import quickfix.models.Profession
 import quickfix.services.ProfessionalService
 
 @RestController
@@ -44,41 +44,51 @@ class ProfessionalController(
 
     @GetMapping("/professions")
     @Operation(summary = "Obtener los servicios que puede brindar el profesional")
-    fun getActiveProfessions(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long) : List<Profession> =
-        professionalService.getActiveProfessions(currentProfessionalId)
+    fun getProfessionalProfessions(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long) : List<ProfessionDTO> =
+        professionalService.getProfessionalProfessions(currentProfessionalId).map { ProfessionDTO.toDto(it) }.sortedBy { it.name }
 
-    @PostMapping("/professions")
+    @PostMapping("/profession")
     @Operation(summary = "Agregar servicio brindado")
     fun addProfession(
         @ModelAttribute("currentProfessionalId") currentProfessionalId: Long,
-        @RequestParam profession: String
+        @RequestParam professionId: Long
     ) =
-        professionalService.addProfession(currentProfessionalId, profession)
+        professionalService.addProfession(currentProfessionalId, professionId)
 
-    @DeleteMapping("/professions")
+    @DeleteMapping("/profession")
     @Operation(summary = "Eliminar servicio brindado")
     fun deleteProfession(
         @ModelAttribute("currentProfessionalId") currentProfessionalId: Long,
-        @RequestParam profession: String
+        @RequestParam professionId: Long
     ) =
-        professionalService.deleteProfession(currentProfessionalId, profession)
+        professionalService.deleteProfession(currentProfessionalId, professionId)
+
+    @PatchMapping("/profession/activate")
+    @Operation(summary = "Activar servicio brindado")
+    fun activateProfession(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long, @RequestParam professionId: Long) =
+        professionalService.switchProfessionStatus(currentProfessionalId, professionId, activate = true)
+
+    @PatchMapping("/profession/deactivate")
+    @Operation(summary = "Desactivar servicio brindado")
+    fun deactivateProfession(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long, @RequestParam professionId: Long) =
+        professionalService.switchProfessionStatus(currentProfessionalId, professionId, activate = false)
 
     @GetMapping("/certificates")
     @Operation(summary = "Obtener certificados")
     fun getCertificates(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long): Set<Certificate> =
         professionalService.getCertificates(currentProfessionalId)
 
-    @PostMapping("/certificates")
+    @PostMapping("/certificate")
     @Operation(summary = "Agregar certificado")
     fun addCertificate(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long, @RequestBody certificateDto: NewCertificateDTO) =
         professionalService.addCertificate(currentProfessionalId, certificateDto)
 
-    @PostMapping("/certificates/{certificateId}")
+    @PostMapping("/certificate/{certificateId}")
     @Operation(summary = "Agregar certificado")
     fun uploadCertificateImg(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long, @PathVariable certificateId : Long, @RequestBody image: MultipartFile) =
         professionalService.uploadCertificateImg(currentProfessionalId, certificateId, image)
 
-    @DeleteMapping("/certificates/{certificateId}")
+    @DeleteMapping("/certificate/{certificateId}")
     @Operation(summary = "Borrar un certificado")
     fun deleteCertificate(@ModelAttribute("currentProfessionalId") currentProfessionalId: Long, @PathVariable certificateId : Long) =
         professionalService.deleteCertificate(currentProfessionalId, certificateId)
