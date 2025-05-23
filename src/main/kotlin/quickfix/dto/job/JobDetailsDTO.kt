@@ -4,7 +4,7 @@ import quickfix.dto.user.SeeBasicUserInfoDTO
 import quickfix.models.Job
 import quickfix.utils.enums.JobStatus
 import quickfix.utils.exceptions.JobException
-import quickfix.utils.functions.stringifyDateWithHours
+import quickfix.utils.functions.stringifyDateTime
 
 data class JobDetailsDTO (
     val id : Long,
@@ -36,7 +36,7 @@ data class JobDetailsDTO (
                 detail = job.detail,
                 price = job.price,
                 rated = false ,
-                date = stringifyDateWithHours(job.initDateTime),
+                date = stringifyDateTime(job.initDateTime),
                 userInfo = SeeBasicUserInfoDTO.toDto(user, seeCustomerInfo, totalRatings),
                 status = job.status,
                 pendingJobDetails = null

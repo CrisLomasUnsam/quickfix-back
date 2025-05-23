@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.JobRepository
 import quickfix.dto.job.jobRequest.JobRequestDTO
+import quickfix.dto.job.jobOffer.AcceptJobOfferDTO
+import quickfix.dto.job.jobOffer.JobOfferDTO
+import quickfix.dto.job.jobOffer.CustomerJobOfferDTO
 import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.MessageResponseDTO
 import quickfix.dto.chat.toMessageResponseDTO
@@ -16,6 +19,9 @@ import quickfix.dto.job.jobOffer.*
 import quickfix.dto.job.jobRequest.validate
 import quickfix.dto.job.jobRequest.CustomerJobRequestDTO
 import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
+import quickfix.dto.job.jobOffer.ProfessionalJobOfferDTO
+import quickfix.dto.job.jobRequest.*
+import quickfix.dto.user.SeeBasicUserInfoDTO
 import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.models.User
@@ -127,10 +133,16 @@ class JobService(
             throw JobException("Usted ya tiene una oferta activa para esta solicitud.")
     }
 
-    fun requestJob(jobRequest : JobRequestDTO) {
-        userService.assertUserExists(jobRequest.customer.id)
+    fun requestJob(currentCustomerId: Long, jobRequest : CreateJobRequestDTO) {
+
+        jobRequest.validate()
+        userService.assertUserExists(currentCustomerId)
         professionService.assertProfessionExists(jobRequest.professionId)
-        redisService.requestJob(jobRequest.apply{ validate() })
+
+        val customerDto = SeeBasicUserInfoDTO.toDto(userService.getById(currentCustomerId), seeCustomerInfo = true)
+        val jobRequestDto = jobRequest.toJobRequestDTO(customerDto).apply { validate() }
+
+        redisService.requestJob(jobRequestDto)
     }
 
     fun cancelJobRequest (professionId: Long, customerId: Long) {
