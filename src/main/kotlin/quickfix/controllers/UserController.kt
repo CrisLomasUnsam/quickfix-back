@@ -5,10 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import quickfix.dto.user.UserDTO
-import quickfix.dto.user.UserModifiedInfoDTO
-import quickfix.dto.user.SeeUserProfileDTO
-import quickfix.dto.user.UserProfileInfoDto
+import quickfix.dto.user.*
 import quickfix.services.UserService
 
 @RestController
@@ -35,6 +32,14 @@ class UserController(
     @GetMapping("/userProfileInfo")
     fun getUserProfileInfo(@ModelAttribute("currentUserId") currentUserId: Long): UserProfileInfoDto =
         UserProfileInfoDto.toDTO(userService.getById(currentUserId))
+
+    @GetMapping("/seeBasicCustomerInfo/{customerId}")
+    fun getSeeBasicCustomerInfo(@PathVariable customerId: Long): SeeBasicUserInfoDTO =
+        SeeBasicUserInfoDTO.toDTO(userService.getById(customerId), true)
+
+    @GetMapping("/seeBasicProfessionalInfo/{professionalId}")
+    fun getSeeBasicProfessionalInfo(@PathVariable professionalId: Long): SeeBasicUserInfoDTO =
+        SeeBasicUserInfoDTO.toDTO(userService.getById(professionalId), false)
 
     @PatchMapping("/avatar")
     fun updateAvatar(@ModelAttribute("currentUserId") currentUserId: Long, @RequestBody image: MultipartFile) =
