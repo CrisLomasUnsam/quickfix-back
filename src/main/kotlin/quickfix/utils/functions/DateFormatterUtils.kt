@@ -16,7 +16,7 @@ fun stringifyDate(date: LocalDate, format: DateTimeFormatter): String = date.for
 
 fun stringifyDateTimeWithoutYear(dateTime: LocalDateTime): String = dateTime.format(CustomDateTimeWithoutYearFormatter)
 
-fun stringifyDateWithHours(dateTime: LocalDateTime): String = dateTime.format(DatetimeFormatter)
+fun stringifyDateTime(dateTime: LocalDateTime): String = dateTime.format(DatetimeFormatter)
 
 fun dateTimeFromTimestamp(timestamp : Long) : LocalDateTime =
     Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDateTime()
@@ -44,4 +44,12 @@ fun LocalDate.toYearMonthString(): String {
         .getDisplayName(TextStyle.FULL, spanish)      // "junio"
         .replaceFirstChar { it.uppercase(spanish) }   // "Junio"
     return "$monthName, ${this.year}"
+}
+
+fun parseDatetime(neededDatetime: String): LocalDateTime {
+    try {
+        return LocalDateTime.parse(neededDatetime, DatetimeFormatter)
+    } catch (e: DateTimeParseException) {
+        throw IllegalDataException("La fecha debe tener el formato dd/MM/yyyy HH:mm")
+    }
 }

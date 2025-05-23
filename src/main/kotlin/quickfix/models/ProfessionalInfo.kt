@@ -11,7 +11,7 @@ class ProfessionalInfo : Identifier {
     @Id @GeneratedValue
     override var id: Long = 0
 
-    @OneToMany(cascade = [(CascadeType.ALL)], fetch = FetchType.EAGER)
+    @OneToMany(cascade = [(CascadeType.ALL)], fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "professional_id", nullable = false)
     var professionalProfessions: MutableSet<ProfessionalProfession> = mutableSetOf()
 
@@ -32,9 +32,8 @@ class ProfessionalInfo : Identifier {
         if (debt < 0) throw ProfessionalException("La deuda (debt) no puede ser negativa.")
 
         certificates.forEach { cert ->
-            if (!hasProfession(cert.profession.id)) {
+            if (!hasProfession(cert.profession.id))
                 throw ProfessionalException("El certificado '${cert.name}' pertenece a una profesión no asignada.")
-            }
         }
     }
 
@@ -44,44 +43,37 @@ class ProfessionalInfo : Identifier {
     }
 
     fun addProfession(profession: Profession) {
-        if (professionalProfessions.any { it.profession.id == profession.id }) {
+        if (professionalProfessions.any { it.profession.id == profession.id })
             throw ProfessionalException("Ya existe la profesión con id ${profession.id}.")
-        }
+
         this.professionalProfessions.add(
             ProfessionalProfession().apply {
                 this.profession = profession
-            }
-        )
+            })
     }
 
-    fun hasActiveProfession(professionId: Long) =
-        professionalProfessions.any { it.profession.id == professionId && it.active }
-
-    fun disableProfession(professionId: Long) {
-        val profession = professionalProfessions.find { it.profession.id == professionId }
-            ?: throw ProfessionalException("No existe la profesión con id $professionId para deshabilitar.")
-        profession.disable()
+    fun setProfessionStatus(professionId: Long, activated: Boolean){
+        val profession = professionalProfessions.firstOrNull { it.profession.id == professionId }
+        if (profession != null)
+            profession.active = activated
     }
 
-    fun enableProfession(professionId: Long) {
-        val profession = professionalProfessions.find { it.profession.id == professionId }
-            ?: throw ProfessionalException("No existe la profesión con id $professionId para habilitar.")
-        profession.enable()
-    }
-
-    private fun hasProfession(professionId: Long): Boolean =
+    fun hasProfession(professionId: Long): Boolean =
         professionalProfessions.any { it.profession.id == professionId }
 
     fun hasProfessionByName(professionName: String): Boolean =
         professionalProfessions.any { it.profession.name == professionName }
 
     fun removeProfession(professionId: Long) {
-        this.professionalProfessions.removeIf{ profession -> profession.id == professionId}
+        val professionToRemove = professionalProfessions.firstOrNull { it.profession.id == professionId }
+        if (professionToRemove != null)
+            professionalProfessions.remove(professionToRemove)
         this.deleteAllCertificates(professionId)
     }
 
     private fun deleteAllCertificates(professionId: Long) {
-        this.certificates.removeIf { it.profession.id == professionId }
+        val certificatesToRemove = this.certificates.filter { it.profession.id == professionId }.toSet()
+        this.certificates.removeAll(certificatesToRemove)
     }
 
     fun assertCertificateExists(certificateId: Long) {

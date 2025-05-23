@@ -1,6 +1,7 @@
 package quickfix.utils.jobs
 
 import quickfix.dto.job.jobOffer.JobOfferDTO
+import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.models.Job
 import quickfix.models.TimeUnit
 import quickfix.utils.INSTANT_REQUEST_LIVE_DAYS
@@ -24,21 +25,24 @@ fun getJobEndtime(job : Job) : LocalDateTime {
 }
 
 fun getJobOfferEndtime(jobOffer : JobOfferDTO) : LocalDateTime {
-    val jobDuration = jobOffer.jobDuration * TimeUnit.fromLabel(jobOffer.jobDurationTimeUnit)!!.minutes
-    return jobOffer.neededDatetime.plusMinutes(jobDuration)
+    val jobDuration = jobOffer.duration * TimeUnit.fromLabel(jobOffer.durationUnit)!!.minutes
+    return jobOffer.request.neededDatetime.plusMinutes(jobDuration)
 }
 
 //If it is a future request, we set a TTL to cancel it automatically as soon as the date and time of need for the service arrives.
-fun getJobRequestTTLForRedis(neededDatetime: LocalDateTime, instantRequest : Boolean) : Duration {
-    return if(instantRequest)
+fun getJobRequestTTLForRedis(jobRequest: JobRequestDTO) : Duration {
+    return if(jobRequest.instantRequest)
         Duration.ofDays(INSTANT_REQUEST_LIVE_DAYS)
     else
-        Duration.between(LocalDateTime.now(), neededDatetime).abs()
+        Duration.between(LocalDateTime.now(), jobRequest.neededDatetime).abs()
 }
 
 //If it is a future request, we set a TTL to cancel it automatically as soon as the date and time of need for the service arrives.
-fun getJobOfferTTLForRedis(neededDatetime: LocalDateTime, instantRequest : Boolean) : Duration {
+fun getJobOfferTTLForRedis(jobOffer: JobOfferDTO) : Duration {
+    val neededDatetime = jobOffer.request.neededDatetime
+    val instantRequest = jobOffer.request.instantRequest
     val instantRequestDaysLeft = Duration.between(neededDatetime, LocalDateTime.now().plusDays(INSTANT_REQUEST_LIVE_DAYS)).toDays()
+
     return if(instantRequest)
         Duration.ofDays(instantRequestDaysLeft)
     else

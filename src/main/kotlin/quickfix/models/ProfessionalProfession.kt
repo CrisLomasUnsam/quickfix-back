@@ -16,6 +16,8 @@ class ProfessionalProfession : Identifier{
 
     var active: Boolean = true
 
+    //al pedo?
+
     fun disable() {
         if (!active) throw ProfessionalException("La profesión ya estaba deshabilitada.")
         this.active = false

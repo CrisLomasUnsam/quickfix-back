@@ -1,5 +1,6 @@
 package quickfix.dto.job.jobRequest
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import io.swagger.v3.oas.annotations.media.Schema
 import quickfix.dto.user.SeeBasicUserInfoDTO
 import quickfix.utils.MINUTES_TO_BE_CONSIDERED_FUTURE_REQUEST
@@ -14,8 +15,9 @@ data class JobRequestDTO (
     var customer: SeeBasicUserInfoDTO,
     var professionId: Long,
     var detail: String,
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     var neededDatetime: LocalDateTime,
-    var instantRequest: Boolean = false
+    var instantRequest: Boolean
 )
 
 fun JobRequestDTO.validate() {
@@ -23,12 +25,6 @@ fun JobRequestDTO.validate() {
     validProfession(professionId)
     validDetail(detail)
     validDatetime(neededDatetime)
-    setInstantRequest()
-}
-
-private fun JobRequestDTO.setInstantRequest(){
-    if(neededDatetime.isBefore(LocalDateTime.now().plusMinutes(MINUTES_TO_BE_CONSIDERED_FUTURE_REQUEST)))
-        instantRequest = true
 }
 
 private fun validCustomer(customerId: Long) {

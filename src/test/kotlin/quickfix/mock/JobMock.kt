@@ -27,7 +27,7 @@ fun createJobMock (
         this.initDateTime = LocalDateTime.now()
         this.status = JobStatus.DONE
         this.profession = profession
-        this.description = ""
+        this.detail = ""
     }
 
 

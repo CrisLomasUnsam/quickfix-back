@@ -16,21 +16,21 @@ data class CustomerJobOfferDTO (
     var price: Double,
     var distance: Double,
     var estimatedArriveTime: Int,
-    var jobDuration: Int,
-    var jobDurationTimeUnit: String,
+    var duration: Int,
+    var durationUnit: String,
 
     ) {
     companion object {
         fun fromDto(jobOfferDTO: JobOfferDTO): CustomerJobOfferDTO {
             return CustomerJobOfferDTO(
-                customerId = jobOfferDTO.customer.id,
-                professionId = jobOfferDTO.profession.id,
+                customerId = jobOfferDTO.request.customer.id,
+                professionId = jobOfferDTO.request.professionId,
                 professional = jobOfferDTO.professional,
                 price = jobOfferDTO.price,
                 distance = jobOfferDTO.distance,
                 estimatedArriveTime = jobOfferDTO.estimatedArriveTime,
-                jobDuration = jobOfferDTO.jobDuration,
-                jobDurationTimeUnit = jobOfferDTO.jobDurationTimeUnit
+                duration = jobOfferDTO.duration,
+                durationUnit = jobOfferDTO.durationUnit
             )
         }
     }
