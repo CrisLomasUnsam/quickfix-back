@@ -1,13 +1,16 @@
 package quickfix.bootstrap.builders
 
 import quickfix.dto.job.jobOffer.JobOfferDTO
+import quickfix.dto.job.jobRequest.CreateJobRequestDTO
 import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.user.SeeBasicUserInfoDTO
 import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.models.User
 import quickfix.utils.enums.JobStatus
+import quickfix.utils.functions.DatetimeFormatter
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class JobBuilder {
     companion object{
@@ -28,14 +31,17 @@ class JobBuilder {
 
 class JobRequestBuilder {
     companion object{
-        fun buildMock(customer: User, profession: Profession, isInstantRequest: Boolean = false) =
-            JobRequestDTO(
-                customer = SeeBasicUserInfoDTO.toDto(customer, seeCustomerInfo = true),
-                professionId = profession.id,
+        private val formatter: DateTimeFormatter = DatetimeFormatter
+        fun buildMock(customer: User, profession: Profession, isInstantRequest: Boolean = false): CreateJobRequestDTO {
+            val datetime = if (isInstantRequest) LocalDateTime.now() else LocalDateTime.now().plusDays(1)
+            return CreateJobRequestDTO(
+                userId = customer.id,
+                serviceId = profession.id,
                 detail = "Lorem ipsum dolor em sit amet lo gump samar ipsum it.",
-                neededDatetime = if (isInstantRequest) LocalDateTime.now() else LocalDateTime.now().plusDays(1),
-                instantRequest = isInstantRequest,
+                neededDatetime = datetime.format(formatter),
+                instantRequest = isInstantRequest
             )
+        }
     }
 }
 

@@ -45,3 +45,11 @@ fun LocalDate.toYearMonthString(): String {
         .replaceFirstChar { it.uppercase(spanish) }   // "Junio"
     return "$monthName, ${this.year}"
 }
+
+fun parseDatetime(neededDatetime: String): LocalDateTime {
+    try {
+        return LocalDateTime.parse(neededDatetime, DatetimeFormatter)
+    } catch (e: DateTimeParseException) {
+        throw IllegalDataException("La fecha debe tener el formato dd/MM/yyyy HH:mm")
+    }
+}

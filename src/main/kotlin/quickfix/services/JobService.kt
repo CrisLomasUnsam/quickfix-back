@@ -9,16 +9,14 @@ import quickfix.dao.JobRepository
 import quickfix.dto.job.jobOffer.AcceptJobOfferDTO
 import quickfix.dto.job.jobOffer.JobOfferDTO
 import quickfix.dto.job.jobOffer.CustomerJobOfferDTO
-import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.MessageResponseDTO
 import quickfix.dto.chat.toMessageResponseDTO
 import quickfix.dto.job.JobDetails
 import quickfix.dto.job.JobWithRatingDTO
-import quickfix.dto.job.jobRequest.validate
 import quickfix.dto.job.jobOffer.ProfessionalJobOfferDTO
-import quickfix.dto.job.jobRequest.CustomerJobRequestDTO
-import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
+import quickfix.dto.job.jobRequest.*
+import quickfix.dto.user.SeeBasicUserInfoDTO
 import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.models.User
@@ -111,10 +109,21 @@ class JobService(
         return redisService.getJobRequests(myProfessionIds, myJobOfferKeys).map { ProfessionalJobRequestDTO.fromJobRequest(it) }
     }
 
-    fun requestJob(jobRequest : JobRequestDTO) {
-        userService.assertUserExists(jobRequest.customer.id)
-        professionService.assertProfessionExists(jobRequest.professionId)
-        redisService.requestJob(jobRequest.apply{ validate() })
+    fun requestJob(currentProfessionalId: Long, jobRequest : CreateJobRequestDTO) {
+
+        userService.assertUserExists(currentProfessionalId)
+        professionService.assertProfessionExists(jobRequest.serviceId)
+
+        jobRequest.validate()
+
+        val user = userService.getById(currentProfessionalId)
+        val customerDto = SeeBasicUserInfoDTO.toDto(user, seeCustomerInfo = true)
+
+        val jobRequestDto = jobRequest
+            .toJobRequestDTO(customerDto)
+            .apply { validate() }
+
+        redisService.requestJob(jobRequestDto)
     }
 
     fun cancelJobRequest (customerId: Long, professionId: Long) {
