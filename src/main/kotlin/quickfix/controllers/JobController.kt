@@ -6,10 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import quickfix.dto.job.JobDetails
 import quickfix.dto.job.JobWithRatingDTO
-import quickfix.dto.job.jobOffer.AcceptJobOfferDTO
-import quickfix.dto.job.jobOffer.CustomerJobOfferDTO
-import quickfix.dto.job.jobOffer.JobOfferDTO
-import quickfix.dto.job.jobOffer.ProfessionalJobOfferDTO
+import quickfix.dto.job.jobOffer.*
 import quickfix.dto.job.jobRequest.JobRequestDTO
 import quickfix.dto.job.jobRequest.CustomerJobRequestDTO
 import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
@@ -30,7 +27,7 @@ class JobController(
         return usernamePAT.principal.toString().toLong()
     }
 
-    @GetMapping("/{jobId}")
+    @GetMapping("/jobDetails/{jobId}")
     @Operation(summary = "Obtiene los detalles de jobs aceptados por customer")
     fun getJobDetailsForCustomerByJobId(@ModelAttribute("currentUserId") currentUserId: Long, @PathVariable jobId: Long): JobDetails =
         jobService.getJobDetailsById(currentUserId, jobId)
@@ -70,7 +67,7 @@ class JobController(
 
     @PostMapping("/offerJob")
     @Operation(summary = "Utilizado para que el profesional pueda enviar su oferta a un determinado JobRequest")
-    fun offerJob(@ModelAttribute("currentUserId") currentProfessionalId : Long, @RequestBody jobOffer : JobOfferDTO) =
+    fun offerJob(@ModelAttribute("currentUserId") currentProfessionalId : Long, @RequestBody jobOffer : CreateJobOfferDTO) =
         jobService.offerJob(currentProfessionalId, jobOffer)
 
     @DeleteMapping("/jobOffer")
@@ -97,14 +94,19 @@ class JobController(
     fun getJobRequests(@ModelAttribute("currentUserId") currentProfessionalId : Long) : List<ProfessionalJobRequestDTO> =
         jobService.getJobRequests(currentProfessionalId)
 
+    @GetMapping("/jobRequest")
+    @Operation(summary = "Utilizado para ver una solicitud específica (sin ofertar) desde un profesional")
+    fun getProfessionalJobRequest(@ModelAttribute("currentUserId") currentProfessionalId : Long, @RequestParam jobRequestId: String) : ProfessionalJobRequestDTO =
+        ProfessionalJobRequestDTO.fromJobRequest(jobService.getNotOfferedJobRequest(currentProfessionalId, jobRequestId))
+
     @PostMapping("/requestJob")
     @Operation(summary = "Buscar profesionales disponibles para el job seleccionado por el customer")
     fun requestJob(@RequestBody jobRequest : JobRequestDTO) =
         jobService.requestJob(jobRequest)
 
-    @DeleteMapping("/requestJob")
+    @DeleteMapping("/jobRequest")
     @Operation(summary = "Cancelar un job request")
     fun cancelJobRequest(@ModelAttribute("currentUserId") currentCustomerId : Long, @RequestParam professionId: Long) =
-        jobService.cancelJobRequest(currentCustomerId, professionId)
+        jobService.cancelJobRequest(professionId, currentCustomerId)
 }
 
