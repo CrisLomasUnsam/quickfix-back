@@ -6,10 +6,10 @@ import quickfix.utils.enums.JobStatus
 import quickfix.utils.exceptions.JobException
 import quickfix.utils.functions.stringifyDateWithHours
 
-data class JobDetails (
+data class JobDetailsDTO (
     val id : Long,
     val professionName: String,
-    val description: String,
+    val detail: String,
     val price: Double,
     val rated: Boolean,
     val date: String,
@@ -24,16 +24,16 @@ data class JobDetails (
             seeCustomerInfo: Boolean,
             totalRatings: Int
 
-        ): JobDetails {
+        ): JobDetailsDTO {
             val user = when (currentUserId) {
                 job.customer.id -> job.professional
                 job.professional.id -> job.customer
                 else -> throw JobException("No existe el Job")
             }
-            return JobDetails(
+            return JobDetailsDTO(
                 id = job.id,
                 professionName = job.profession.name,
-                description = job.description,
+                detail = job.detail,
                 price = job.price,
                 rated = false ,
                 date = stringifyDateWithHours(job.initDateTime),
@@ -44,3 +44,8 @@ data class JobDetails (
         }
     }
 }
+
+data class PendingJobDetails(
+    val distance: Int?,
+    val estimatedArrivalMinutes: Int?,
+)
