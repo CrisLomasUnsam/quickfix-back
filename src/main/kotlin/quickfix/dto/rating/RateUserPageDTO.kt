@@ -1,6 +1,5 @@
 package quickfix.dto.rating
 
-import quickfix.models.Job
 import quickfix.models.Rating
 import quickfix.models.User
 
@@ -17,13 +16,13 @@ data class RateUserPageDTO(
 
 ){
     companion object {
-        fun from(userTo: User, averageRating: Double, existingRating: Rating?, job: Job): RateUserPageDTO {
+        fun from(userTo: User, professionName: String, existingRating: Rating?): RateUserPageDTO {
             return RateUserPageDTO(
                 name = userTo.name,
                 lastName = userTo.lastName,
                 verified = userTo.verified,
-                averageRating = averageRating,
-                professionName = job.profession.name,
+                averageRating = userTo.averageRating,
+                professionName = professionName,
                 avatar = "/user/avatar/${userTo.id}",
                 score = existingRating?.score,
                 comment = existingRating?.comment

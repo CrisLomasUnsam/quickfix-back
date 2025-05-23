@@ -1,34 +1,74 @@
 package quickfix.services
 
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.RatingRepository
+import quickfix.dto.rating.RateUserPageDTO
 import quickfix.dto.rating.RatingDTO
 import quickfix.dto.rating.RatingInfoDTO
 import quickfix.models.Job
 import quickfix.models.Rating
+import quickfix.utils.PAGE_SIZE
 import quickfix.utils.exceptions.RatingException
 import java.time.LocalDate
 
 @Service
 class RatingService(
     val ratingRepository: RatingRepository,
-    val jobService: JobService
+    val jobService: JobService,
+    private val userService: UserService
 ) {
 
-    fun findRatingsReceivedByUser(userId: Long, pageable: Pageable): Page<Rating> {
-        return ratingRepository.findAllByUserToId(userId, pageable)
+    fun findCustomerRatings(customerId: Long, pageNumber: Int, ratingValue: Int): Page<Rating> {
+        if(ratingValue < 0 || ratingValue > 5 || pageNumber < 0)
+            throw RatingException("Ha habido un error en los parámetros solicitados.")
+
+        val page = PageRequest.of(pageNumber, PAGE_SIZE, Sort.Direction.ASC, "year_and_month")
+        val ratingsPage =
+            if(ratingValue > 0) ratingRepository.findByCustomerToIdAndScore(customerId, ratingValue, page)
+            else ratingRepository.findAllByCustomerToId(customerId, page)
+
+        return ratingsPage
     }
 
-    @Transactional(readOnly = true)
-    fun findRatingsMadeByUser(userId: Long): List<Rating> {
-        return ratingRepository.findAllByUserFromId(userId)
+    fun findProfessionalRatings(professionalId: Long, pageNumber: Int, ratingValue: Int): Page<Rating> {
+        if(ratingValue < 0 || ratingValue > 5 || pageNumber < 0)
+            throw RatingException("Ha habido un error en los parámetros solicitados.")
+
+        val page = PageRequest.of(pageNumber, PAGE_SIZE, Sort.Direction.ASC, "year_and_month")
+        val ratingsPage =
+            if(ratingValue > 0) ratingRepository.findByProfessionalToIdAndScore(professionalId, ratingValue, page)
+            else ratingRepository.findAllByProfessionalToId(professionalId, page)
+
+        return ratingsPage
     }
 
-    private fun getByJobId(jobId: Long) : Rating =
-        ratingRepository.findByJobId(jobId).orElseThrow { RatingException("Ha habido un error al obtener la calificación.") }
+    fun getJobRatingAsCustomer(customerId: Long, jobId: Long) : RateUserPageDTO {
+        val customer = userService.getById(customerId)
+        val job = jobService.getJobById(jobId)
+        val rating : Rating? = ratingRepository.findByCustomerFromIdAndJobId(customerId, jobId)
+        return RateUserPageDTO.from(customer, job.profession.name, rating)
+    }
+
+    fun getJobRatingAsProfessional(professionalId: Long, jobId: Long) : RateUserPageDTO {
+        val professional = userService.getById(professionalId)
+        val job = jobService.getJobById(jobId)
+        val rating : Rating? = ratingRepository.findByProfessionalFromIdAndJobId(professionalId, jobId)
+        return RateUserPageDTO.from(professional, job.profession.name, rating)
+    }
+
+    fun findRatingsReceivedByCustomer(customerId: Long, pageNumber: Int): Page<Rating> {
+        val page = PageRequest.of(pageNumber, PAGE_SIZE, Sort.Direction.ASC, "year_and_month")
+        return ratingRepository.findAllByCustomerToId(customerId, page)
+    }
+
+    fun findRatingsReceivedByProfessional(professionalId: Long, pageNumber: Int): Page<Rating> {
+        val page = PageRequest.of(pageNumber, PAGE_SIZE, Sort.Direction.ASC, "year_and_month")
+        return ratingRepository.findAllByProfessionalToId(professionalId, page)
+    }
 
     @Transactional(rollbackFor = [Exception::class])
     fun rateUser(raterUserId: Long, ratingDTO: RatingDTO) {
@@ -78,7 +118,7 @@ class RatingService(
         if(!ratingRepository.existsByJobIdAndUserFromId(data.jobId, userId))
             throw RatingException("Ha habido un error al modificar esta calificación.")
 
-        val rating : Rating = getByJobId(data.jobId)
+        val rating = ratingRepository.findByJobIdAndUserFromId(data.jobId, userId).orElseThrow {RatingException("Ha habido un error al modificar esta calificación.")}
         val raterIsCustomer = userId == rating.job.customer.id
 
         if(raterIsCustomer)
