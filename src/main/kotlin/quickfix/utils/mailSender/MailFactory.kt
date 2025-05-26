@@ -1,16 +1,21 @@
 package quickfix.utils.mailSender
 
-import quickfix.utils.events.OnChangePasswordRequestEvent
-import quickfix.utils.events.OnJobStartedEvent
-import quickfix.utils.events.OnRatingReceivedEvent
-import quickfix.utils.events.OnRegistrationCompletedEvent
+import quickfix.utils.events.*
 
 object MailFactory {
     fun getStrategyByEvent(event: Any): IMailContent? = when (event) {
         is OnRegistrationCompletedEvent -> RegistrationMail()
         is OnChangePasswordRequestEvent -> PasswordRecoveryMail()
-        is OnJobStartedEvent -> JobStartedMail()
         is OnRatingReceivedEvent -> RatingReceivedMail()
+        is OnRatingEditedEvent -> RatingEditedMail()
+        is OnJobRequestedEvent -> JobRequestedMail()
+        is OnJobOfferedEvent -> JobOfferedMail()
+        is OnJobAcceptedEvent -> JobAcceptedMail()
+        is OnJobStartedEvent -> JobStartedMail()
+        is OnJobDoneEvent -> JobDoneMail()
+        is OnJobCanceledEvent -> JobCanceledMail()
+        is OnDebtPaidEvent -> DebtPaidMail()
+        is OnChangedUserInfoEvent -> UserInfoEditedMail()
         else -> null
     }
 }

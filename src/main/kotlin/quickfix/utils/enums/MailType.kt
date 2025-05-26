@@ -7,7 +7,10 @@ enum class MailType(val subject: String) {
     JOB_OFFERED("Ha ofertado en un trabajo"),
     JOB_ACCEPTED("Han aceptado tu oferta"),
     JOB_STARTED("Trabajo iniciado"),
-    JOB_ENDED("Trabajo finalizado"),
+    JOB_DONE("Trabajo finalizado exitosamente"),
     JOB_CANCELED("Trabajo cancelado"),
     RATING_RECEIVED("Nueva calificación recibida"),
+    RATING_EDITED("Calificación editada"),
+    DEBT_PAID("Estado de deuda"),
+    INFO_EDITED("Datos actualizados")
 }
