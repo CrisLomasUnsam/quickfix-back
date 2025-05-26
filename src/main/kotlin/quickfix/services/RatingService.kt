@@ -1,5 +1,6 @@
 package quickfix.services
 
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -12,6 +13,8 @@ import quickfix.dto.rating.RatingInfoDTO
 import quickfix.models.Job
 import quickfix.models.Rating
 import quickfix.utils.PAGE_SIZE
+import quickfix.utils.events.OnRatingEditedEvent
+import quickfix.utils.events.OnRatingReceivedEvent
 import quickfix.utils.exceptions.RatingException
 import java.time.LocalDate
 
@@ -19,7 +22,8 @@ import java.time.LocalDate
 class RatingService(
     val ratingRepository: RatingRepository,
     val jobService: JobService,
-    private val userService: UserService
+    private val userService: UserService,
+    private val eventPublisher: ApplicationEventPublisher
 ) {
 
     fun findCustomerRatings(customerId: Long, pageNumber: Int, ratingValue: Int): Page<Rating> {
@@ -96,6 +100,7 @@ class RatingService(
         }.also { it.validate() }
 
         ratingRepository.save(rating)
+        eventPublisher.publishEvent(OnRatingReceivedEvent(rating))
     }
 
     @Transactional(rollbackFor = [Exception::class])
@@ -130,6 +135,7 @@ class RatingService(
             score = data.score
             comment = data.comment
         }.also { it.validate() }
+        eventPublisher.publishEvent(OnRatingEditedEvent(rating))
     }
 
     @Transactional(rollbackFor = [Exception::class])

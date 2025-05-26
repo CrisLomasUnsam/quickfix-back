@@ -1,5 +1,6 @@
 package quickfix.services
 
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -27,6 +28,7 @@ import quickfix.models.Profession
 import quickfix.models.User
 import quickfix.utils.PAGE_SIZE
 import quickfix.utils.enums.JobStatus
+import quickfix.utils.events.*
 import quickfix.utils.exceptions.JobException
 import quickfix.utils.jobs.dateTimesCollides
 import quickfix.utils.jobs.getJobEndtime
@@ -40,7 +42,8 @@ class JobService(
     val redisService: RedisService,
     val userService: UserService,
     val professionalService: ProfessionalService,
-    val professionService: ProfessionService
+    val professionService: ProfessionService,
+    val eventPublisher: ApplicationEventPublisher
 ){
 
     fun getJobById(id: Long): Job =
@@ -57,18 +60,21 @@ class JobService(
     @Transactional(rollbackFor = [Exception::class])
     fun setJobAsDone(professionalId: Long, jobId: Long) {
         assertUserExistsInJob(professionalId, jobId)
-        updateJobStatus(jobId, JobStatus.DONE)
+        val job = updateJobStatus(jobId, JobStatus.DONE)
+        eventPublisher.publishEvent(OnJobDoneEvent(job))
     }
 
     @Transactional(rollbackFor = [Exception::class])
     fun setJobAsCancelled(userId: Long, jobId: Long) {
         assertUserExistsInJob(userId, jobId)
-        updateJobStatus(jobId, JobStatus.CANCELED)
+        val job = updateJobStatus(jobId, JobStatus.CANCELED)
+        eventPublisher.publishEvent(OnJobCanceledEvent(job))
     }
 
-    private fun updateJobStatus(id: Long, status: JobStatus) {
+    private fun updateJobStatus(id: Long, status: JobStatus): Job {
         val job = this.getJobById(id)
         job.status = status
+        return job
     }
 
     private fun sortMyJobsPageByDate(pageNumber: Int?) : PageRequest? {
@@ -143,6 +149,7 @@ class JobService(
         val jobRequestDto = jobRequest.toJobRequestDTO(customerDto).apply { validate() }
 
         redisService.requestJob(jobRequestDto)
+        eventPublisher.publishEvent(OnJobRequestedEvent(jobRequestDto))
     }
 
     fun cancelJobRequest (professionId: Long, customerId: Long) {
@@ -171,6 +178,7 @@ class JobService(
         val offer = CreateJobOfferDTO.toJobOffer(newJobOffer, request, professional)
         assertProfessionalCanOfferJob(professional, offer)
         redisService.offerJob(offer)
+        eventPublisher.publishEvent(OnJobOfferedEvent(offer))
     }
 
     private fun assertProfessionalCanOfferJob(professional : User, jobOffer: JobOfferDTO) {
@@ -219,6 +227,7 @@ class JobService(
 
         jobRepository.save(job)
         redisService.removeJobRequest(profession.id, customerId)
+        eventPublisher.publishEvent(OnJobAcceptedEvent(job))
     }
 
     /*************************
