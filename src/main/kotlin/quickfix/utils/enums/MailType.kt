@@ -5,9 +5,9 @@ enum class MailType(val subject: String) {
     PASSWORD_RECOVERY("Recupere su contraseña"),
     JOB_REQUESTED("Ha solicitado un trabajo"),
     JOB_OFFERED("Ha ofertado en un trabajo"),
+    JOB_ACCEPTED("Han aceptado tu oferta"),
     JOB_STARTED("Trabajo iniciado"),
     JOB_ENDED("Trabajo finalizado"),
     JOB_CANCELED("Trabajo cancelado"),
-    REVIEW_LEFT("Nueva calificación recibida"),
-
+    RATING_RECEIVED("Nueva calificación recibida"),
 }
