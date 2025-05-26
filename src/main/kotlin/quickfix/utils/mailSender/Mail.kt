@@ -10,28 +10,16 @@ data class Mail(
 ) {
     companion object {
 
-        fun toRegistrationMail(
+        fun toNotificationMail(
             to: String,
+            subject: String,
             content: String
 
         ): Mail {
             return Mail(
                 from = FROM,
                 to = to,
-                subject = "Confirme su cuenta",
-                content = content
-            )
-        }
-
-        fun toPasswordRecoveryMail(
-            to: String,
-            content: String
-
-        ): Mail {
-            return Mail(
-                from = FROM,
-                to = to,
-                subject = "Recupere su contraseña",
+                subject = subject,
                 content = content
             )
         }
