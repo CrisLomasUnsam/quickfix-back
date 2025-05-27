@@ -11,18 +11,18 @@ class SmtpMailSender(
 
 ) : IMailSender {
 
-    override fun sendEmail(mails: List<Mail>) {
-        mails.forEach { mail ->
+    override fun sendEmail(mail: List<Mail>) {
+        mail.forEach {
             try {
                 val message: MimeMessage = javaMailSender.createMimeMessage()
                 val helper = MimeMessageHelper(message, true)
 
-                helper.setFrom(mail.from)
-                helper.setTo(mail.to)
-                helper.setSubject(mail.subject)
-                helper.setText(mail.content, true)
+                helper.setFrom(it.from)
+                helper.setTo(it.to)
+                helper.setSubject(it.subject)
+                helper.setText(it.content, true)
                 javaMailSender.send(message)
-                println("Email enviado a ${mail.to}")
+                //println("Email enviado a ${it.to}")
 
             } catch (e: Exception) {
                 println("Error: ${e.message}")
