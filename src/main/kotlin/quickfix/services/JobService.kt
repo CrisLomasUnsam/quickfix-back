@@ -28,6 +28,7 @@ import quickfix.models.Profession
 import quickfix.models.User
 import quickfix.utils.PAGE_SIZE
 import quickfix.utils.enums.JobStatus
+import quickfix.utils.enums.MailType
 import quickfix.utils.events.*
 import quickfix.utils.exceptions.JobException
 import quickfix.utils.jobs.dateTimesCollides
@@ -61,14 +62,14 @@ class JobService(
     fun setJobAsDone(professionalId: Long, jobId: Long) {
         assertUserExistsInJob(professionalId, jobId)
         val job = updateJobStatus(jobId, JobStatus.DONE)
-        eventPublisher.publishEvent(OnJobDoneEvent(job))
+        eventPublisher.publishEvent(OnJobNotificationEvent(job,MailType.JOB_DONE))
     }
 
     @Transactional(rollbackFor = [Exception::class])
     fun setJobAsCancelled(userId: Long, jobId: Long) {
         assertUserExistsInJob(userId, jobId)
         val job = updateJobStatus(jobId, JobStatus.CANCELED)
-        eventPublisher.publishEvent(OnJobCanceledEvent(job))
+        eventPublisher.publishEvent(OnJobNotificationEvent(job,MailType.JOB_CANCELED))
     }
 
     private fun updateJobStatus(id: Long, status: JobStatus): Job {
@@ -148,8 +149,8 @@ class JobService(
         val customerDto = SeeBasicUserInfoDTO.toDTO(userService.getById(currentCustomerId), seeCustomerInfo = true)
         val jobRequestDto = jobRequest.toJobRequestDTO(customerDto).apply { validate() }
 
-        redisService.requestJob(jobRequestDto)
         eventPublisher.publishEvent(OnJobRequestedEvent(jobRequestDto))
+        redisService.requestJob(jobRequestDto)
     }
 
     fun cancelJobRequest (professionId: Long, customerId: Long) {
@@ -177,8 +178,8 @@ class JobService(
         val professional = userService.getById(professionalId)
         val offer = CreateJobOfferDTO.toJobOffer(newJobOffer, request, professional)
         assertProfessionalCanOfferJob(professional, offer)
-        redisService.offerJob(offer)
         eventPublisher.publishEvent(OnJobOfferedEvent(offer))
+        redisService.offerJob(offer)
     }
 
     private fun assertProfessionalCanOfferJob(professional : User, jobOffer: JobOfferDTO) {
@@ -226,8 +227,8 @@ class JobService(
         }
 
         jobRepository.save(job)
+        eventPublisher.publishEvent(OnJobNotificationEvent(job,MailType.JOB_ACCEPTED))
         redisService.removeJobRequest(profession.id, customerId)
-        eventPublisher.publishEvent(OnJobAcceptedEvent(job))
     }
 
     /*************************

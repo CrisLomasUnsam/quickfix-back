@@ -37,19 +37,6 @@ class PasswordRecoveryMail : MailTemplate(), IMailContent {
     }
 }
 
-class JobStartedMail : MailTemplate(), IMailContent {
-    override fun generateMail(event: Any): List<Mail> {
-        val e = event as OnJobStartedEvent
-        val content = buildHtml("""
-            <p>El trabajo de ${e.job.profession.name} ha sido iniciado.</p>
-        """.trimIndent())
-        return listOf(
-            Mail.toNotificationMail(e.job.professional.mail, MailType.JOB_STARTED.subject, content),
-            Mail.toNotificationMail(e.job.customer.mail, MailType.JOB_STARTED.subject, content)
-        )
-    }
-}
-
 class JobRequestedMail : MailTemplate(), IMailContent {
     override fun generateMail(event: Any): List<Mail> {
         val e = event as OnJobRequestedEvent
@@ -79,46 +66,53 @@ class JobOfferedMail : MailTemplate(), IMailContent {
     }
 }
 
-class JobAcceptedMail : MailTemplate(), IMailContent {
+class JobNotificationMail : MailTemplate(), IMailContent {
     override fun generateMail(event: Any): List<Mail> {
-        val e = event as OnJobAcceptedEvent
-        val content = buildHtml("""
-            <p>Hola ${e.job.professional.name},</p>
-            <p>Tu oferta para el trabajo de ${e.job.profession.name} ha sido aceptada.</p>
-        """.trimIndent())
-        return listOf(
-            Mail.toNotificationMail(e.job.professional.mail, MailType.JOB_ACCEPTED.subject, content)
-        )
+        val e = event as OnJobNotificationEvent
+        val job = e.job
+        val professionName = job.profession.name
+
+        val (content, mailRecipients) = when (e.type) {
+
+            MailType.JOB_STARTED -> {
+                val content = buildHtml("""
+                    <p>El trabajo de $professionName ha sido iniciado.</p>
+                    """.trimIndent())
+                content to listOf(job.professional, job.customer)
+            }
+
+            MailType.JOB_ACCEPTED -> {
+                val content = buildHtml("""
+                    <p>Hola ${job.professional.name},</p>
+                    <p>Tu oferta para el trabajo de $professionName ha sido aceptada.</p>
+                """.trimIndent())
+                content to listOf(job.professional)
+            }
+
+            MailType.JOB_DONE -> {
+                val content = buildHtml("""
+                    <p>El trabajo de $professionName ha finalizado.</p>
+                """.trimIndent())
+                content to listOf(job.professional, job.customer)
+            }
+
+            MailType.JOB_CANCELED -> {
+                val content = buildHtml("""
+                    <p>El trabajo de $professionName ha sido cancelado.</p>
+                """)
+                content to listOf(job.professional, job.customer)
+            }
+
+            else -> throw IllegalArgumentException("MailType no manejado: ${e.type}")
+        }
+
+        return mailRecipients.map { user ->
+            Mail.toNotificationMail(user.mail, e.type.subject, content)
+        }
     }
 }
 
-class JobDoneMail : MailTemplate(), IMailContent {
-    override fun generateMail(event: Any): List<Mail> {
-        val e = event as OnJobDoneEvent
-        val content = buildHtml("""
-            <p>El trabajo de ${e.job.profession.name} ha finalizado.</p>
-        """.trimIndent())
-        return listOf(
-            Mail.toNotificationMail(e.job.professional.mail, MailType.JOB_DONE.subject, content),
-            Mail.toNotificationMail(e.job.customer.mail, MailType.JOB_DONE.subject, content)
-        )
-    }
-}
-
-class JobCanceledMail : MailTemplate(), IMailContent {
-    override fun generateMail(event: Any): List<Mail> {
-        val e = event as OnJobCanceledEvent
-        val content = buildHtml("""
-            <p>El trabajo de ${e.job.profession.name} ha sido cancelado.</p>
-        """.trimIndent())
-        return listOf(
-            Mail.toNotificationMail(e.job.professional.mail, MailType.JOB_CANCELED.subject, content),
-            Mail.toNotificationMail(e.job.customer.mail, MailType.JOB_CANCELED.subject, content)
-        )
-    }
-}
-
-class RatingReceivedMail: MailTemplate(), IMailContent {
+class RatingReceivedMail : MailTemplate(), IMailContent {
     override fun generateMail(event: Any): List<Mail> {
         val e = event as OnRatingReceivedEvent
         val content = buildHtml("""
@@ -131,7 +125,7 @@ class RatingReceivedMail: MailTemplate(), IMailContent {
     }
 }
 
-class RatingEditedMail: MailTemplate(), IMailContent {
+class RatingEditedMail : MailTemplate(), IMailContent {
     override fun generateMail(event: Any): List<Mail> {
         val e = event as OnRatingEditedEvent
         val content = buildHtml("""
@@ -144,7 +138,7 @@ class RatingEditedMail: MailTemplate(), IMailContent {
     }
 }
 
-class DebtPaidMail: MailTemplate(), IMailContent {
+class DebtPaidMail : MailTemplate(), IMailContent {
     override fun generateMail(event: Any): List<Mail> {
         val e = event as OnDebtPaidEvent
         val content = buildHtml("""
@@ -157,7 +151,7 @@ class DebtPaidMail: MailTemplate(), IMailContent {
     }
 }
 
-class UserInfoEditedMail: MailTemplate(), IMailContent {
+class UserInfoEditedMail : MailTemplate(), IMailContent {
     override fun generateMail(event: Any): List<Mail> {
         val e = event as OnChangedUserInfoEvent
         val content = buildHtml("""

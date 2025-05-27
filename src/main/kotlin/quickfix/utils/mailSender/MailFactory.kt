@@ -8,12 +8,9 @@ object MailFactory {
         is OnChangePasswordRequestEvent -> PasswordRecoveryMail()
         is OnRatingReceivedEvent -> RatingReceivedMail()
         is OnRatingEditedEvent -> RatingEditedMail()
+        is OnJobNotificationEvent -> JobNotificationMail()
         is OnJobRequestedEvent -> JobRequestedMail()
         is OnJobOfferedEvent -> JobOfferedMail()
-        is OnJobAcceptedEvent -> JobAcceptedMail()
-        is OnJobStartedEvent -> JobStartedMail()
-        is OnJobDoneEvent -> JobDoneMail()
-        is OnJobCanceledEvent -> JobCanceledMail()
         is OnDebtPaidEvent -> DebtPaidMail()
         is OnChangedUserInfoEvent -> UserInfoEditedMail()
         else -> null
