@@ -2,6 +2,7 @@ package quickfix.dto.rating
 
 import quickfix.models.Rating
 import quickfix.models.User
+import quickfix.utils.functions.getAvatarUrl
 
 
 data class RateUserPageDTO(
@@ -23,7 +24,7 @@ data class RateUserPageDTO(
                 verified = userTo.verified,
                 averageRating = userTo.averageRating,
                 professionName = professionName,
-                avatar = "/user/avatar/${userTo.id}",
+                avatar = getAvatarUrl(userTo.id),
                 score = existingRating?.score,
                 comment = existingRating?.comment
             )
