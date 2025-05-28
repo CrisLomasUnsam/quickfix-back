@@ -1,13 +1,13 @@
 package quickfix.dto.job
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import quickfix.utils.enums.JobStatus
-import quickfix.utils.functions.DateWithDayFormatter
 import quickfix.utils.functions.getAvatarUrl
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 interface IJobWithRating {
     fun getId(): Long
-    fun getInitDateTime(): LocalDate
+    fun getInitDateTime(): LocalDateTime
     fun getUserName(): String
     fun getUserLastName(): String
     fun getProfessionName(): String
@@ -19,7 +19,8 @@ interface IJobWithRating {
 
 data class JobWithRatingDTO(
     val id: Long,
-    val initDateTime: String,
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    val initDateTime: LocalDateTime,
     val userName: String,
     val userLastName: String,
     val professionName: String,
@@ -32,7 +33,7 @@ data class JobWithRatingDTO(
         fun fromProjection(job : IJobWithRating) : JobWithRatingDTO =
             JobWithRatingDTO(
                 id = job.getId(),
-                initDateTime = job.getInitDateTime().format(DateWithDayFormatter),
+                initDateTime = job.getInitDateTime(),
                 userName = job.getUserName(),
                 userLastName = job.getUserLastName(),
                 professionName = job.getProfessionName(),

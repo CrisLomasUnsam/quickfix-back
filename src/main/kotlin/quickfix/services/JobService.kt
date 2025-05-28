@@ -2,7 +2,6 @@ package quickfix.services
 
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import quickfix.dao.JobRepository
@@ -48,11 +47,11 @@ class JobService(
 
     @Transactional(readOnly = true)
     fun findMyJobsByCustomerId(customerId: Long, pageNumber: Int?): Page<JobWithRatingDTO> =
-        jobRepository.findAllJobsByCustomerId(customerId, sortMyJobsPageByDate(pageNumber)).map { JobWithRatingDTO.fromProjection(it) }
+        jobRepository.findAllJobsByCustomerId(customerId, getMyJobsPageRequest(pageNumber)).map { JobWithRatingDTO.fromProjection(it) }
 
     @Transactional(readOnly = true)
     fun findMyJobsByProfessionalId(professionalId: Long, pageNumber: Int?): Page<JobWithRatingDTO> =
-        jobRepository.findAllJobsByProfessionalId(professionalId, sortMyJobsPageByDate(pageNumber)).map { JobWithRatingDTO.fromProjection(it) }
+        jobRepository.findAllJobsByProfessionalId(professionalId, getMyJobsPageRequest(pageNumber)).map { JobWithRatingDTO.fromProjection(it) }
 
     @Transactional(rollbackFor = [Exception::class])
     fun setJobAsDone(professionalId: Long, jobId: Long) {
@@ -71,10 +70,9 @@ class JobService(
         job.status = status
     }
 
-    private fun sortMyJobsPageByDate(pageNumber: Int?) : PageRequest? {
+    private fun getMyJobsPageRequest(pageNumber: Int?) : PageRequest? {
         if(pageNumber == null) return null
-        val sort: Sort = Sort.by("initDateTime").descending()
-        return PageRequest.of(pageNumber, PAGE_SIZE, sort)
+        return PageRequest.of(pageNumber, PAGE_SIZE)
     }
 
     fun getJobDetailsById(currentUserId: Long, jobId: Long): JobDetailsDTO {

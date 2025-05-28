@@ -50,7 +50,7 @@ interface JobRepository : JpaRepository<Job, Long> {
                 on r.job_id = j.id
                 and r.user_to_id = j.professional_id
             where j.customer_id = :customerId
-            order by j.init_date_time asc
+            order by j.init_date_time desc
         """,
         nativeQuery = true)
     fun findAllJobsByCustomerId(@Param("customerId") customerId: Long, pageable: Pageable?): Page<IJobWithRating>
@@ -79,7 +79,7 @@ interface JobRepository : JpaRepository<Job, Long> {
                 on r.job_id = j.id
                 and r.user_to_id = j.customer_id
             where j.professional_id = :professionalId
-            order by j.init_date_time asc
+            order by j.init_date_time desc
         """,
         nativeQuery = true)
     fun findAllJobsByProfessionalId(@Param("professionalId") professionalId: Long, pageable: Pageable?): Page<IJobWithRating>
