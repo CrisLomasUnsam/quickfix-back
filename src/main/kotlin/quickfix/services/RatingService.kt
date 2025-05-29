@@ -50,14 +50,14 @@ class RatingService(
         jobService.assertUserExistsInJob(customerId, jobId)
         val job = jobService.getJobById(jobId)
         val rating : Rating? = ratingRepository.findByCustomerFromIdAndJobId(customerId, jobId)
-        return RateUserPageDTO.from(job.professional, job.profession.name, rating)
+        return RateUserPageDTO.from(job.professional, job.profession.id, rating)
     }
 
     fun getJobRatingAsProfessional(professionalId: Long, jobId: Long) : RateUserPageDTO {
         jobService.assertUserExistsInJob(professionalId, jobId)
         val job = jobService.getJobById(jobId)
         val rating : Rating? = ratingRepository.findByProfessionalFromIdAndJobId(professionalId, jobId)
-        return RateUserPageDTO.from(job.customer, job.profession.name, rating)
+        return RateUserPageDTO.from(job.customer, job.profession.id, rating)
     }
 
     fun findRatingsReceivedByCustomer(customerId: Long, pageNumber: Int): Page<Rating> {
