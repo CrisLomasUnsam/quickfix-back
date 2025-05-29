@@ -46,13 +46,21 @@ class JobController(
     fun findJobsByProfessionalId(@ModelAttribute("currentUserId") currentProfessionalId : Long, @RequestParam (required = false) pageNumber: Int? ) : PageDTO<JobCardDTO> =
         PageDTO.toJobWithRatingPageDTO(jobService.findMyJobsByProfessionalId(currentProfessionalId, pageNumber))
 
-    @PatchMapping("/complete/{jobId}")
-    fun setJobAsDone(@ModelAttribute("currentUserId") currentProfessionalId : Long, @PathVariable jobId: Long) =
-        jobService.setJobAsDone(currentProfessionalId, jobId)
+    @PatchMapping("/start/{jobId}")
+    fun startJob(@ModelAttribute("currentUserId") currentProfessionalId : Long, @PathVariable jobId: Long) =
+        jobService.startJob(currentProfessionalId, jobId)
 
-    @PatchMapping("/cancel/{jobId}")
-    fun setJobAsCancelled(@ModelAttribute("currentUserId") currentUserId : Long, @PathVariable jobId: Long) =
-        jobService.setJobAsCancelled(currentUserId, jobId)
+    @PatchMapping("/finish/{jobId}")
+    fun finishJob(@ModelAttribute("currentUserId") currentProfessionalId : Long, @PathVariable jobId: Long) =
+        jobService.finishJob(currentProfessionalId, jobId)
+
+    @PatchMapping("/cancelAsCustomer{jobId}")
+    fun cancelJobAsCustomer(@ModelAttribute("currentUserId") currentCustomerId : Long, @PathVariable jobId: Long) =
+        jobService.cancelJobAsCustomer(currentCustomerId, jobId)
+
+    @PatchMapping("/cancelAsProfessional/{jobId}")
+    fun cancelJobAsProfessional(@ModelAttribute("currentUserId") currentProfessionalId : Long, @PathVariable jobId: Long) =
+        jobService.cancelJobAsProfessional(currentProfessionalId, jobId)
 
     /*************************
      JOB OFFERS
