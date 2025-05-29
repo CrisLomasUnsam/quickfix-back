@@ -14,6 +14,7 @@ import quickfix.models.Token
 import quickfix.models.User
 import quickfix.utils.FRONTEND_URL
 import quickfix.utils.events.OnChangePasswordRequestEvent
+import quickfix.utils.events.OnChangedUserInfoEvent
 import quickfix.utils.exceptions.NotFoundException
 import java.util.*
 
@@ -59,6 +60,7 @@ class UserService(
     fun changeUserInfo(id: Long, modifiedInfo: UserModifiedInfoDTO) {
         val user = this.getById(id)
         user.updateUserInfo(modifiedInfo)
+        eventPublisher.publishEvent(OnChangedUserInfoEvent(user.mail))
     }
 
     @Transactional(rollbackFor = [Exception::class])

@@ -1,5 +1,6 @@
 package quickfix.services
 
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -10,6 +11,7 @@ import quickfix.models.Certificate
 import quickfix.models.ProfessionalInfo
 import quickfix.models.ProfessionalProfession
 import quickfix.utils.commission
+import quickfix.utils.events.OnDebtPaidEvent
 import quickfix.utils.exceptions.ProfessionalException
 import quickfix.utils.functions.datifyStringMonthAndYear
 
@@ -18,7 +20,8 @@ class ProfessionalService(
     val userService: UserService,
     val professionService: ProfessionService,
     private val userRepository: UserRepository,
-    private val imageService: ImageService
+    private val imageService: ImageService,
+    val eventPublisher: ApplicationEventPublisher
 )  {
 
     fun getActiveProfessionIds(professionalId : Long) : Set<Long> {
@@ -110,7 +113,9 @@ class ProfessionalService(
 
     @Transactional
     fun payDebt(professionalId: Long) {
-        val professional = userService.getById(professionalId).professionalInfo
+        val professionalInfo = userService.getById(professionalId)
+        val professional = professionalInfo.professionalInfo
         professional.payDebt()
+        eventPublisher.publishEvent(OnDebtPaidEvent(professionalInfo.name, professionalInfo.mail))
     }
 }

@@ -11,7 +11,8 @@ data class SeeBasicUserInfoDTO  (
     var verified: Boolean,
     var averageRating: Double,
     var totalRatings: Int? = null,
-    var hasVehicle: Boolean? = null
+    var hasVehicle: Boolean? = null,
+    var mail: String
 ) {
     companion object {
         fun toDTO(user: User, seeCustomerInfo: Boolean, totalRatings: Int? = null): SeeBasicUserInfoDTO {
@@ -27,7 +28,8 @@ data class SeeBasicUserInfoDTO  (
                 verified = user.verified,
                 averageRating = userAverageRating,
                 totalRatings = totalRatings,
-                hasVehicle = if(seeCustomerInfo) null else user.professionalInfo.hasVehicle
+                hasVehicle = if(seeCustomerInfo) null else user.professionalInfo.hasVehicle,
+                mail = user.mail
             )
         }
     }
