@@ -24,6 +24,7 @@ import quickfix.dto.job.jobRequest.*
 import quickfix.dto.user.SeeBasicUserInfoDTO
 import quickfix.models.Job
 import quickfix.models.Profession
+import quickfix.models.ProfessionalInfo
 import quickfix.models.User
 import quickfix.utils.PAGE_SIZE
 import quickfix.utils.enums.JobStatus
@@ -34,7 +35,9 @@ import quickfix.utils.jobs.dateTimesCollides
 import quickfix.utils.jobs.getJobEndtime
 import quickfix.utils.jobs.getJobOfferEndtime
 import quickfix.utils.jobs.getJobRequestKey
+import java.time.Duration
 import java.time.LocalDateTime
+import kotlin.math.absoluteValue
 
 @Service
 class JobService(
@@ -58,23 +61,64 @@ class JobService(
         jobRepository.findAllJobsByProfessionalId(professionalId, getMyJobsPageRequest(pageNumber)).map { JobCardDTO.fromProjection(it) }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun setJobAsDone(professionalId: Long, jobId: Long) {
-        assertUserExistsInJob(professionalId, jobId)
-        val job = updateJobStatus(jobId, JobStatus.DONE)
+    fun startJob(professionalId: Long, jobId: Long) {
+        val job = getJobById(jobId)
+        if(job.professional.id != professionalId || job.status != JobStatus.PENDING)
+            throw JobException("Ha habido un error al iniciar este trabajo.")
+
+        job.status = JobStatus.IN_PROGRESS
+        eventPublisher.publishEvent(OnJobNotificationEvent(job,MailType.JOB_STARTED))
+    }
+
+    @Transactional(rollbackFor = [Exception::class])
+    fun finishJob(professionalId: Long, jobId: Long) {
+        val job = getJobById(jobId)
+        if(job.professional.id != professionalId || job.status != JobStatus.IN_PROGRESS)
+            throw JobException("Ha habido un error al finalizar este trabajo.")
+
+        job.status = JobStatus.DONE
+        redisService.deleteChatMessages(jobId)
         eventPublisher.publishEvent(OnJobNotificationEvent(job,MailType.JOB_DONE))
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun setJobAsCancelled(userId: Long, jobId: Long) {
-        assertUserExistsInJob(userId, jobId)
-        val job = updateJobStatus(jobId, JobStatus.CANCELED)
+    fun cancelJobAsCustomer(customerId: Long, jobId: Long) {
+        val job = getJobById(jobId)
+        if(job.customer.id != customerId || jobStatusCanNotBeCancelled(job.status))
+            throw JobException("Ha habido un error al cancelar este trabajo.")
+
+        if(hasToAddCancellationInLastHour(job)){
+            val customer : User = userService.getById(customerId)
+            customer.cancellationsInLastHour += 1
+        }
+        job.status = JobStatus.CANCELED
+        redisService.deleteChatMessages(jobId)
         eventPublisher.publishEvent(OnJobNotificationEvent(job,MailType.JOB_CANCELED))
     }
 
-    private fun updateJobStatus(id: Long, status: JobStatus): Job {
-        val job = this.getJobById(id)
-        job.status = status
-        return job
+    @Transactional(rollbackFor = [Exception::class])
+    fun cancelJobAsProfessional(professionalId: Long, jobId: Long) {
+        val job = getJobById(jobId)
+        if(job.professional.id != professionalId || jobStatusCanNotBeCancelled(job.status))
+            throw JobException("Ha habido un error al cancelar este trabajo.")
+
+        if(hasToAddCancellationInLastHour(job)){
+            val professional : ProfessionalInfo = userService.getProfessionalInfo(professionalId)
+            professional.cancellationsInLastHour += 1
+        }
+        job.status = JobStatus.CANCELED
+        redisService.deleteChatMessages(jobId)
+        eventPublisher.publishEvent(OnJobNotificationEvent(job,MailType.JOB_CANCELED))
+    }
+
+    private fun jobStatusCanNotBeCancelled(status: JobStatus) =
+        JobStatus.DONE == status || JobStatus.CANCELED == status
+
+    private fun hasToAddCancellationInLastHour(job: Job) : Boolean{
+        val isInProgress = job.status == JobStatus.IN_PROGRESS
+        val cancellationIsBeforeInit = LocalDateTime.now().isBefore(job.initDateTime)
+        val differenceIsLessThanAnHour =  Duration.between(LocalDateTime.now(), job.initDateTime).toMinutes().absoluteValue <= 60
+        return isInProgress || (cancellationIsBeforeInit && differenceIsLessThanAnHour)
     }
 
     private fun getMyJobsPageRequest(pageNumber: Int?) : PageRequest? {
@@ -107,20 +151,17 @@ class JobService(
      JOB REQUEST METHODS
      **************************/
 
-    @Transactional(readOnly = true)
     fun getMyJobRequests(customerId : Long) : List<CustomerJobRequestDTO> {
         val myJobRequests = redisService.getMyJobRequests(customerId)
         return myJobRequests.map{ CustomerJobRequestDTO.fromJobRequest(it, redisService.countOffersForRequest(it)) }
     }
 
-    @Transactional(readOnly = true)
     fun getJobRequests(professionalId : Long) : List<ProfessionalJobRequestDTO> {
         val myProfessionIds : Set<Long> = professionalService.getActiveProfessionIds(professionalId)
         val myJobOfferKeys = getMyJobOffers(professionalId).map{ it.requestId }.toSet()
         return redisService.getJobRequests(myProfessionIds, myJobOfferKeys).map { ProfessionalJobRequestDTO.fromJobRequest(it) }
     }
 
-    @Transactional(readOnly = true)
     fun getNotOfferedJobRequest(professionalId : Long, jobRequestId: String) : JobRequestDTO {
         val jobRequest = redisService.getJobRequest(jobRequestId) ?: throw JobException("La solicitud expiró.")
         validateCanViewNotOfferedRequest(professionalId, jobRequest)
@@ -232,11 +273,6 @@ class JobService(
     /*************************
         CHAT METHODS
     **************************/
-
-    private fun deleteChatMessages(jobId: Long){
-        val job = getJobById(jobId)
-        redisService.deleteChatMessages(job.id)
-    }
 
     fun getCustomerChatMessages(customerId : Long, jobId : Long) : List<MessageResponseDTO> {
         if(!jobRepository.existsByIdAndCustomerId(jobId, customerId)) throw JobException("Ha habido un error al obtener los mensajes.")
