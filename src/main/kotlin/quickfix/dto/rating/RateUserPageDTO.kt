@@ -6,24 +6,24 @@ import quickfix.utils.functions.getAvatarUrl
 
 
 data class RateUserPageDTO(
+    val userId: Long,
     val name: String,
     val lastName: String,
     val verified: Boolean,
-    val averageRating: Double,
-    val professionName: String,
+    val professionId: Long,
     var avatar: String,
     val score: Int?,
     val comment: String?
 
 ){
     companion object {
-        fun from(userTo: User, professionName: String, existingRating: Rating?): RateUserPageDTO {
+        fun from(userTo: User, professionId: Long, existingRating: Rating?): RateUserPageDTO {
             return RateUserPageDTO(
+                userId = userTo.id,
                 name = userTo.name,
                 lastName = userTo.lastName,
                 verified = userTo.verified,
-                averageRating = userTo.averageRating,
-                professionName = professionName,
+                professionId = professionId,
                 avatar = getAvatarUrl(userTo.id),
                 score = existingRating?.score,
                 comment = existingRating?.comment
