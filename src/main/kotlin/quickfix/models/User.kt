@@ -36,6 +36,7 @@ class User : Identifier {
     lateinit var name : String
     lateinit var lastName : String
     lateinit var dateBirth : LocalDate
+    var cancellationsInLastHour : Int = 0
     var verified : Boolean = false
     var averageRating : Double = 0.0
 

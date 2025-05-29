@@ -18,6 +18,7 @@ class ProfessionalInfo : Identifier {
     @OneToMany(cascade = [(CascadeType.ALL)], orphanRemoval = true)
     var certificates: MutableSet<Certificate> = mutableSetOf()
 
+    var cancellationsInLastHour : Int = 0
     var averageRating: Double = 0.0
     var balance: Double = 0.0
     var debt: Double = 0.0
@@ -46,10 +47,7 @@ class ProfessionalInfo : Identifier {
         if (professionalProfessions.any { it.profession.id == profession.id })
             throw ProfessionalException("Ya existe la profesión con id ${profession.id}.")
 
-        this.professionalProfessions.add(
-            ProfessionalProfession().apply {
-                this.profession = profession
-            })
+        this.professionalProfessions.add(ProfessionalProfession().apply { this.profession = profession })
     }
 
     fun setProfessionStatus(professionId: Long, activated: Boolean){
@@ -87,15 +85,12 @@ class ProfessionalInfo : Identifier {
     }
     
     fun addCertificate(newCertificate: Certificate) {
-        //Falta q el nombre no sea el mismo para la misma profesion
-        if (certificates.any {
-            it.name.equals(newCertificate.name, ignoreCase = true) }) {
+        if (certificates.any { it.name.equals(newCertificate.name, ignoreCase = true) } )
             throw ProfessionalException("Ya existe un certificado con el mismo nombre.")
-        }
 
-        if (!hasProfession(newCertificate.profession.id)) {
+        if (!hasProfession(newCertificate.profession.id))
             throw ProfessionalException("No se puede agregar un certificado para una profesión no asignada.")
-        }
+
         validateCertificateAlreadyExists(newCertificate.name, newCertificate.profession)
         this.certificates.add(newCertificate)
     }
@@ -113,9 +108,8 @@ class ProfessionalInfo : Identifier {
     }
 
     fun validateCanOfferJob() {
-        if (this.debt >= MAXIMUM_DEBT) {
+        if (this.debt >= MAXIMUM_DEBT)
             throw ProfessionalException("No puede ofertar trabajos con una deuda igual o superior a $MAXIMUM_DEBT.")
-        }
     }
 
 }
