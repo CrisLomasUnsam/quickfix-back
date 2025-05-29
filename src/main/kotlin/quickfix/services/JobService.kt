@@ -14,7 +14,7 @@ import quickfix.dto.chat.MessageDTO
 import quickfix.dto.chat.MessageResponseDTO
 import quickfix.dto.chat.toMessageResponseDTO
 import quickfix.dto.job.JobDetailsDTO
-import quickfix.dto.job.JobWithRatingDTO
+import quickfix.dto.job.JobCardDTO
 import quickfix.dto.job.jobOffer.*
 import quickfix.dto.job.jobRequest.validate
 import quickfix.dto.job.jobRequest.CustomerJobRequestDTO
@@ -50,12 +50,12 @@ class JobService(
         jobRepository.findById(id).orElseThrow { throw JobException("Ha habido un error al recuperar la información del trabajo.") }
 
     @Transactional(readOnly = true)
-    fun findMyJobsByCustomerId(customerId: Long, pageNumber: Int?): Page<JobWithRatingDTO> =
-        jobRepository.findAllJobsByCustomerId(customerId, getMyJobsPageRequest(pageNumber)).map { JobWithRatingDTO.fromProjection(it) }
+    fun findMyJobsByCustomerId(customerId: Long, pageNumber: Int?): Page<JobCardDTO> =
+        jobRepository.findAllJobsByCustomerId(customerId, getMyJobsPageRequest(pageNumber)).map { JobCardDTO.fromProjection(it) }
 
     @Transactional(readOnly = true)
-    fun findMyJobsByProfessionalId(professionalId: Long, pageNumber: Int?): Page<JobWithRatingDTO> =
-        jobRepository.findAllJobsByProfessionalId(professionalId, getMyJobsPageRequest(pageNumber)).map { JobWithRatingDTO.fromProjection(it) }
+    fun findMyJobsByProfessionalId(professionalId: Long, pageNumber: Int?): Page<JobCardDTO> =
+        jobRepository.findAllJobsByProfessionalId(professionalId, getMyJobsPageRequest(pageNumber)).map { JobCardDTO.fromProjection(it) }
 
     @Transactional(rollbackFor = [Exception::class])
     fun setJobAsDone(professionalId: Long, jobId: Long) {

@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import quickfix.dto.job.JobDetailsDTO
-import quickfix.dto.job.JobWithRatingDTO
+import quickfix.dto.job.JobCardDTO
 import quickfix.dto.job.jobOffer.AcceptJobOfferDTO
 import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.job.jobOffer.CustomerJobOfferDTO
@@ -38,12 +38,12 @@ class JobController(
     @GetMapping("/customer")
     @Operation(summary = "Obtiene todos los servicios pedidos por un usuario")
     fun findJobsByCustomerId(
-        @ModelAttribute("currentUserId") currentCustomerId : Long, @RequestParam(required = false) pageNumber: Int? ) : PageDTO<JobWithRatingDTO> =
+        @ModelAttribute("currentUserId") currentCustomerId : Long, @RequestParam(required = false) pageNumber: Int? ) : PageDTO<JobCardDTO> =
         PageDTO.toJobWithRatingPageDTO(jobService.findMyJobsByCustomerId(currentCustomerId, pageNumber))
 
     @GetMapping("/professional")
     @Operation(summary = "Obtiene todos los servicios realizados por un profesional")
-    fun findJobsByProfessionalId(@ModelAttribute("currentUserId") currentProfessionalId : Long, @RequestParam (required = false) pageNumber: Int? ) : PageDTO<JobWithRatingDTO> =
+    fun findJobsByProfessionalId(@ModelAttribute("currentUserId") currentProfessionalId : Long, @RequestParam (required = false) pageNumber: Int? ) : PageDTO<JobCardDTO> =
         PageDTO.toJobWithRatingPageDTO(jobService.findMyJobsByProfessionalId(currentProfessionalId, pageNumber))
 
     @PatchMapping("/complete/{jobId}")

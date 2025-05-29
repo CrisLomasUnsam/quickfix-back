@@ -1,7 +1,7 @@
 package quickfix.dto.page
 
 import org.springframework.data.domain.Page
-import quickfix.dto.job.JobWithRatingDTO
+import quickfix.dto.job.JobCardDTO
 import quickfix.dto.rating.RatingDTO
 import quickfix.dto.rating.toDTO
 import quickfix.models.Rating
@@ -15,7 +15,7 @@ data class PageDTO<T>(
     var totalPages: Int
 ) {
     companion object{
-        fun toJobWithRatingPageDTO(page: Page<JobWithRatingDTO>): PageDTO<JobWithRatingDTO> {
+        fun toJobWithRatingPageDTO(page: Page<JobCardDTO>): PageDTO<JobCardDTO> {
             return PageDTO(
                 content = page.content,
                 first = page.isFirst,
