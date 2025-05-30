@@ -12,7 +12,7 @@ data class JobDetailsDTO (
     val detail: String,
     val price: Double,
     val rated: Boolean,
-    val date: String,
+    val dateTime: String,
     val userInfo: SeeBasicUserInfoDTO,
     val status: JobStatus,
     val pendingJobDetails: PendingJobDetails?
@@ -36,7 +36,7 @@ data class JobDetailsDTO (
                 detail = job.detail,
                 price = job.price,
                 rated = false ,
-                date = stringifyDateTime(job.initDateTime),
+                dateTime = stringifyDateTime(job.initDateTime),
                 userInfo = SeeBasicUserInfoDTO.toDTO(user, seeCustomerInfo, totalRatings),
                 status = job.status,
                 pendingJobDetails = null
