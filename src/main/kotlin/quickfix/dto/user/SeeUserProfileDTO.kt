@@ -11,6 +11,7 @@ interface  ISeeUserProfile{
     fun getLastName(): String
     fun getVerified(): Boolean
     fun getTotalJobsFinished(): Int
+    fun getCancellationsInLastHour(): Int
     fun getAverageRating(): Double
     fun getTotalRatings(): Int
     fun getAmountRating1(): Int
@@ -27,6 +28,7 @@ data class SeeUserProfileDTO(
     val avatar: String,
     val verified: Boolean,
     val totalJobsFinished: Int,
+    val cancellationsInLastHour: Int,
     val ratingStats : RatingStatsDTO
 ) {
     companion object {
@@ -49,6 +51,7 @@ data class SeeUserProfileDTO(
                 avatar = getAvatarUrl(seeUserProfileInfo.getId()),
                 verified = seeUserProfileInfo.getVerified(),
                 totalJobsFinished = seeUserProfileInfo.getTotalJobsFinished(),
+                cancellationsInLastHour = seeUserProfileInfo.getCancellationsInLastHour(),
                 ratingStats = ratingStats
             )
         }

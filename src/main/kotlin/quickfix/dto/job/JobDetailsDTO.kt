@@ -8,11 +8,11 @@ import quickfix.utils.functions.stringifyDateTime
 
 data class JobDetailsDTO (
     val id : Long,
-    val professionName: String,
+    val professionId: Long,
     val detail: String,
     val price: Double,
     val rated: Boolean,
-    val date: String,
+    val dateTime: String,
     val userInfo: SeeBasicUserInfoDTO,
     val status: JobStatus,
     val pendingJobDetails: PendingJobDetails?
@@ -32,11 +32,11 @@ data class JobDetailsDTO (
             }
             return JobDetailsDTO(
                 id = job.id,
-                professionName = job.profession.name,
+                professionId = job.profession.id,
                 detail = job.detail,
                 price = job.price,
                 rated = false ,
-                date = stringifyDateTime(job.initDateTime),
+                dateTime = stringifyDateTime(job.initDateTime),
                 userInfo = SeeBasicUserInfoDTO.toDTO(user, seeCustomerInfo, totalRatings),
                 status = job.status,
                 pendingJobDetails = null

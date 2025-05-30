@@ -90,8 +90,11 @@ class SecurityConfig {
                 it.requestMatchers(HttpMethod.PATCH, "/professional/**").hasAuthority(Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.DELETE, "/professional/**").hasAuthority(Role.PROFESSIONAL.name)
 
+                it.requestMatchers(HttpMethod.PATCH, "/job/start/**").hasAuthority(Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.PATCH, "/job/finish/**").hasAuthority(Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.PATCH, "/job/cancelAsCustomer/**").hasAuthority(Role.CUSTOMER.name)
+                it.requestMatchers(HttpMethod.PATCH, "/job/cancelAsProfessional/**").hasAuthority(Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.GET, "/job/jobDetails/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
-                it.requestMatchers(HttpMethod.PATCH, "/job/complete/**", "/job/cancel/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
 
                 it.requestMatchers(HttpMethod.GET, "/rating/customer/**").hasAuthority(Role.CUSTOMER.name)
                 it.requestMatchers(HttpMethod.GET, "/rating/seeProfessionalRatings/**").hasAuthority(Role.CUSTOMER.name)
