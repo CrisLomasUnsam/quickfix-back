@@ -54,7 +54,7 @@ class JobController(
     fun finishJob(@ModelAttribute("currentUserId") currentProfessionalId : Long, @PathVariable jobId: Long) =
         jobService.finishJob(currentProfessionalId, jobId)
 
-    @PatchMapping("/cancelAsCustomer{jobId}")
+    @PatchMapping("/cancelAsCustomer/{jobId}")
     fun cancelJobAsCustomer(@ModelAttribute("currentUserId") currentCustomerId : Long, @PathVariable jobId: Long) =
         jobService.cancelJobAsCustomer(currentCustomerId, jobId)
 
