@@ -42,7 +42,7 @@ interface UserRepository: CrudRepository<User, Long>{
                 (SELECT COUNT(*) FROM ratings r WHERE r.user_to_id = u.id AND r.score = 5) as amountRating5
                      
         FROM users u
-        INNER JOIN professionals pr ON u.professional_id = pr.id
+        INNER JOIN professionals pr ON u.professional_info_id = pr.id
         WHERE u.id = :professionalId
     """, nativeQuery = true)
     fun getSeeProfessionalProfileInfo(@Param("professionalId") professionalId: Long) : ISeeUserProfile
