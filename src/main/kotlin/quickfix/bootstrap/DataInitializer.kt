@@ -2,6 +2,7 @@ package quickfix.bootstrap
 
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import quickfix.bootstrap.builders.*
 import quickfix.dao.*
@@ -10,6 +11,7 @@ import quickfix.services.RatingService
 import quickfix.services.RedisService
 
 @Service
+@Profile("!test")
 class DataInitializer : InitializingBean {
 
     @Autowired private lateinit var jobService: JobService
