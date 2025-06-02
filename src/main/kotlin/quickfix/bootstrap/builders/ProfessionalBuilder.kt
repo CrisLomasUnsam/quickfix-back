@@ -5,7 +5,7 @@ import quickfix.models.User
 class ProfessionalBuilder {
 
     companion object {
-        fun buildMock(userName: String, lastName: String, professions: Iterable<Profession>): User {
+        fun buildMock(userName: String, lastName: String = "Test", professions: Iterable<Profession> = listOf()): User {
             val professional = CustomerBuilder.buildMock(userName, lastName)
             professional.professionalInfo.apply {
                 balance = 100999.0
