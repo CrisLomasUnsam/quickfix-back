@@ -2,7 +2,7 @@ services:
 
   img-uploader-server:
     build:
-      context: ./Docker/img-uploader-server
+      context: ./docker/img-uploader-server
     container_name: img-uploader-server
     ports:
       - "5000:5000"
@@ -34,7 +34,7 @@ services:
       - '5432:5432'
     volumes:
       - db:/var/lib/postgresql/data
-      - ./Docker/init_db.sh:/docker-entrypoint-initdb.d/01_init_db.sh
+      - ./docker/init_db.sh:/docker-entrypoint-initdb.d/01_init_db.sh
 
   pgadmin:
     image: dpage/pgadmin4
