@@ -4,6 +4,7 @@ import quickfix.models.Address
 import quickfix.models.Gender
 import quickfix.models.User
 import quickfix.utils.functions.datifyStringWithDay
+import java.util.*
 
 class RegisterRequestDTO (
     var mail: String,
@@ -26,7 +27,7 @@ fun RegisterRequestDTO.toUser() : User {
 
     return User().apply {
 
-        mail = request.mail.trim()
+        mail = request.mail.trim().lowercase(Locale.getDefault())
         name = request.name.trim()
         lastName = request.lastName.trim()
         dni = request.dni
