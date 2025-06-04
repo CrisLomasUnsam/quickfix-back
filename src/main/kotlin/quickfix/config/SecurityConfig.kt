@@ -51,7 +51,6 @@ class SecurityConfig {
             .authorizeHttpRequests {
                 it.requestMatchers(
                     "/quickfix-api/**",
-                    "/mp/subscriptions/**", //RECORDAR SACAR DE ACA, es para testear
                     "/swagger",
                     "/swagger-ui/**",
                     "/registration",
@@ -92,6 +91,10 @@ class SecurityConfig {
                 it.requestMatchers(HttpMethod.POST, "/professional/**").hasAuthority(Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.PATCH, "/professional/**").hasAuthority(Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.DELETE, "/professional/**").hasAuthority(Role.PROFESSIONAL.name)
+
+                it.requestMatchers(HttpMethod.POST, "/mp/**").hasAuthority(Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.GET, "/mp/**").hasAuthority(Role.PROFESSIONAL.name)
+
 
                 it.requestMatchers(HttpMethod.PATCH, "/job/start/**").hasAuthority(Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.PATCH, "/job/finish/**").hasAuthority(Role.PROFESSIONAL.name)
