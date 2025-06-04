@@ -14,12 +14,18 @@ import quickfix.services.RedisService
 @Profile("!test")
 class DataInitializer : InitializingBean {
 
-    @Autowired private lateinit var jobService: JobService
-    @Autowired private lateinit var redisService: RedisService
-    @Autowired private lateinit var ratingService: RatingService
-    @Autowired private lateinit var jobRepository: JobRepository
-    @Autowired private lateinit var userRepository: UserRepository
-    @Autowired private lateinit var professionRepository: ProfessionRepository
+    @Autowired
+    private lateinit var jobService: JobService
+    @Autowired
+    private lateinit var redisService: RedisService
+    @Autowired
+    private lateinit var ratingService: RatingService
+    @Autowired
+    private lateinit var jobRepository: JobRepository
+    @Autowired
+    private lateinit var userRepository: UserRepository
+    @Autowired
+    private lateinit var professionRepository: ProfessionRepository
 
     override fun afterPropertiesSet() {
         initProfessions()
@@ -37,8 +43,10 @@ class DataInitializer : InitializingBean {
     fun initUsers() {
         val professions = professionRepository.findAll().toList()
 
-        val prof1 = ProfessionalBuilder.buildMock("Mariano", "Cristobo", professions)
-        val prof2 = ProfessionalBuilder.buildMock("Pablo", "Nuñez Monzon", professions)
+        val prof1 =
+            ProfessionalBuilder.buildMock("Mariano", "Cristobo", professions, "test_user_1716603402@testuser.com")
+        val prof2 =
+            ProfessionalBuilder.buildMock("Pablo", "Nuñez Monzon", professions, "test_user_314631960@testuser.com")
 
         val custom1 = CustomerBuilder.buildMock("Valentino", "Bortolussi")
         val custom2 = CustomerBuilder.buildMock("Tomas", "Neiro")
@@ -55,7 +63,8 @@ class DataInitializer : InitializingBean {
 
         val job1 = JobBuilder.buildMock(users["Valentino"]!!, users["Mariano"]!!, professions["Plomería"]!!)
         val job2 = JobBuilder.buildMock(users["Valentino"]!!, users["Mariano"]!!, professions["Albañilería"]!!)
-        val job3 = JobBuilder.buildMock(users["Valentino"]!!, users["Mariano"]!!, professions["Electricidad"]!!, done = false)
+        val job3 =
+            JobBuilder.buildMock(users["Valentino"]!!, users["Mariano"]!!, professions["Electricidad"]!!, done = false)
         val job4 = JobBuilder.buildMock(users["Valentino"]!!, users["Pablo"]!!, professions["Mecánica"]!!)
 
         val job5 = JobBuilder.buildMock(users["Tomas"]!!, users["Pablo"]!!, professions["Albañilería"]!!)
@@ -93,7 +102,8 @@ class DataInitializer : InitializingBean {
         val users = userRepository.findAll().associateBy { it.name }
         val professions = professionRepository.findAll().associateBy { it.name }
 
-        val jobRequest1 = JobRequestBuilder.buildMock(users["Valentino"]!!, professions["Electricidad"]!!, 0, isInstantRequest = true)
+        val jobRequest1 =
+            JobRequestBuilder.buildMock(users["Valentino"]!!, professions["Electricidad"]!!, 0, isInstantRequest = true)
         val jobRequest2 = JobRequestBuilder.buildMock(users["Valentino"]!!, professions["Mecánica"]!!, 1)
         val jobRequest3 = JobRequestBuilder.buildMock(users["Valentino"]!!, professions["Albañilería"]!!, 2)
         val jobRequest4 = JobRequestBuilder.buildMock(users["Valentino"]!!, professions["Plomería"]!!, 3)
@@ -104,15 +114,15 @@ class DataInitializer : InitializingBean {
         val jobRequest9 = JobRequestBuilder.buildMock(users["Tomas"]!!, professions["Plomería"]!!, 8)
         val jobRequest10 = JobRequestBuilder.buildMock(users["Tomas"]!!, professions["Mecánica"]!!, 9)
 
-        jobService.requestJob(users["Valentino"]!!.id,jobRequest1)
-        jobService.requestJob(users["Valentino"]!!.id,jobRequest2)
+        jobService.requestJob(users["Valentino"]!!.id, jobRequest1)
+        jobService.requestJob(users["Valentino"]!!.id, jobRequest2)
         jobService.requestJob(users["Valentino"]!!.id, jobRequest3)
         jobService.requestJob(users["Valentino"]!!.id, jobRequest4)
         jobService.requestJob(users["Valentino"]!!.id, jobRequest5)
         jobService.requestJob(users["Tomas"]!!.id, jobRequest6)
-        jobService.requestJob(users["Tomas"]!!.id,jobRequest7)
-        jobService.requestJob(users["Tomas"]!!.id,jobRequest8)
-        jobService.requestJob(users["Tomas"]!!.id,jobRequest9)
+        jobService.requestJob(users["Tomas"]!!.id, jobRequest7)
+        jobService.requestJob(users["Tomas"]!!.id, jobRequest8)
+        jobService.requestJob(users["Tomas"]!!.id, jobRequest9)
         jobService.requestJob(users["Tomas"]!!.id, jobRequest10)
 
     }
