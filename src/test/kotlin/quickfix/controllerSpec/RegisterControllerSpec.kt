@@ -2,6 +2,7 @@ package quickfix.controllerSpec
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.core.annotation.DisplayName
+import io.mockk.InternalPlatformDsl.toStr
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -14,9 +15,13 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import quickfix.QuickFixApp
 import quickfix.bootstrap.builders.CustomerBuilder
+import quickfix.dao.TokenRepository
 import quickfix.dao.UserRepository
 import quickfix.dto.register.RegisterRequestDTO
 import quickfix.models.Gender
+import quickfix.models.User.Companion.EDAD_REQUERIDA
+import quickfix.utils.functions.DateWithDayFormatter
+import java.time.LocalDate
 
 @SpringBootTest(
     classes = [QuickFixApp::class],
@@ -36,13 +41,16 @@ class RegisterControllerSpec {
     @Autowired
     private lateinit var userRepository: UserRepository
 
+    @Autowired
+    private lateinit var tokenRepository: TokenRepository
+
     @BeforeAll
     fun init() {
         userRepository.save(CustomerBuilder.buildMock("mailExist"))
     }
 
     @Test
-    fun `Create a user`() {
+    fun `Create a user and confirm token`() {
 
         val registerData =
             objectMapper.writeValueAsString(
@@ -67,6 +75,16 @@ class RegisterControllerSpec {
                 .post("/registration")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(registerData)
+        )
+            .andExpect(status().isOk)
+            .andExpect(content().string(""))
+
+        val token = tokenRepository.getTokensByUser(userRepository.findByMail("valentino@gmail.com").get())
+
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/registration/confirm")
+                .param("token", token.value)
         )
             .andExpect(status().isOk)
             .andExpect(content().string(""))
@@ -104,6 +122,223 @@ class RegisterControllerSpec {
     }
 
     @Test
+    fun `Try create a user with a wrong mail (no contains @)`() {
+
+        val registerData =
+            objectMapper.writeValueAsString(
+                RegisterRequestDTO(
+                    "mail.gmail.com",
+                    "Name",
+                    "Lastname",
+                    "password",
+                    12345678,
+                    "01/01/2000",
+                    Gender.OTHER,
+                    "StreetAddress1",
+                    "StreetAddress2",
+                    "1234",
+                    "City",
+                    "State"
+                )
+            )
+
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("/registration")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(registerData)
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.message").value("El email no es válido."))
+    }
+
+    @Test
+    fun `Try create a user with a wrong name (is empty)`() {
+
+        val registerData =
+            objectMapper.writeValueAsString(
+                RegisterRequestDTO(
+                    "mail@gmail.com",
+                    "",
+                    "Lastname",
+                    "password",
+                    12345678,
+                    "01/01/2000",
+                    Gender.OTHER,
+                    "StreetAddress1",
+                    "StreetAddress2",
+                    "1234",
+                    "City",
+                    "State"
+                )
+            )
+
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("/registration")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(registerData)
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.message").value("El nombre no puede estar vacío ni contener caracteres especiales o numéricos."))
+    }
+
+    @Test
+    fun `Try create a user with a wrong lastname (is a number)`() {
+
+        val registerData =
+            objectMapper.writeValueAsString(
+                RegisterRequestDTO(
+                    "mail@gmail.com",
+                    "Name",
+                    "1",
+                    "password",
+                    12345678,
+                    "01/01/2000",
+                    Gender.OTHER,
+                    "StreetAddress1",
+                    "StreetAddress2",
+                    "1234",
+                    "City",
+                    "State"
+                )
+            )
+
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("/registration")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(registerData)
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.message").value("El apellido no puede estar vacío ni contener caracteres especiales o numéricos."))
+    }
+
+    @Test
+    fun `Try create a user with a wrong password (has a blank space)`() {
+
+        val registerData =
+            objectMapper.writeValueAsString(
+                RegisterRequestDTO(
+                    "mail@gmail.com",
+                    "Name",
+                    "Lastname",
+                    "password password",
+                    12345678,
+                    "01/01/2000",
+                    Gender.OTHER,
+                    "StreetAddress1",
+                    "StreetAddress2",
+                    "1234",
+                    "City",
+                    "State"
+                )
+            )
+
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("/registration")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(registerData)
+        )
+            .andExpect(status().isUnauthorized)
+            .andExpect(jsonPath("$.message").value("Credenciales inválidas"))
+    }
+
+    @Test
+    fun `Try create a user with a wrong password (length minor 6 chars)`() {
+
+        val registerData =
+            objectMapper.writeValueAsString(
+                RegisterRequestDTO(
+                    "mail@gmail.com",
+                    "Name",
+                    "Lastname",
+                    "passw",
+                    12345678,
+                    "01/01/2000",
+                    Gender.OTHER,
+                    "StreetAddress1",
+                    "StreetAddress2",
+                    "1234",
+                    "City",
+                    "State"
+                )
+            )
+
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("/registration")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(registerData)
+        )
+            .andExpect(status().isUnauthorized)
+            .andExpect(jsonPath("$.message").value("Credenciales inválidas"))
+    }
+
+    @Test
+    fun `Try create a user with a wrong dni (length minor 7 number)`() {
+
+        val registerData =
+            objectMapper.writeValueAsString(
+                RegisterRequestDTO(
+                    "mail@gmail.com",
+                    "Name",
+                    "Lastname",
+                    "password",
+                    1,
+                    "01/01/2000",
+                    Gender.OTHER,
+                    "StreetAddress1",
+                    "StreetAddress2",
+                    "1234",
+                    "City",
+                    "State"
+                )
+            )
+
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("/registration")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(registerData)
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.message").value("El DNI es incorrecto."))
+    }
+
+    @Test
+    fun `Try create a user with a wrong date birth (+18)`() {
+
+        val registerData =
+            objectMapper.writeValueAsString(
+                RegisterRequestDTO(
+                    "mail@gmail.com",
+                    "Name",
+                    "Lastname",
+                    "password",
+                    12345678,
+                    LocalDate.now().format(DateWithDayFormatter),
+                    Gender.OTHER,
+                    "StreetAddress1",
+                    "StreetAddress2",
+                    "1234",
+                    "City",
+                    "State"
+                )
+            )
+
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("/registration")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(registerData)
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.message").value("El usuario debe ser mayor a $EDAD_REQUERIDA años."))
+    }
+
+    @Test
     fun `Try create a user with a wrong dateBirth format`() {
 
         val registerData =
@@ -114,7 +349,7 @@ class RegisterControllerSpec {
                     "Lastname",
                     "password",
                     12345678,
-                    "",
+                    LocalDate.now().toStr(),
                     Gender.OTHER,
                     "StreetAddress1",
                     "StreetAddress2",
@@ -132,5 +367,27 @@ class RegisterControllerSpec {
         )
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath("$.message").value("La fecha no tiene el formato esperado dd/MM/yyyy"))
+    }
+
+    @Test
+    fun `Try Confirm registration non existing token`() {
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/registration/confirm")
+                .param("token", "nonExistingToken")
+        )
+            .andExpect(status().isUnauthorized)
+            .andExpect(jsonPath("$.message").value("Credenciales inválidas"))
+    }
+
+    @Test
+    fun `Try Confirm registration empty token`() {
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/registration/confirm")
+                .param("token", "   ")
+        )
+            .andExpect(status().`is`(498))
+            .andExpect(jsonPath("$.message").value("Token inválido"))
     }
 }
