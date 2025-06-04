@@ -56,6 +56,7 @@ class SecurityConfig {
                     "/login/**",
                     "/recovery",
                     "/recovery/confirm",
+                    "/expiredSession",
                     "/error"
                     ).permitAll()
 
@@ -127,8 +128,7 @@ class SecurityConfig {
                 configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .addFilterBefore(
                 jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
-            .exceptionHandling(
-                Customizer.withDefaults())
+            .exceptionHandling(Customizer.withDefaults())
             .build()
     }
 }
