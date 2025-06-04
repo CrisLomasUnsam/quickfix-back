@@ -12,7 +12,7 @@ interface AddressRepository  : CrudRepository<Address, Long>{
     @Query("select * from addresses where user_id = :userId and principal = true", nativeQuery = true)
     fun findPrincipalAddressByUserId(@Param("userId") userId: Long): Address?
 
-    @Query("select * from addresses where user_id = :userId and principal = false", nativeQuery = true)
+    @Query("select * from addresses where user_id = :userId and principal = false order by alias asc", nativeQuery = true)
     fun findSecondaryAddressesByUserId(@Param("userId") userId: Long): List<Address>
 
     @Query("select * from addresses where user_id = :userId order by principal desc, alias asc", nativeQuery = true)
