@@ -6,9 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 // DTO para la solicitud del cliente (frontend)
 data class CreateSubscriptionClientRequest(
-    val userEmail: String,
     val planType: String, // "MENSUAL" o "ANUAL"
-    val userInternalId: String? // Para saber que profesional mando este id, usarModelAtrbute
 )
 
 // DTOs para la comunicación con Mercado Pago:
