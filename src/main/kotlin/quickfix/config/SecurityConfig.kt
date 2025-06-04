@@ -112,12 +112,13 @@ class SecurityConfig {
                 it.requestMatchers(HttpMethod.GET, "/user/seeBasicCustomerInfo/**").hasAuthority(Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.GET, "/user/seeProfessionalProfile/**").hasAuthority(Role.CUSTOMER.name)
                 it.requestMatchers(HttpMethod.GET, "/user/seeBasicProfessionalInfo/**").hasAuthority(Role.CUSTOMER.name)
-                it.requestMatchers(HttpMethod.GET, "/user/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
 
+                it.requestMatchers(HttpMethod.GET, "/user/allAddresses").hasAuthority(Role.CUSTOMER.name)
                 it.requestMatchers(HttpMethod.GET, "/user/secondaryAddress").hasAuthority(Role.CUSTOMER.name)
                 it.requestMatchers(HttpMethod.POST, "/user/secondaryAddress").hasAuthority(Role.CUSTOMER.name)
                 it.requestMatchers(HttpMethod.DELETE, "/user/secondaryAddress").hasAuthority(Role.CUSTOMER.name)
 
+                it.requestMatchers(HttpMethod.GET, "/user/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.PATCH, "/user/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
 
                 it.anyRequest().authenticated()

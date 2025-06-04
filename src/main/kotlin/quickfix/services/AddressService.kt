@@ -19,6 +19,9 @@ class AddressService(
     fun getPrimaryAddress(customerId: Long) : Address =
         addressRepository.findPrincipalAddressByUserId(customerId) ?: throw NotFoundException("Ha habido un error al recuperar la dirección")
 
+    fun findAllAddresses(customerId: Long) : List<Address> =
+        addressRepository.findAllByUserId(customerId)
+
     fun findSecondaryAddresses(customerId: Long) : List<Address> =
         addressRepository.findSecondaryAddressesByUserId(customerId)
 

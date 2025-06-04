@@ -15,11 +15,13 @@ interface AddressRepository  : CrudRepository<Address, Long>{
     @Query("select * from addresses where user_id = :userId and principal = false", nativeQuery = true)
     fun findSecondaryAddressesByUserId(@Param("userId") userId: Long): List<Address>
 
+    @Query("select * from addresses where user_id = :userId order by principal desc, alias asc", nativeQuery = true)
+    fun findAllByUserId(@Param("userId") userId: Long): List<Address>
+
     fun countByUserId(@Param("userId") userId: Long): Long
 
     fun existsByUserIdAndAlias(@Param("userId") userId: Long, @Param("alias") alias: String): Boolean
 
     fun findByAlias(@Param("alias") alias: String): Address?
 
-    fun findAllByUserId(@Param("userId") userId: Long): List<Address>
 }

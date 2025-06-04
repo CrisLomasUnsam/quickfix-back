@@ -74,7 +74,9 @@ class UserService(
         eventPublisher.publishEvent(OnChangedUserInfoEvent(user.mail))
     }
 
-    fun getSecondaryAddress(customerId: Long) : List<Address> = addressService.findSecondaryAddresses(customerId)
+    fun getAllAddresses(customerId: Long) : List<Address> = addressService.findAllAddresses(customerId)
+
+    fun getSecondaryAddresses(customerId: Long) : List<Address> = addressService.findSecondaryAddresses(customerId)
 
     @Transactional(rollbackFor = [Exception::class])
     fun addSecondaryAddress(customerId: Long, address: AddressDTO) {
