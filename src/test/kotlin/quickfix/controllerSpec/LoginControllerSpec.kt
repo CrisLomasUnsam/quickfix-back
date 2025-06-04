@@ -3,6 +3,7 @@ package quickfix.controllerSpec
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.core.annotation.DisplayName
 import org.hamcrest.Matchers.startsWith
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -38,8 +39,12 @@ class LoginControllerSpec {
 
     @BeforeAll
     fun init() {
-        val user = CustomerBuilder.buildMock("Valentino")
-        userRepository.save(user)
+        userRepository.save(CustomerBuilder.buildMock("Valentino"))
+    }
+
+    @AfterAll
+    fun final() {
+        userRepository.deleteAll()
     }
 
     @Test

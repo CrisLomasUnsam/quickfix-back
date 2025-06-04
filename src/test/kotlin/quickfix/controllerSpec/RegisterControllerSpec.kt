@@ -3,6 +3,7 @@ package quickfix.controllerSpec
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.core.annotation.DisplayName
 import io.mockk.InternalPlatformDsl.toStr
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -47,6 +48,11 @@ class RegisterControllerSpec {
     @BeforeAll
     fun init() {
         userRepository.save(CustomerBuilder.buildMock("mailExist"))
+    }
+
+    @AfterAll
+    fun final() {
+        userRepository.deleteAll()
     }
 
     @Test
