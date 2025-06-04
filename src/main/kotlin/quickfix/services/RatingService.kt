@@ -22,7 +22,6 @@ import java.time.LocalDate
 class RatingService(
     val ratingRepository: RatingRepository,
     val jobService: JobService,
-    private val userService: UserService,
     private val eventPublisher: ApplicationEventPublisher
 ) {
 
