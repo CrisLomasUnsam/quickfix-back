@@ -50,6 +50,9 @@ class UserService(
             throw NotFoundException("Usuario no encontrado: $id")
     }
 
+    fun userHasRatedJob(userId: Long, jobId: Long) : Boolean =
+        userRepository.userHasRatedJob(userId, jobId)
+
     fun getProfessionalInfo(userId: Long) : ProfessionalInfo =
         userRepository.findUserWithProfessionalInfoById(userId).orElseThrow{ NotFoundException() }.professionalInfo
 
