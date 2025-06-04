@@ -11,6 +11,8 @@ import java.time.LocalDateTime
 data class CreateJobRequestDTO(
     var professionId: Long,
     var detail: String,
+    var streetAddress: String,
+    var streetReference: String,
     val neededDatetime: String,
     var instantRequest: Boolean?
 ){
@@ -21,6 +23,7 @@ data class CreateJobRequestDTO(
             instantRequest = false
 
         if (professionId < 1) throw ProfessionException("ID de profesión inválido")
+        if (streetAddress.isBlank()) throw DetailException("La dirección no puede estar vacía")
         if (detail.isBlank()) throw DetailException("El detalle no puede estar vacío")
 
         val parsedDatetime = parseDatetime(neededDatetime)
@@ -38,7 +41,9 @@ data class CreateJobRequestDTO(
         JobRequestDTO(
             customer = customer,
             professionId = this.professionId,
-            detail = this.detail,
+            detail = this.detail.trim(),
+            streetAddress = this.streetAddress.trim(),
+            streetReference = this.streetReference.trim(),
             neededDatetime = parseDatetime(neededDatetime),
             instantRequest = this.instantRequest!!
         )

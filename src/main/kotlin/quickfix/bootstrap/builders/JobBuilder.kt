@@ -4,7 +4,6 @@ import quickfix.utils.functions.stringifyDateTime
 
 import quickfix.dto.job.jobOffer.CreateJobOfferDTO
 import quickfix.dto.job.jobRequest.CreateJobRequestDTO
-import quickfix.dto.user.SeeBasicUserInfoDTO
 import quickfix.models.Job
 import quickfix.models.Profession
 import quickfix.models.User
@@ -31,11 +30,13 @@ class JobBuilder {
 
 class JobRequestBuilder {
     companion object{
-        fun buildMock(customer: User, profession: Profession, dayOffset: Long, isInstantRequest: Boolean = false) : CreateJobRequestDTO {
+        fun buildMock(profession: Profession, dayOffset: Long, isInstantRequest: Boolean = false) : CreateJobRequestDTO {
             val dateTime = if (isInstantRequest) LocalDateTime.now() else LocalDateTime.now().plusDays(1 + dayOffset)
             return CreateJobRequestDTO(
                 professionId = profession.id,
                 detail = "Lorem ipsum dolor em sit amet lo gump samar ipsum it.",
+                streetAddress = "Calle siempre viva 123",
+                streetReference = "Toque timbre",
                 //Le pongo un dayOffset para que no falle el dataInitializer por detectar que el profesional ya tiene una oferta activa ese día
                 neededDatetime = stringifyDateTime(dateTime),
                 instantRequest = isInstantRequest

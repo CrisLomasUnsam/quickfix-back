@@ -49,8 +49,8 @@ class RegisterService(
             this.alias = "Principal"
             this.user = savedUser
             this.principal = true
-            this.streetAddress1 = registerData.streetAddress1
-            this.streetAddress2 = registerData.streetAddress2?: ""
+            this.streetAddress = registerData.streetAddress
+            this.streetReference = registerData.streetReference?: ""
             this.zipCode = registerData.zipCode
             this.state = registerData.state
             this.city = registerData.city

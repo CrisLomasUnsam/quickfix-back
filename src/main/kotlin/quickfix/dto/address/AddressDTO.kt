@@ -8,8 +8,8 @@ import quickfix.models.User
 @Schema(description = "DTO para dirección")
 data class AddressDTO(
     var alias: String?,
-    var streetAddress1: String?,
-    var streetAddress2: String?,
+    var streetAddress: String?,
+    var streetReference: String?,
     var zipCode: String?,
     var state: String?,
     var city: String?,
@@ -19,8 +19,8 @@ data class AddressDTO(
         fun toDTO(address: Address): AddressDTO {
             return AddressDTO(
                 alias = address.alias,
-                streetAddress1 = address.streetAddress1,
-                streetAddress2 = address.streetAddress2,
+                streetAddress = address.streetAddress,
+                streetReference = address.streetReference,
                 zipCode = address.zipCode,
                 state = address.state,
                 city = address.city
@@ -30,8 +30,8 @@ data class AddressDTO(
         fun fromUserModifiedInfoDTO(modifiedInfo : UserModifiedInfoDTO) : AddressDTO =
             AddressDTO(
                 alias = null, //Only primary Address can be edited
-                streetAddress1 = modifiedInfo.streetAddress1,
-                streetAddress2 = modifiedInfo.streetAddress2,
+                streetAddress = modifiedInfo.streetAddress,
+                streetReference = modifiedInfo.streetReference,
                 zipCode = modifiedInfo.zipCode,
                 state = modifiedInfo.state,
                 city = modifiedInfo.city,
@@ -42,8 +42,8 @@ data class AddressDTO(
 fun AddressDTO.toAddress(user: User) : Address {
     val address = Address()
     address.alias = this.alias?.trim() ?: ""
-    address.streetAddress1 = this.streetAddress1?.trim() ?: ""
-    address.streetAddress2 = this.streetAddress2?.trim() ?: ""
+    address.streetAddress = this.streetAddress?.trim() ?: ""
+    address.streetReference = this.streetReference?.trim() ?: ""
     address.zipCode = this.zipCode?.trim() ?: ""
     address.state = this.state?.trim() ?: ""
     address.city = this.city?.trim() ?: ""

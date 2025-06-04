@@ -27,6 +27,12 @@ class Job : Identifier {
     var status : JobStatus = JobStatus.PENDING
 
     @Column(length = 150)
+    var streetAddress : String = ""
+
+    @Column(length = 150)
+    var streetReference : String = ""
+
+    @Column(length = 150)
     var detail : String = ""
 
     lateinit var initDateTime: LocalDateTime
@@ -40,9 +46,12 @@ class Job : Identifier {
 
     private fun validDate(): Boolean = this.initDateTime.isAfter(LocalDateTime.now().minusMinutes(MINUTES_TO_BE_CONSIDERED_FUTURE_REQUEST))
 
+    private fun validAddress(): Boolean = this.streetAddress.trim().isNotEmpty()
+
     override fun validate() {
-        if (!validPrice()) throw JobException("El precio debe ser mayor a cero")
-        if (!validDate()) throw JobException("No se puede elegir una fecha del pasado")
+        if (!validPrice()) throw JobException("El precio debe ser mayor a cero.")
+        if (!validDate()) throw JobException("No se puede elegir una fecha del pasado.")
+        if(!validAddress()) throw JobException("La dirección es incorrecta.")
     }
 
 }

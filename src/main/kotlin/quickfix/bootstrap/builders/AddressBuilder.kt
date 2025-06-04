@@ -10,8 +10,8 @@ class AddressBuilder {
                 this.user = user
                 this.alias = "Principal"
                 this.principal = true
-                this.streetAddress1 = streetName
-                this.streetAddress2 = "PB 1ºA"
+                this.streetAddress = streetName
+                this.streetReference = "PB 1ºA"
                 this.city = "Belgrano"
                 this.state = "Ciudad Autónoma de Buenos Aires"
                 this.zipCode = "9999"
