@@ -18,7 +18,8 @@ import java.util.UUID
 @Service
 class MercadoPagoSubscriptionService(
     private val restTemplate: RestTemplate,
-    private val mercadoPagoProperties: MercadoPagoProperties
+    private val mercadoPagoProperties: MercadoPagoProperties,
+    private val userService: UserService
 ) {
 
     private val logger = LoggerFactory.getLogger(MercadoPagoSubscriptionService::class.java)
@@ -30,11 +31,12 @@ class MercadoPagoSubscriptionService(
     private val precioAnualARS = 120000.0
 
     fun createSubscription(
-        payerEmail: String,
+        currentProfessionalId: Long,
         planType: String,
-        externalReference: String?
     ): MPSubscriptionResponse? {
 
+        val professionalUser  = userService.getById(currentProfessionalId)
+        val payerEmail = professionalUser.mail
         val reason: String
         val autoRecurringData: MPAutoRecurringRequest
 
@@ -52,8 +54,8 @@ class MercadoPagoSubscriptionService(
             "ANUAL" -> {
                 reason = "Suscripción Anual QuickFix"
                 autoRecurringData = MPAutoRecurringRequest(
-                    frequency = 1,
-                    frequencyType = "years",
+                    frequency = 365,
+                    frequencyType = "days",
                     transactionAmount = precioAnualARS,
                     currencyId = FIXED_CURRENCY_ID
                 )
@@ -69,7 +71,7 @@ class MercadoPagoSubscriptionService(
             payerEmail = payerEmail,
             status = "pending",
             reason = reason,
-            externalReference = externalReference,
+            externalReference = currentProfessionalId.toString(),
             backUrl = "https://www.yoursite.com",
             autoRecurring = autoRecurringData
         )
@@ -81,7 +83,7 @@ class MercadoPagoSubscriptionService(
         }
 
         val entity = HttpEntity(subscriptionPayloadForMP, headers)
-        logger.debug("Enviando payload a Mercado Pago /preapproval: {}", subscriptionPayloadForMP)
+        logger.info("Enviando payload a Mercado Pago /preapproval: {}", subscriptionPayloadForMP)
 
         return try {
             val responseEntity = restTemplate.exchange(
@@ -90,11 +92,11 @@ class MercadoPagoSubscriptionService(
                 entity,
                 MPSubscriptionResponse::class.java
             )
-            logger.debug(
+            logger.info(
                 "Suscripción iniciada para {}. ID MP: {}, InitPoint: ...{}",
                 payerEmail,
                 responseEntity.body?.id,
-                responseEntity.body?.initPoint?.takeLast(20)
+                responseEntity.body
             )
             responseEntity.body
         } catch (e: HttpClientErrorException) {
