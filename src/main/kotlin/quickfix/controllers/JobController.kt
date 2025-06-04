@@ -15,6 +15,7 @@ import quickfix.dto.job.jobRequest.CustomerJobRequestDTO
 import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
 import quickfix.dto.page.PageDTO
 import quickfix.services.JobService
+import quickfix.utils.jobs.getJobRequestKey
 
 @RestController
 @RequestMapping("/job")
@@ -109,6 +110,11 @@ class JobController(
     @Operation(summary = "Utilizado para ver una solicitud específica (sin ofertar) desde un profesional")
     fun getProfessionalJobRequest(@ModelAttribute("currentUserId") currentProfessionalId : Long, @RequestParam jobRequestId: String) : ProfessionalJobRequestDTO =
         ProfessionalJobRequestDTO.fromJobRequest(jobService.getNotOfferedJobRequest(currentProfessionalId, jobRequestId))
+
+    @GetMapping("/jobRequestId/{jobRequestId}")
+    @Operation(summary = "Utilizado para obtener la clave de un jobRequest")
+    fun getCustomerJobRequestId(@ModelAttribute("currentUserId") currentCustomerId : Long, @PathVariable jobRequestId: Long) : String =
+        getJobRequestKey(jobRequestId, currentCustomerId)
 
     @PostMapping("/requestJob")
     @Operation(summary = "Buscar profesionales disponibles para el job seleccionado por el customer")
