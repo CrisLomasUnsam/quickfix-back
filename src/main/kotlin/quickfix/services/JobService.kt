@@ -132,11 +132,12 @@ class JobService(
 
         val job = getJobById(jobId)
         val seeCustomerInfo = currentUserId == job.professional.id
+        val isRated = userService.userHasRatedJob(currentUserId, jobId)
         val totalRatings =
-            if (seeCustomerInfo) { userService.getSeeCustomerProfileInfo(currentUserId).getTotalRatings() }
-            else { userService.getSeeProfessionalProfileInfo(currentUserId).getTotalRatings() }
+            if (seeCustomerInfo) userService.getSeeCustomerProfileInfo(currentUserId).getTotalRatings()
+            else userService.getSeeProfessionalProfileInfo(currentUserId).getTotalRatings()
 
-        return JobDetailsDTO.toDTO(currentUserId, job, seeCustomerInfo, totalRatings)
+        return JobDetailsDTO.toDTO(currentUserId, job, seeCustomerInfo, isRated, totalRatings)
     }
 
     fun assertUserExistsInJob(userId: Long, jobId: Long){
