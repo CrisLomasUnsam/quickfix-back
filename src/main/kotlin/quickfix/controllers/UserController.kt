@@ -5,7 +5,9 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import quickfix.dto.address.AddressDTO
 import quickfix.dto.user.*
+import quickfix.models.Address
 import quickfix.services.UserService
 
 @RestController
@@ -21,17 +23,25 @@ class UserController(
         return usernamePAT.principal.toString().toLong()
     }
 
-    @GetMapping("/data")
-    fun userInfo(@ModelAttribute("currentUserId") currentUserId : Long) : UserDTO =
-        UserDTO.toDTO(userService.getById(currentUserId))
-
-    @PatchMapping("/data/edit")
+    @PatchMapping("/profileInfo/edit")
     fun updateUserInfo(@ModelAttribute("currentUserId") currentUserId : Long, @RequestBody modifiedInfo: UserModifiedInfoDTO) =
         userService.changeUserInfo(currentUserId, modifiedInfo)
 
-    @GetMapping("/userProfileInfo")
+    @GetMapping("/secondaryAddress")
+    fun getSecondaryAddresses(@ModelAttribute("currentUserId") currentUserId : Long) : List<AddressDTO> =
+        userService.getSecondaryAddress(currentUserId).map { AddressDTO.toDTO(it) }
+
+    @PostMapping("/secondaryAddress")
+    fun addSecondaryAddress(@ModelAttribute("currentUserId") currentUserId : Long, @RequestBody address: AddressDTO) =
+        userService.addSecondaryAddress(currentUserId, address)
+
+    @DeleteMapping("/secondaryAddress")
+    fun removeSecondaryAddress(@ModelAttribute("currentUserId") currentUserId : Long, @RequestBody addressAlias: String) =
+        userService.removeSecondaryAddress(currentUserId, addressAlias)
+
+    @GetMapping("/profileInfo")
     fun getUserProfileInfo(@ModelAttribute("currentUserId") currentUserId: Long): UserProfileInfoDto =
-        UserProfileInfoDto.toDTO(userService.getById(currentUserId))
+        userService.getUserProfileInfo(currentUserId)
 
     @GetMapping("/seeBasicCustomerInfo/{customerId}")
     fun getSeeBasicCustomerInfo(@PathVariable customerId: Long): SeeBasicUserInfoDTO =
