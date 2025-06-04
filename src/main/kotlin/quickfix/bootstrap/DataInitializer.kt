@@ -20,6 +20,7 @@ class DataInitializer : InitializingBean {
     @Autowired private lateinit var jobRepository: JobRepository
     @Autowired private lateinit var userRepository: UserRepository
     @Autowired private lateinit var professionRepository: ProfessionRepository
+    @Autowired private lateinit var addressRepository: AddressRepository
 
     override fun afterPropertiesSet() {
         initProfessions()
@@ -45,7 +46,9 @@ class DataInitializer : InitializingBean {
 
         val tester = CustomerBuilder.buildMock("tester").apply { this.mail = "alt.gm-0okdbotm@yopmail.com" }
 
-        userRepository.saveAll(listOf(custom1, custom2, tester, prof1, prof2))
+        val allUsers = userRepository.saveAll(listOf(custom1, custom2, tester, prof1, prof2))
+        val addresses = allUsers.map { AddressBuilder.buildPrimaryMocks(it, it.name) }
+        addressRepository.saveAll(addresses)
     }
 
     fun initJobs() {

@@ -3,10 +3,12 @@ package quickfix.services
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import quickfix.dao.AddressRepository
 import quickfix.dao.TokenRepository
 import quickfix.dto.register.RegisterRequestDTO
 import quickfix.dto.register.toUser
 import quickfix.dto.register.NewCredentialRequestDTO
+import quickfix.models.Address
 import quickfix.models.Token
 import quickfix.models.User
 import quickfix.utils.FRONTEND_URL
@@ -21,7 +23,8 @@ import java.time.LocalDateTime
 class RegisterService(
     private val userService: UserService,
     private val eventPublisher: ApplicationEventPublisher,
-    private val tokenRepository: TokenRepository
+    private val tokenRepository: TokenRepository,
+    private val addressRepository: AddressRepository
 ) {
     fun getVerificationToken(token: String) = tokenRepository.findByValue(token)
         ?: throw InvalidCredentialsException()
@@ -42,6 +45,17 @@ class RegisterService(
     private fun registerNewUser(registerData: RegisterRequestDTO) {
         val user : User = registerData.toUser().apply { setNewPassword(registerData.rawPassword) }
         val savedUser = userService.save(user)
+        val address = Address().apply {
+            this.alias = "Principal"
+            this.user = savedUser
+            this.principal = true
+            this.streetAddress1 = registerData.streetAddress1
+            this.streetAddress2 = registerData.streetAddress2?: ""
+            this.zipCode = registerData.zipCode
+            this.state = registerData.state
+            this.city = registerData.city
+        }
+        addressRepository.save(address)
         val token = tokenRepository.save(Token.createTokenEntity(savedUser))
         val confirmationURL = createConfirmationOrRecoveryLink(token.value)
         eventPublisher.publishEvent(OnRegistrationCompletedEvent(savedUser, confirmationURL))
