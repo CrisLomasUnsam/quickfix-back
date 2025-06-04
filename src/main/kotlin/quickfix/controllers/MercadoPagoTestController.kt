@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import quickfix.services.MercadoPagoSubscriptionService
 import org.slf4j.LoggerFactory
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import quickfix.dto.mercadopago.CreateSubscriptionClientRequest
 import quickfix.dto.mercadopago.MPSubscriptionResponse
@@ -19,9 +20,18 @@ class SubscriptionController(
 ) {
     private val logger = LoggerFactory.getLogger(SubscriptionController::class.java)
 
+    @ModelAttribute("currentProfessionalId")
+    fun getCurrentProfessionalId(): Long {
+        val usernamePAT = SecurityContextHolder.getContext().authentication
+        return usernamePAT.principal.toString().toLong()
+    }
+
     @PostMapping("/create")
-    fun createNewSubscription(@RequestBody clientRequest: CreateSubscriptionClientRequest): ResponseEntity<*> {
-        if (clientRequest.userEmail.isBlank() || clientRequest.planType.isBlank()) {
+    fun createNewSubscription(
+        @ModelAttribute("currentProfessionalId") currentProfessionalId: Long,
+        @RequestBody clientRequest: CreateSubscriptionClientRequest
+    ): ResponseEntity<*> {
+        if (clientRequest.planType.isBlank()) {
             logger.warn("Intento de crear suscripción con datos incompletos: {}", clientRequest)
             return ResponseEntity.badRequest().body(mapOf("error" to "Email y tipo de plan son requeridos."))
         }
@@ -30,14 +40,18 @@ class SubscriptionController(
 
         try {
             val subscriptionResponse: MPSubscriptionResponse? = subscriptionService.createSubscription(
-                payerEmail = clientRequest.userEmail,
+                currentProfessionalId,
                 planType = clientRequest.planType,
-                externalReference = clientRequest.userInternalId ?: "user_${clientRequest.userEmail}_${System.currentTimeMillis()}"
             )
 
             return if (subscriptionResponse?.initPoint?.isNotBlank() == true) {
                 logger.info("Suscripción iniciada en MP, devolviendo init_point. MP ID: {}", subscriptionResponse.id)
-                ResponseEntity.ok(mapOf("init_point" to subscriptionResponse.initPoint, "subscription_id" to subscriptionResponse.id))
+                ResponseEntity.ok(
+                    mapOf(
+                        "init_point" to subscriptionResponse.initPoint,
+                        "subscription_id" to subscriptionResponse.id
+                    )
+                )
             } else {
                 logger.error("Servicio de suscripción de MP devolvió null o init_point vacío para {}", clientRequest)
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -47,7 +61,12 @@ class SubscriptionController(
             logger.warn("Error de datos inválidos al crear suscripción para {}: {}", clientRequest, e.message)
             return ResponseEntity.badRequest().body(mapOf("error" to e.message))
         } catch (e: Exception) {
-            logger.error("Error inesperado en SubscriptionController al crear suscripción para {}: {}", clientRequest, e.message, e)
+            logger.error(
+                "Error inesperado en SubscriptionController al crear suscripción para {}: {}",
+                clientRequest,
+                e.message,
+                e
+            )
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(mapOf("error" to "Error inesperado en el servidor al procesar la suscripción."))
         }
@@ -55,7 +74,6 @@ class SubscriptionController(
 
     // WebHooks
     // ej. /mp-callbacks/success, /mp-callbacks/failure, /mp-callbacks/pending
-    // que manejarán los parámetros que MP envía en la redirección.
     @GetMapping("/mp-callbacks/success")
     fun handleSuccessCallback(
         @RequestParam params: Map<String, String>
@@ -92,7 +110,8 @@ class SubscriptionController(
         // 1. Registrar el fallo.
         // 2. Actualizar estado en la DB (ej. PENDING_PAYMENT_FAILED).
         // 3. Redirigir al usuario a una página de fallo en el front(o toast).
-        return ResponseEntity.badRequest().body("Fallo - La suscripción no pudo completarse. Ver como manejar en el front.")
+        return ResponseEntity.badRequest()
+            .body("Fallo - La suscripción no pudo completarse. Ver como manejar en el front.")
     }
 
     @GetMapping("/mp-callbacks/pending")
