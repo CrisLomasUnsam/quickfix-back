@@ -33,7 +33,7 @@ class RedisService(
         assertCustomerCanCreateAJobRequest(customerId)
 
         val key = getJobRequestKey(professionId = jobRequest.professionId, customerId = customerId)
-        assertKeyDoesNotExist(key, "No es posible tener dos solicitudes activas de una misma categoría. Ya tiene una solicitud para esta categoría.")
+        assertKeyDoesNotExist(key)
 
         redisJobRequestStorage.opsForValue().set(key, jobRequest)
         //If it is a future request, we set a TTL to cancel it automatically as soon as the date and time of need for the service arrives.
@@ -85,9 +85,9 @@ class RedisService(
             throw JobException("Solo es posible tener hasta un máximo de $MAX_CUSTOMER_REQUESTS_AT_TIME solicitudes activas al mismo tiempo.")
     }
 
-    private fun assertKeyDoesNotExist(key: String, errorMessage: String){
+    private fun assertKeyDoesNotExist(key: String){
         if(redisJobRequestStorage.hasKey(key))
-            throw JobException(errorMessage)
+            throw JobException("No es posible tener dos solicitudes activas de una misma categoría. Ya tiene una solicitud para esta categoría.")
     }
 
     private fun assertCustomerHasJobRequest(professionId: Long, customerId : Long){
