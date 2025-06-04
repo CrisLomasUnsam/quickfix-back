@@ -28,7 +28,6 @@ class CustomerBuilder {
                 this.name = userName
                 this.lastName = lastName
                 this.gender = Gender.OTHER
-                this.address = AddressBuilder.buildMock("Siempre viva 123")
                 this.dateBirth = LocalDate.of(1990, 1, 1)
                 this.verified = true
                 this.dni = generateDniFromUserName(userName)

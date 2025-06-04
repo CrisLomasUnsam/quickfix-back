@@ -1,16 +1,20 @@
 package quickfix.bootstrap.builders
 
 import quickfix.models.Address
+import quickfix.models.User
 
 class AddressBuilder {
     companion object {
-        fun buildMock(streetName : String) : Address {
+        fun buildPrimaryMocks(user: User, streetName : String) : Address {
             return Address().apply {
-                street = streetName
-                optional = "PB 1ºA"
-                city = "Belgrano"
-                state = "Ciudad Autónoma de Buenos Aires"
-                zipCode = "9999"
+                this.user = user
+                this.alias = "Principal"
+                this.principal = true
+                this.streetAddress1 = streetName
+                this.streetAddress2 = "PB 1ºA"
+                this.city = "Belgrano"
+                this.state = "Ciudad Autónoma de Buenos Aires"
+                this.zipCode = "9999"
             }
         }
     }
