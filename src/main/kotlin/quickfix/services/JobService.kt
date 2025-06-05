@@ -35,6 +35,7 @@ import quickfix.utils.jobs.dateTimesCollides
 import quickfix.utils.jobs.getJobEndtime
 import quickfix.utils.jobs.getJobOfferEndtime
 import quickfix.utils.jobs.getJobRequestKey
+import quickfix.utils.putOffDots
 import java.time.Duration
 import java.time.LocalDateTime
 import kotlin.math.absoluteValue
@@ -259,7 +260,7 @@ class JobService(
             this.professional = professional
             this.customer = customer
             this.profession = profession
-            this.price = jobOffer.price
+            this.price = jobOffer.price.putOffDots()
             this.initDateTime = if(jobOffer.request.instantRequest) LocalDateTime.now() else jobOffer.request.neededDatetime
             this.duration = jobOffer.duration
             this.durationUnit = jobOffer.durationUnit
