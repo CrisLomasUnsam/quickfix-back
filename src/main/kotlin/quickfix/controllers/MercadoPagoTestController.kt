@@ -12,11 +12,13 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import quickfix.dto.mercadopago.CreateSubscriptionClientRequest
 import quickfix.dto.mercadopago.MPSubscriptionResponse
+import quickfix.services.SubscriptionService
 
 @RestController
 @RequestMapping("/mp/subscriptions")
 class SubscriptionController(
-    private val mercadoPagoSubscriptionService: MercadoPagoSubscriptionService
+    private val mercadoPagoSubscriptionService: MercadoPagoSubscriptionService,
+    private val subscriptionService: SubscriptionService
 ) {
     private val logger = LoggerFactory.getLogger(SubscriptionController::class.java)
 
@@ -106,6 +108,20 @@ class SubscriptionController(
         } catch (e: Exception) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(mapOf("error" to "Error al renovar la suscripción."))
+        }
+    }
+
+    @PutMapping("/startFreeTrial")
+    fun startFreeTrial(
+        @ModelAttribute("currentProfessionalId") currentProfessionalId: Long
+    ): ResponseEntity<*> {
+        return try {
+            val trialResponse = subscriptionService.initFreeTrial(currentProfessionalId)
+            ResponseEntity.ok(trialResponse)
+        } catch (e: Exception) {
+            logger.error("Error al iniciar el período de prueba para el profesional ID $currentProfessionalId: ${e.message}", e)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(mapOf("error" to "Error al iniciar el período de prueba."))
         }
     }
 

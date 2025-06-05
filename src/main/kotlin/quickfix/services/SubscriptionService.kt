@@ -3,6 +3,7 @@ package quickfix.services
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import quickfix.utils.enums.SubscriptionStatus
+import java.time.LocalDateTime
 import java.time.OffsetDateTime
 
 @Service
@@ -32,8 +33,6 @@ class SubscriptionService(
     ) {
         val professionalInfo = userService.getProfessionalInfo(currentProfessionalId)
 
-        println("Refreshing subscription status for user ID: $currentProfessionalId, subscription ID: $subscriptionId, status: $status, next payment date: $nextPaymentDate")
-
         if (professionalInfo.subscriptionId == null || professionalInfo.subscriptionId != subscriptionId) {
             throw IllegalStateException("No se encontró una suscripción activa con ID: $subscriptionId")
         }
@@ -55,4 +54,20 @@ class SubscriptionService(
         professionalInfo.nextPaymentDate = OffsetDateTime.parse(nextPaymentDate).toLocalDateTime()
         professionalInfo.subscriptionStatus = SubscriptionStatus.fromString(status)!!
     }
+
+    @Transactional(rollbackFor = [Exception::class])
+    fun initFreeTrial (
+        currentProfessionalId: Long,
+    ) {
+        val professionalInfo = userService.getProfessionalInfo(currentProfessionalId)
+        val currentDate = LocalDateTime.now().plusDays(30) // 30 días de prueba
+
+        if (professionalInfo.subscriptionId == null || professionalInfo.nextPaymentDate != null) {
+            throw IllegalStateException("El profesional ya tuvo un periodo de prueba activo o una suscripción.")
+        }
+
+        professionalInfo.subscriptionStatus = SubscriptionStatus.AUTHORIZED
+        professionalInfo.nextPaymentDate = currentDate
+    }
+
 }
