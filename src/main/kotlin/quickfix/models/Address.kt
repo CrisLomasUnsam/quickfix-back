@@ -18,19 +18,19 @@ class Address : Identifier {
     lateinit var alias: String
 
     var principal = false
-    lateinit var streetAddress1: String
-    var streetAddress2: String = ""
+    lateinit var streetAddress: String
+    var streetReference: String = ""
     lateinit var zipCode: String
     lateinit var state: String
     lateinit var city: String
 
 
     fun updateAddressInfo(modifiedAddressDTO: AddressDTO) {
-        modifiedAddressDTO.streetAddress1?.takeIf { it.isNotBlank() }?.let {
-            this.streetAddress1 = it
+        modifiedAddressDTO.streetAddress?.takeIf { it.isNotBlank() }?.let {
+            this.streetAddress = it
         }
-        modifiedAddressDTO.streetAddress2?.takeIf { it.isNotBlank() }?.let {
-            this.streetAddress2 = it
+        modifiedAddressDTO.streetReference?.takeIf { it.isNotBlank() }?.let {
+            this.streetReference = it
         }
         modifiedAddressDTO.zipCode?.takeIf { it.isNotBlank() }?.let {
             this.zipCode = it
@@ -46,7 +46,7 @@ class Address : Identifier {
 
     override fun validate() {
         if (!validName(alias.trim())) throw AddressException("Ingrese un alias que contenga solo números y letras.")
-        if (!validName(streetAddress1.trim())) throw AddressException("Ingrese una dirección válida.")
+        if (!validName(streetAddress.trim())) throw AddressException("Ingrese una dirección válida.")
         if (!validName(city.trim())) throw AddressException("Ingrese una ciudad válida.")
         if (!validName(state.trim())) throw AddressException("Ingrese una provincia válida.")
         if (!validZipCode()) throw AddressException("El código postal debe contener 4 o 5 números")

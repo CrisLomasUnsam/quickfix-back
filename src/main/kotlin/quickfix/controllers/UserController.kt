@@ -27,9 +27,13 @@ class UserController(
     fun updateUserInfo(@ModelAttribute("currentUserId") currentUserId : Long, @RequestBody modifiedInfo: UserModifiedInfoDTO) =
         userService.changeUserInfo(currentUserId, modifiedInfo)
 
+    @GetMapping("/allAddresses")
+    fun getAllAddresses(@ModelAttribute("currentUserId") currentUserId : Long) : List<AddressDTO> =
+        userService.getAllAddresses(currentUserId).map { AddressDTO.toDTO(it) }
+    
     @GetMapping("/secondaryAddress")
     fun getSecondaryAddresses(@ModelAttribute("currentUserId") currentUserId : Long) : List<AddressDTO> =
-        userService.getSecondaryAddress(currentUserId).map { AddressDTO.toDTO(it) }
+        userService.getSecondaryAddresses(currentUserId).map { AddressDTO.toDTO(it) }
 
     @PostMapping("/secondaryAddress")
     fun addSecondaryAddress(@ModelAttribute("currentUserId") currentUserId : Long, @RequestBody address: AddressDTO) =

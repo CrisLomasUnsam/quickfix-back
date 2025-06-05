@@ -15,6 +15,8 @@ data class JobDetailsDTO (
     val dateTime: String,
     val userInfo: SeeBasicUserInfoDTO,
     val status: JobStatus,
+    val streetAddress: String,
+    val streetReference: String?,
     val pendingJobDetails: PendingJobDetails?
 ) {
     companion object {
@@ -39,6 +41,8 @@ data class JobDetailsDTO (
                 dateTime = stringifyDateTime(job.initDateTime),
                 userInfo = SeeBasicUserInfoDTO.toDTO(user, seeCustomerInfo, totalRatings),
                 status = job.status,
+                streetAddress = job.streetAddress,
+                streetReference = job.streetReference,
                 pendingJobDetails = null
             )
         }

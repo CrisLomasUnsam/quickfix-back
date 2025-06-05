@@ -96,16 +96,16 @@ class DataInitializer : InitializingBean {
         val users = userRepository.findAll().associateBy { it.name }
         val professions = professionRepository.findAll().associateBy { it.name }
 
-        val jobRequest1 = JobRequestBuilder.buildMock(users["Valentino"]!!, professions["Electricidad"]!!, 0, isInstantRequest = true)
-        val jobRequest2 = JobRequestBuilder.buildMock(users["Valentino"]!!, professions["Mecánica"]!!, 1)
-        val jobRequest3 = JobRequestBuilder.buildMock(users["Valentino"]!!, professions["Albañilería"]!!, 2)
-        val jobRequest4 = JobRequestBuilder.buildMock(users["Valentino"]!!, professions["Plomería"]!!, 3)
-        val jobRequest5 = JobRequestBuilder.buildMock(users["Valentino"]!!, professions["Carpintería"]!!, 4)
-        val jobRequest6 = JobRequestBuilder.buildMock(users["Tomas"]!!, professions["Jardinería"]!!, 5)
-        val jobRequest7 = JobRequestBuilder.buildMock(users["Tomas"]!!, professions["Pinturería"]!!, 6)
-        val jobRequest8 = JobRequestBuilder.buildMock(users["Tomas"]!!, professions["Gasfitería"]!!, 7)
-        val jobRequest9 = JobRequestBuilder.buildMock(users["Tomas"]!!, professions["Plomería"]!!, 8)
-        val jobRequest10 = JobRequestBuilder.buildMock(users["Tomas"]!!, professions["Mecánica"]!!, 9)
+        val jobRequest1 = JobRequestBuilder.buildMock(professions["Electricidad"]!!, 0, isInstantRequest = true)
+        val jobRequest2 = JobRequestBuilder.buildMock(professions["Mecánica"]!!, 1)
+        val jobRequest3 = JobRequestBuilder.buildMock(professions["Albañilería"]!!, 2)
+        val jobRequest4 = JobRequestBuilder.buildMock(professions["Plomería"]!!, 3)
+        val jobRequest5 = JobRequestBuilder.buildMock(professions["Carpintería"]!!, 4)
+        val jobRequest6 = JobRequestBuilder.buildMock(professions["Jardinería"]!!, 5)
+        val jobRequest7 = JobRequestBuilder.buildMock(professions["Pinturería"]!!, 6)
+        val jobRequest8 = JobRequestBuilder.buildMock(professions["Gasfitería"]!!, 7)
+        val jobRequest9 = JobRequestBuilder.buildMock(professions["Plomería"]!!, 8)
+        val jobRequest10 = JobRequestBuilder.buildMock(professions["Mecánica"]!!, 9)
 
         jobService.requestJob(users["Valentino"]!!.id,jobRequest1)
         jobService.requestJob(users["Valentino"]!!.id,jobRequest2)

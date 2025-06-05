@@ -13,13 +13,13 @@ class RegisterRequestDTO (
     var dni: Int,
     var dateBirth: String,
     var gender: Gender,
-    var streetAddress1: String,
-    var streetAddress2: String?,
+    var streetAddress: String,
+    var streetReference: String?,
     var zipCode: String,
     var city: String,
     var state: String,
 
-)
+    )
 
 fun RegisterRequestDTO.toUser() : User {
     val request : RegisterRequestDTO = this
