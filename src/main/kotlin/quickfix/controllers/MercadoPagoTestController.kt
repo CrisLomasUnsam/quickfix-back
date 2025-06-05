@@ -16,7 +16,7 @@ import quickfix.dto.mercadopago.MPSubscriptionResponse
 @RestController
 @RequestMapping("/mp/subscriptions")
 class SubscriptionController(
-    private val subscriptionService: MercadoPagoSubscriptionService
+    private val mercadoPagoSubscriptionService: MercadoPagoSubscriptionService
 ) {
     private val logger = LoggerFactory.getLogger(SubscriptionController::class.java)
 
@@ -39,7 +39,7 @@ class SubscriptionController(
         logger.info("Recibida solicitud para crear suscripción: {}", clientRequest)
 
         try {
-            val subscriptionResponse: MPSubscriptionResponse? = subscriptionService.createSubscription(
+            val subscriptionResponse: MPSubscriptionResponse? = mercadoPagoSubscriptionService.createSubscription(
                 currentProfessionalId,
                 planType = clientRequest.planType,
             )
@@ -72,7 +72,45 @@ class SubscriptionController(
         }
     }
 
-    // WebHooks
+    @GetMapping("/status")
+    fun getCurrentSubscriptionStatus(
+        @ModelAttribute("currentProfessionalId") currentProfessionalId: Long
+    ): ResponseEntity<*> {
+        return try {
+            val status = mercadoPagoSubscriptionService.getCurrentSubscriptionStatus(currentProfessionalId)
+            ResponseEntity.ok(mapOf("status" to status))
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(mapOf("error" to "Error al consultar el estado de la suscripción."))
+        }
+    }
+
+    @PutMapping("/renew")
+    fun renewSubscription(
+        @ModelAttribute("currentProfessionalId") currentProfessionalId: Long
+    ): ResponseEntity<*> {
+        return try {
+            val renewalResponse: MPSubscriptionResponse? =
+                mercadoPagoSubscriptionService.renewSubscription(currentProfessionalId)
+            if (renewalResponse != null) {
+                ResponseEntity.ok(
+                    mapOf(
+                        "subscription_id" to renewalResponse.id,
+                        "init_point" to renewalResponse.initPoint,
+                    )
+                )
+            } else {
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(mapOf("error" to "No se pudo renovar la suscripción."))
+            }
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(mapOf("error" to "Error al renovar la suscripción."))
+        }
+    }
+
+
+    // WebHooks(mmmm)
     // ej. /mp-callbacks/success, /mp-callbacks/failure, /mp-callbacks/pending
     @GetMapping("/mp-callbacks/success")
     fun handleSuccessCallback(
