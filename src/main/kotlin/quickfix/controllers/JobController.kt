@@ -111,11 +111,6 @@ class JobController(
     fun getProfessionalJobRequest(@ModelAttribute("currentUserId") currentProfessionalId : Long, @RequestParam jobRequestId: String) : ProfessionalJobRequestDTO =
         ProfessionalJobRequestDTO.fromJobRequest(jobService.getNotOfferedJobRequest(currentProfessionalId, jobRequestId))
 
-    @GetMapping("/jobRequestId/{jobRequestId}")
-    @Operation(summary = "Utilizado para obtener la clave de un jobRequest")
-    fun getCustomerJobRequestId(@ModelAttribute("currentUserId") currentCustomerId : Long, @PathVariable jobRequestId: Long) : String =
-        getJobRequestKey(jobRequestId, currentCustomerId)
-
     @PostMapping("/requestJob")
     @Operation(summary = "Buscar profesionales disponibles para el job seleccionado por el customer")
     fun requestJob(@ModelAttribute("currentUserId") currentCustomerId : Long, @RequestBody jobRequest : CreateJobRequestDTO) =
