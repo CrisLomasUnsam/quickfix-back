@@ -42,6 +42,10 @@ class ProfessionalService(
         val professional = userService.getById(professionalId)
         return professional.professionalInfo.professionalProfessions
     }
+    fun getProfessionalSubscription(professionalId: Long): ProfessionalInfo {
+        val professional = userService.getById(professionalId)
+        return professional.professionalInfo
+    }
 
     @Transactional(rollbackFor = [Exception::class])
     fun addProfession(professionalId: Long, professionId: Long) {
