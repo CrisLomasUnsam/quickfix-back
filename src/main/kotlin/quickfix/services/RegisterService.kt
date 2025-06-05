@@ -33,7 +33,7 @@ class RegisterService(
 
     @Transactional(rollbackFor = [SQLException::class, Exception::class])
     fun registerUser(registerData: RegisterRequestDTO){
-        validateUserAlreadyExists(registerData.mail)
+        validateUserAlreadyExists(registerData.mail.lowercase())
         registerNewUser(registerData)
     }
 
