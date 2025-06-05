@@ -7,6 +7,7 @@ import quickfix.utils.exceptions.DetailException
 import quickfix.utils.exceptions.IllegalDataException
 import quickfix.utils.exceptions.ProfessionException
 import quickfix.utils.functions.parseDatetime
+import quickfix.utils.functions.stringifyDateTime
 import java.time.LocalDateTime
 
 data class CreateJobRequestDTO(
@@ -14,7 +15,7 @@ data class CreateJobRequestDTO(
     var detail: String,
     var streetAddress: String,
     var streetReference: String,
-    val neededDatetime: String,
+    var neededDatetime: String,
     var instantRequest: Boolean?
 ){
 
@@ -26,6 +27,11 @@ data class CreateJobRequestDTO(
         if (professionId < 1) throw ProfessionException("ID de profesión inválido")
         if (streetAddress.isBlank()) throw DetailException("La dirección no puede estar vacía")
         if (detail.isBlank()) throw DetailException("El detalle no puede estar vacío")
+
+        if(instantRequest == true){
+            neededDatetime = stringifyDateTime(LocalDateTime.now())
+            return
+        }
 
         val parsedDatetime = parseDatetime(neededDatetime)
 
