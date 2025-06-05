@@ -2,7 +2,9 @@ package quickfix.models
 
 import jakarta.persistence.*
 import quickfix.utils.MAXIMUM_DEBT
+import quickfix.utils.enums.SubscriptionStatus
 import quickfix.utils.exceptions.ProfessionalException
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "professionals")
@@ -23,6 +25,13 @@ class ProfessionalInfo : Identifier {
     var balance: Double = 0.0
     var debt: Double = 0.0
     var hasVehicle: Boolean = false
+
+    // Relevantes para Mercado Pago
+    @Column(unique = true)
+    var subscriptionId: String? = null
+    @Enumerated(EnumType.STRING)
+    var subscriptionStatus: SubscriptionStatus = SubscriptionStatus.NONE
+    var nextPaymentDate: LocalDateTime? = null
 
     fun getActiveProfessions() : Set<Profession> =
         professionalProfessions.filter { it.active }.map { it.profession }.toSet()
