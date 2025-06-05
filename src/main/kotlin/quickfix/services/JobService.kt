@@ -264,6 +264,8 @@ class JobService(
             this.duration = jobOffer.duration
             this.durationUnit = jobOffer.durationUnit
             this.detail = jobOffer.request.detail
+            this.streetAddress = jobOffer.request.streetAddress
+            this.streetReference = jobOffer.request.streetReference
         }
 
         jobRepository.save(job)
