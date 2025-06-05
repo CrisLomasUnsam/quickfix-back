@@ -56,6 +56,7 @@ class SecurityConfig {
                     "/login/**",
                     "/recovery",
                     "/recovery/confirm",
+                    "/expiredSession",
                     "/error"
                     ).permitAll()
 
@@ -112,6 +113,11 @@ class SecurityConfig {
                 it.requestMatchers(HttpMethod.GET, "/user/seeProfessionalProfile/**").hasAuthority(Role.CUSTOMER.name)
                 it.requestMatchers(HttpMethod.GET, "/user/seeBasicProfessionalInfo/**").hasAuthority(Role.CUSTOMER.name)
                 it.requestMatchers(HttpMethod.GET, "/user/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
+
+                it.requestMatchers(HttpMethod.GET, "/user/secondaryAddress").hasAuthority(Role.CUSTOMER.name)
+                it.requestMatchers(HttpMethod.POST, "/user/secondaryAddress").hasAuthority(Role.CUSTOMER.name)
+                it.requestMatchers(HttpMethod.DELETE, "/user/secondaryAddress").hasAuthority(Role.CUSTOMER.name)
+
                 it.requestMatchers(HttpMethod.PATCH, "/user/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
 
                 it.anyRequest().authenticated()
@@ -122,8 +128,7 @@ class SecurityConfig {
                 configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .addFilterBefore(
                 jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
-            .exceptionHandling(
-                Customizer.withDefaults())
+            .exceptionHandling(Customizer.withDefaults())
             .build()
     }
 }

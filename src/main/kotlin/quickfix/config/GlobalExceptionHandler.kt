@@ -30,8 +30,8 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidTokenException::class)
-    fun handleInvalidToken(e: InvalidTokenException): ResponseEntity<SimpleResponse> {
-        return ResponseEntity.status(498).body(SimpleResponse(e.message))
+    fun handleInvalidTokenException(e: InvalidTokenException): ResponseEntity<SimpleResponse> {
+        return ResponseEntity.status((HttpStatus.UNAUTHORIZED)).body(SimpleResponse(e.message))
     }
 
     @ExceptionHandler(JobException::class)

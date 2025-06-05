@@ -1,5 +1,6 @@
 package quickfix.dto.user
 
+import quickfix.models.Address
 import quickfix.models.Gender
 import quickfix.models.User
 import quickfix.utils.functions.DateWithDayFormatter
@@ -22,7 +23,7 @@ data class UserProfileInfoDto (
 )
 {
     companion object{
-        fun toDTO(user : User) : UserProfileInfoDto{
+        fun toDTO(user : User, address: Address) : UserProfileInfoDto{
             return UserProfileInfoDto(
                 mail = user.mail,
                 name = user.name,
@@ -30,11 +31,11 @@ data class UserProfileInfoDto (
                 dni = user.dni,
                 dateBirth = stringifyDate(user.dateBirth, DateWithDayFormatter),
                 gender = user.gender,
-                streetAddress1 = user.address.street,
-                streetAddress2 = user.address.optional,
-                zipCode = user.address.zipCode,
-                city = user.address.city,
-                state = user.address.state,
+                streetAddress1 = address.streetAddress1,
+                streetAddress2 = address.streetAddress2,
+                zipCode = address.zipCode,
+                city = address.city,
+                state = address.state,
                 avatar = getAvatarUrl(user.id),
             )
         }

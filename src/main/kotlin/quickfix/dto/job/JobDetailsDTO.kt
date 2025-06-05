@@ -22,8 +22,8 @@ data class JobDetailsDTO (
             currentUserId: Long,
             job: Job,
             seeCustomerInfo: Boolean,
+            isRated: Boolean,
             totalRatings: Int
-
         ): JobDetailsDTO {
             val user = when (currentUserId) {
                 job.customer.id -> job.professional
@@ -35,7 +35,7 @@ data class JobDetailsDTO (
                 professionId = job.profession.id,
                 detail = job.detail,
                 price = job.price,
-                rated = false ,
+                rated = isRated,
                 dateTime = stringifyDateTime(job.initDateTime),
                 userInfo = SeeBasicUserInfoDTO.toDTO(user, seeCustomerInfo, totalRatings),
                 status = job.status,

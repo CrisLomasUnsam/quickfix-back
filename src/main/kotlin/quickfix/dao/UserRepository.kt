@@ -18,6 +18,9 @@ interface UserRepository: CrudRepository<User, Long>{
 
     fun findByMail(mail: String): Optional<User>
 
+    @Query(" select exists( select 1 from ratings where user_from_id = :userId and job_id = :jobId)", nativeQuery = true)
+    fun userHasRatedJob(@Param("userId") userId: Long, @Param("jobId") jobId: Long): Boolean
+
     @Query(value = "SELECT sum(price) FROM jobs WHERE professional_id = :professionalId AND status = 'DONE' AND init_date_time BETWEEN :startDate AND :endDate", nativeQuery = true)
     fun getEarningsByProfessionalIdAndDateRange(
         @Param("professionalId") professionalId: Long,
