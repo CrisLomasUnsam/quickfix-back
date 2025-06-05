@@ -13,6 +13,7 @@ import quickfix.models.ProfessionalInfo
 import quickfix.models.Token
 import quickfix.models.User
 import quickfix.utils.FRONTEND_URL
+import quickfix.utils.enums.SubscriptionStatus
 import quickfix.utils.events.OnChangePasswordRequestEvent
 import quickfix.utils.events.OnChangedUserInfoEvent
 import quickfix.utils.exceptions.NotFoundException
@@ -55,6 +56,20 @@ class UserService(
 
     fun getSeeCustomerProfileInfo(customerId : Long) : ISeeUserProfile =
         userRepository.getSeeCustomerProfileInfo(customerId)
+
+    fun getSubscriptionId(professionalId: Long): String? {
+        val subscriptionId = userRepository.findSubscriptionIdById(professionalId)
+            ?: throw NotFoundException("Profesional no encontrado con ID $professionalId")
+
+        return subscriptionId
+    }
+
+    fun getSubscriptionStatus(professionalId: Long): SubscriptionStatus {
+        val subscriptionStatus = userRepository.findSubscriptionStatusById(professionalId)
+            ?: throw NotFoundException("Profesional no encontrado con ID $professionalId")
+
+        return subscriptionStatus
+    }
 
     @Transactional(rollbackFor = [Exception::class])
     fun changeUserInfo(id: Long, modifiedInfo: UserModifiedInfoDTO) {
