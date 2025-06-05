@@ -9,6 +9,10 @@ import quickfix.dao.*
 import quickfix.services.JobService
 import quickfix.services.RatingService
 import quickfix.services.RedisService
+import quickfix.utils.enums.SubscriptionStatus
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 @Service
 @Profile("!test")
@@ -52,6 +56,11 @@ class DataInitializer : InitializingBean {
         val custom2 = CustomerBuilder.buildMock("Tomas", "Neiro")
 
         val tester = CustomerBuilder.buildMock("tester").apply { this.mail = "alt.gm-0okdbotm@yopmail.com" }
+
+        // Mariano ya tiene una subscripción activa
+        prof1.professionalInfo.subscriptionId = "5258096123af415bb5434fb66eb33888"
+        prof1.professionalInfo.subscriptionStatus = SubscriptionStatus.fromString("authorized")!!
+        prof1.professionalInfo.nextPaymentDate = OffsetDateTime.parse("2026-06-04T18:19:00.000-04:00").toLocalDateTime()
 
         userRepository.saveAll(listOf(custom1, custom2, tester, prof1, prof2))
     }
