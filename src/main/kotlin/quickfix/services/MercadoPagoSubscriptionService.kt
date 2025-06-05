@@ -144,7 +144,7 @@ class MercadoPagoSubscriptionService(
 
         if (professionalInfo.subscriptionId == null) {
             logger.warn("El usuario con ID {} no tiene una suscripción activa.", currentProfessionalId)
-            return "NONE"
+            return "none"
         }
 
         val entity = HttpEntity<String>(headers)
