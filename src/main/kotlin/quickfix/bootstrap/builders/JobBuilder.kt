@@ -24,6 +24,8 @@ class JobBuilder {
                 this.detail = "Lorem ipsum dolor sit amet consectetur adipiscing elit aliquam, morbi ad ornare pharetra posuere ut fringilla molestie tristique."
                 this.duration = 10
                 this.durationUnit = "Minutos"
+                this.streetAddress = "Cap. San Juan 4135, Belgrano, Ciudad Autónoma de Buenos Aires (CP 1911)"
+                this.streetReference = "Toque timbre, estoy al fondo."
             }
     }
 }
