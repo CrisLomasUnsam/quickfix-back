@@ -10,7 +10,6 @@ import quickfix.dto.user.SeeBasicUserInfoDTO
 @SchemaProperty(name = "availability", schema = Schema(description = "Disponibilidad del professional en minutos para iniciar el trabajo."))
 
 data class CustomerJobOfferDTO (
-    var customerId : Long,
     var professionId : Long,
     var professional: SeeBasicUserInfoDTO,
     var price: Double,
@@ -23,7 +22,6 @@ data class CustomerJobOfferDTO (
     companion object {
         fun fromDto(jobOfferDTO: JobOfferDTO): CustomerJobOfferDTO {
             return CustomerJobOfferDTO(
-                customerId = jobOfferDTO.request.customer.id,
                 professionId = jobOfferDTO.request.professionId,
                 professional = jobOfferDTO.professional,
                 price = jobOfferDTO.price,
