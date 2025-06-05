@@ -125,6 +125,20 @@ class SubscriptionController(
         }
     }
 
+    @PutMapping("/endFreeTrial")
+    fun endSubscription(
+        @ModelAttribute("currentProfessionalId") currentProfessionalId: Long
+    ): ResponseEntity<*> {
+        return try {
+            subscriptionService.endSubscription(currentProfessionalId)
+            ResponseEntity.ok(mapOf("message" to "Período de prueba finalizado correctamente."))
+        } catch (e: Exception) {
+            logger.error("Error al finalizar el período de prueba para el profesional ID $currentProfessionalId: ${e.message}", e)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(mapOf("error" to "Error al finalizar el período de prueba."))
+        }
+    }
+
 
     // WebHooks(mmmm)
     // ej. /mp-callbacks/success, /mp-callbacks/failure, /mp-callbacks/pending

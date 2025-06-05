@@ -56,7 +56,7 @@ class SubscriptionService(
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun initFreeTrial (
+    fun initFreeTrial(
         currentProfessionalId: Long,
     ) {
         val professionalInfo = userService.getProfessionalInfo(currentProfessionalId)
@@ -68,6 +68,17 @@ class SubscriptionService(
 
         professionalInfo.subscriptionStatus = SubscriptionStatus.AUTHORIZED
         professionalInfo.nextPaymentDate = currentDate
+    }
+
+    @Transactional(rollbackFor = [Exception::class])
+    fun endSubscription(currentProfessionalId: Long) {
+        val professionalInfo = userService.getProfessionalInfo(currentProfessionalId)
+
+        if (professionalInfo.subscriptionStatus != SubscriptionStatus.AUTHORIZED) {
+            throw IllegalStateException("El profesional no tiene una suscripción activa o un periodo de prueba.")
+        }
+
+        professionalInfo.subscriptionStatus = SubscriptionStatus.NONE
     }
 
 }
