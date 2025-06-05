@@ -15,7 +15,6 @@ import quickfix.dto.job.jobRequest.CustomerJobRequestDTO
 import quickfix.dto.job.jobRequest.ProfessionalJobRequestDTO
 import quickfix.dto.page.PageDTO
 import quickfix.services.JobService
-import quickfix.utils.jobs.getJobRequestKey
 
 @RestController
 @RequestMapping("/job")
