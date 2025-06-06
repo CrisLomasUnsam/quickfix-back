@@ -41,12 +41,12 @@ class LoginControllerSpec {
 
     @BeforeAll
     fun init() {
-        this.final()
+        this.clean()
         userRepository.save(CustomerBuilder.buildMock("Valentino"))
     }
 
     @AfterAll
-    fun final() {
+    fun clean() {
         addressRepository.deleteAll()
         userRepository.deleteAll()
     }
