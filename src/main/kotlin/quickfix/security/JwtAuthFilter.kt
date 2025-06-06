@@ -34,7 +34,8 @@ class   JwtAuthFilter : OncePerRequestFilter() {
 
         } catch (e : InvalidTokenException) {
             logger.warn(e.message)
-            response.sendError(498, e.message)
+            response.sendError(401, e.message)
+            return
         }
     }
 }

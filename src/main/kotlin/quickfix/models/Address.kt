@@ -1,9 +1,6 @@
 package quickfix.models
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import quickfix.dto.address.AddressDTO
 import quickfix.utils.exceptions.AddressException
 
@@ -14,18 +11,26 @@ class Address : Identifier {
     @Id @GeneratedValue
     override var id: Long = 0
 
-    lateinit var street: String
-    var optional: String = ""
+    @ManyToOne
+    lateinit var user : User
+
+    @Column(length = 25, nullable = false)
+    lateinit var alias: String
+
+    var principal = false
+    lateinit var streetAddress: String
+    var streetReference: String = ""
     lateinit var zipCode: String
     lateinit var state: String
     lateinit var city: String
 
+
     fun updateAddressInfo(modifiedAddressDTO: AddressDTO) {
-        modifiedAddressDTO.street?.takeIf { it.isNotBlank() }?.let {
-            this.street = it
+        modifiedAddressDTO.streetAddress?.takeIf { it.isNotBlank() }?.let {
+            this.streetAddress = it
         }
-        modifiedAddressDTO.optional?.takeIf { it.isNotBlank() }?.let {
-            this.optional = it
+        modifiedAddressDTO.streetReference?.takeIf { it.isNotBlank() }?.let {
+            this.streetReference = it
         }
         modifiedAddressDTO.zipCode?.takeIf { it.isNotBlank() }?.let {
             this.zipCode = it
@@ -40,14 +45,16 @@ class Address : Identifier {
     }
 
     override fun validate() {
-        if (!validName(street)) throw AddressException("La calle debe contener sólo letras")
-        if (!validName(city)) throw AddressException("La ciudad debe contener sólo letras")
-        if (!validName(state)) throw AddressException("La provincia debe contener sólo letras")
-        if (!validZipCode()) throw AddressException("El código postal deben contener sólo números")
+        if (!validName(alias.trim())) throw AddressException("Ingrese un alias que contenga solo números y letras.")
+        if (!validName(streetAddress.trim())) throw AddressException("Ingrese una dirección válida.")
+        if (!validName(city.trim())) throw AddressException("Ingrese una ciudad válida.")
+        if (!validName(state.trim())) throw AddressException("Ingrese una provincia válida.")
+        if (!validZipCode()) throw AddressException("El código postal debe contener 4 o 5 números")
     }
 
     private fun validZipCode(): Boolean =
         zipCode.isNotBlank() && zipCode.all { it.isDigit() } && (zipCode.length in 4..5)
 
-    private fun validName(name: String): Boolean = name.isNotBlank() && name.all { it.isLetter()}
+    private fun validName(name: String): Boolean = name.isNotBlank() && name.all { it.isLetter() || it.isDigit() || it == ' '}
+
 }

@@ -15,6 +15,8 @@ data class JobDetailsDTO (
     val dateTime: String,
     val userInfo: SeeBasicUserInfoDTO,
     val status: JobStatus,
+    val streetAddress: String,
+    val streetReference: String?,
     val pendingJobDetails: PendingJobDetails?
 ) {
     companion object {
@@ -22,8 +24,8 @@ data class JobDetailsDTO (
             currentUserId: Long,
             job: Job,
             seeCustomerInfo: Boolean,
+            isRated: Boolean,
             totalRatings: Int
-
         ): JobDetailsDTO {
             val user = when (currentUserId) {
                 job.customer.id -> job.professional
@@ -35,10 +37,12 @@ data class JobDetailsDTO (
                 professionId = job.profession.id,
                 detail = job.detail,
                 price = job.price,
-                rated = false ,
+                rated = isRated,
                 dateTime = stringifyDateTime(job.initDateTime),
                 userInfo = SeeBasicUserInfoDTO.toDTO(user, seeCustomerInfo, totalRatings),
                 status = job.status,
+                streetAddress = job.streetAddress,
+                streetReference = job.streetReference,
                 pendingJobDetails = null
             )
         }

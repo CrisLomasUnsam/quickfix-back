@@ -35,6 +35,7 @@ import quickfix.utils.jobs.dateTimesCollides
 import quickfix.utils.jobs.getJobEndtime
 import quickfix.utils.jobs.getJobOfferEndtime
 import quickfix.utils.jobs.getJobRequestKey
+import quickfix.utils.putOffDots
 import java.time.Duration
 import java.time.LocalDateTime
 import kotlin.math.absoluteValue
@@ -132,11 +133,12 @@ class JobService(
 
         val job = getJobById(jobId)
         val seeCustomerInfo = currentUserId == job.professional.id
+        val isRated = userService.userHasRatedJob(currentUserId, jobId)
         val totalRatings =
-            if (seeCustomerInfo) { userService.getSeeCustomerProfileInfo(currentUserId).getTotalRatings() }
-            else { userService.getSeeProfessionalProfileInfo(currentUserId).getTotalRatings() }
+            if (seeCustomerInfo) userService.getSeeCustomerProfileInfo(currentUserId).getTotalRatings()
+            else userService.getSeeProfessionalProfileInfo(currentUserId).getTotalRatings()
 
-        return JobDetailsDTO.toDTO(currentUserId, job, seeCustomerInfo, totalRatings)
+        return JobDetailsDTO.toDTO(currentUserId, job, seeCustomerInfo, isRated, totalRatings)
     }
 
     fun assertUserExistsInJob(userId: Long, jobId: Long){
@@ -258,11 +260,13 @@ class JobService(
             this.professional = professional
             this.customer = customer
             this.profession = profession
-            this.price = jobOffer.price
+            this.price = jobOffer.price.putOffDots()
             this.initDateTime = if(jobOffer.request.instantRequest) LocalDateTime.now() else jobOffer.request.neededDatetime
             this.duration = jobOffer.duration
             this.durationUnit = jobOffer.durationUnit
             this.detail = jobOffer.request.detail
+            this.streetAddress = jobOffer.request.streetAddress
+            this.streetReference = jobOffer.request.streetReference
         }
 
         jobRepository.save(job)

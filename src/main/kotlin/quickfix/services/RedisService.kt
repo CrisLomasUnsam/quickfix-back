@@ -33,7 +33,7 @@ class RedisService(
         assertCustomerCanCreateAJobRequest(customerId)
 
         val key = getJobRequestKey(professionId = jobRequest.professionId, customerId = customerId)
-        assertKeyDoesNotExist(key, "No es posible tener dos solicitudes activas de una misma categoría. Ya tiene una solicitud para esta categoría.")
+        assertKeyDoesNotExist(key)
 
         redisJobRequestStorage.opsForValue().set(key, jobRequest)
         //If it is a future request, we set a TTL to cancel it automatically as soon as the date and time of need for the service arrives.
@@ -44,7 +44,7 @@ class RedisService(
     fun getMyJobRequests(customerId: Long) : List<JobRequestDTO> {
         val requestsKeys = redisJobRequestStorage.keys("JobRequest_*_${customerId}_")
         val myJobRequests = redisJobRequestStorage.opsForValue().multiGet(requestsKeys) ?: emptySet()
-        return myJobRequests.toList().sortedWith( compareBy<JobRequestDTO> {it.neededDatetime}.thenBy { it.professionId })
+        return myJobRequests.toList().sortedWith( compareByDescending<JobRequestDTO>{it.instantRequest}.thenBy{ it.neededDatetime }.thenBy { it.professionId })
     }
 
     fun countOffersForRequest(jobRequest: JobRequestDTO) : Int {
@@ -62,7 +62,7 @@ class RedisService(
             val requestsValues = redisJobRequestStorage.opsForValue().multiGet(requestsKeys) ?: emptySet()
             jobRequests.addAll(requestsValues)
         }
-        return jobRequests.sortedWith( compareBy<JobRequestDTO> {it.neededDatetime}.thenBy { it.professionId }.thenBy { it.customer.averageRating })
+        return jobRequests.sortedWith( compareByDescending<JobRequestDTO> {it.neededDatetime}.thenBy { it.professionId }.thenBy { it.customer.averageRating })
     }
 
     fun getJobRequest(jobRequestId: String) : JobRequestDTO? {
@@ -85,9 +85,9 @@ class RedisService(
             throw JobException("Solo es posible tener hasta un máximo de $MAX_CUSTOMER_REQUESTS_AT_TIME solicitudes activas al mismo tiempo.")
     }
 
-    private fun assertKeyDoesNotExist(key: String, errorMessage: String){
+    private fun assertKeyDoesNotExist(key: String){
         if(redisJobRequestStorage.hasKey(key))
-            throw JobException(errorMessage)
+            throw JobException("No es posible tener dos solicitudes activas de una misma categoría. Ya tiene una solicitud para esta categoría.")
     }
 
     private fun assertCustomerHasJobRequest(professionId: Long, customerId : Long){
@@ -123,7 +123,7 @@ class RedisService(
     private fun getSortedJobOffers(keyPattern: String) : List<JobOfferDTO> {
         val jobOfferKeys = redisJobOfferStorage.keys(keyPattern)
         val offers = redisJobOfferStorage.opsForValue().multiGet(jobOfferKeys)?.toList() ?: emptySet()
-        return offers.sortedWith( compareBy<JobOfferDTO> {it.request.neededDatetime}.thenBy{ it.request.professionId }.thenBy {it.distance})
+        return offers.sortedWith( compareByDescending<JobOfferDTO> {it.request.neededDatetime}.thenBy{ it.request.professionId }.thenBy {it.distance})
     }
 
     fun offerJob(jobOffer : JobOfferDTO) {

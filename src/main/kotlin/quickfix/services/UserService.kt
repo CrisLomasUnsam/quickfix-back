@@ -6,12 +6,11 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import quickfix.dao.TokenRepository
 import quickfix.dao.UserRepository
+import quickfix.dto.address.AddressDTO
 import quickfix.dto.user.ISeeUserProfile
 import quickfix.dto.user.UserModifiedInfoDTO
-import quickfix.models.Profession
-import quickfix.models.ProfessionalInfo
-import quickfix.models.Token
-import quickfix.models.User
+import quickfix.dto.user.UserProfileInfoDto
+import quickfix.models.*
 import quickfix.utils.FRONTEND_URL
 import quickfix.utils.enums.SubscriptionStatus
 import quickfix.utils.events.OnChangePasswordRequestEvent
@@ -24,13 +23,20 @@ class UserService(
     private val userRepository: UserRepository,
     private val eventPublisher: ApplicationEventPublisher,
     private val tokenRepository: TokenRepository,
-    private val imageService: ImageService
+    private val imageService: ImageService,
+    private val addressService: AddressService
 ) {
 
     private fun createRecoveryURL(token: String) = "$FRONTEND_URL/newPassword?token=$token"
 
     fun getById(id: Long): User =
         userRepository.findById(id).orElseThrow{ NotFoundException("Usuario no encontrado $id") }
+
+    fun getUserProfileInfo(userId: Long) : UserProfileInfoDto {
+        val user = userRepository.findById(userId).orElseThrow { NotFoundException("Usuario no encontrado.") }
+        val address = addressService.getPrimaryAddress(userId)
+        return UserProfileInfoDto.toDTO(user, address)
+    }
 
     fun findByMail(mail : String) : Optional<User> =
         userRepository.findByMail(mail)
@@ -44,6 +50,9 @@ class UserService(
         if (!userRepository.existsById(id))
             throw NotFoundException("Usuario no encontrado: $id")
     }
+
+    fun userHasRatedJob(userId: Long, jobId: Long) : Boolean =
+        userRepository.userHasRatedJob(userId, jobId)
 
     fun getProfessionalInfo(userId: Long) : ProfessionalInfo =
         userRepository.findUserWithProfessionalInfoById(userId).orElseThrow{ NotFoundException() }.professionalInfo
@@ -72,11 +81,27 @@ class UserService(
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun changeUserInfo(id: Long, modifiedInfo: UserModifiedInfoDTO) {
-        val user = this.getById(id)
+    fun changeUserInfo(userId: Long, modifiedInfo: UserModifiedInfoDTO) {
+        val user = this.getById(userId)
         user.updateUserInfo(modifiedInfo)
+        val newAddressInfo = AddressDTO.fromUserModifiedInfoDTO(modifiedInfo)
+        addressService.updatePrimaryAddress(userId, newAddressInfo)
         eventPublisher.publishEvent(OnChangedUserInfoEvent(user.mail))
     }
+
+    fun getAllAddresses(customerId: Long) : List<Address> = addressService.findAllAddresses(customerId)
+
+    fun getSecondaryAddresses(customerId: Long) : List<Address> = addressService.findSecondaryAddresses(customerId)
+
+    @Transactional(rollbackFor = [Exception::class])
+    fun addSecondaryAddress(customerId: Long, address: AddressDTO) {
+        val customer = getById(customerId)
+        addressService.addSecondaryAddress(customer, address)
+    }
+
+    @Transactional(rollbackFor = [Exception::class])
+    fun removeSecondaryAddress(customerId: Long, addressAlias: String) =
+        addressService.removeSecondaryAddress(customerId, addressAlias )
 
     @Transactional(rollbackFor = [Exception::class])
     fun requestChangePassword(mail: String) {
@@ -84,7 +109,6 @@ class UserService(
         val token = tokenRepository.save(Token.createTokenEntity(user))
         val recoveryURL = createRecoveryURL(token.value)
         eventPublisher.publishEvent(OnChangePasswordRequestEvent(user, recoveryURL))
-
     }
 
     @Transactional(rollbackFor = [Exception::class])

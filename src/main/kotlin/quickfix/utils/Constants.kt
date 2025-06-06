@@ -19,3 +19,6 @@ const val PAGE_SIZE: Int = 4
 const val MAX_CUSTOMER_REQUESTS_AT_TIME: Int = 10
 const val MINUTES_TO_BE_CONSIDERED_FUTURE_REQUEST : Long = 5
 const val INSTANT_REQUEST_LIVE_DAYS : Long = 28
+
+
+const val MAXIMUM_ADDRESSES = 10

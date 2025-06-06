@@ -1,7 +1,6 @@
 package quickfix.controllerSpec
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.hamcrest.Matchers.startsWith
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -16,8 +15,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import quickfix.QuickFixApp
 import quickfix.bootstrap.builders.CustomerBuilder
 import quickfix.dao.AddressRepository
+import quickfix.dao.TokenRepository
 import quickfix.dao.UserRepository
-import quickfix.dto.login.LoginDTO
+import quickfix.dto.register.NewCredentialRequestDTO
+import quickfix.models.Token
+import java.time.LocalDateTime
 
 @SpringBootTest(
     classes = [QuickFixApp::class],
@@ -25,7 +27,7 @@ import quickfix.dto.login.LoginDTO
 )
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class LoginControllerSpec {
+class RecoveryControllerSpec {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
@@ -35,6 +37,9 @@ class LoginControllerSpec {
 
     @Autowired
     private lateinit var userRepository: UserRepository
+
+    @Autowired
+    private lateinit var tokenRepository: TokenRepository
 
     @Autowired
     private lateinit var addressRepository: AddressRepository
@@ -48,96 +53,99 @@ class LoginControllerSpec {
     @AfterAll
     fun clean() {
         addressRepository.deleteAll()
+        tokenRepository.deleteAll()
         userRepository.deleteAll()
     }
 
     @Test
-    fun `Login with valen as customer`() {
+    fun `Request change password and change it`() {
 
-        val loginCustomerData = objectMapper.writeValueAsString(LoginDTO("valentino@gmail.com", "password"))
+        val mail = "valentino@gmail.com"
 
         mockMvc.perform(
             MockMvcRequestBuilders
-                .post("/login/customer")
+                .post("/recovery")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(loginCustomerData)
+                .content(mail)
         )
             .andExpect(status().isOk)
-            .andExpect(content().string(startsWith("eyJ")))
+            .andExpect(content().string(""))
+
+        val token = tokenRepository.getTokensByUser(userRepository.findByMail("valentino@gmail.com").get())
+
+        val newCredential = objectMapper.writeValueAsString(
+            NewCredentialRequestDTO(
+                "123456",
+                token.value
+            )
+        )
+
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .patch("/recovery/confirm")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(newCredential)
+        )
+            .andExpect(status().isOk)
+            .andExpect(content().string(""))
     }
 
     @Test
-    fun `Try login with valen as customer (wrong password)`() {
+    fun `Try Request change password (non existing mail)`() {
 
-        val loginCustomerData = objectMapper.writeValueAsString(LoginDTO("valentino@gmail.com", "wrongPassword"))
+        val mail = "nonexistingmail@gmail.com"
 
         mockMvc.perform(
             MockMvcRequestBuilders
-                .post("/login/customer")
+                .post("/recovery")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(loginCustomerData)
+                .content(mail)
+        )
+            .andExpect(status().isNotFound)
+            .andExpect(jsonPath("$.message").value("Usuario no encontrado nonexistingmail@gmail.com"))
+    }
+
+    @Test
+    fun `Try change password (non existing token)`() {
+
+        val newCredential = objectMapper.writeValueAsString(
+            NewCredentialRequestDTO(
+                "123456",
+                "nonExistingToken"
+            )
+        )
+
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .patch("/recovery/confirm")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(newCredential)
         )
             .andExpect(status().isUnauthorized)
             .andExpect(jsonPath("$.message").value("Credenciales inválidas"))
     }
 
     @Test
-    fun `Try login with nonexistent mail as customer`() {
+    fun `Try change password (token expiry)`() {
 
-        val loginCustomerData = objectMapper.writeValueAsString(LoginDTO("nonexistentMail@gmail.com", "password"))
+        val token = Token.createTokenEntity(userRepository.findByMail("valentino@gmail.com").get())
+        token.expiryDate = LocalDateTime.now().minusDays(1)
+        tokenRepository.save(token)
 
-        mockMvc.perform(
-            MockMvcRequestBuilders
-                .post("/login/customer")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(loginCustomerData)
+        val newCredential = objectMapper.writeValueAsString(
+            NewCredentialRequestDTO(
+                "123456",
+                token.value
+            )
         )
-            .andExpect(status().isNotFound)
-            .andExpect(jsonPath("$.message").value("Usuario no encontrado nonexistentMail@gmail.com"))
-    }
-
-    @Test
-    fun `Login with valen as professional`() {
-
-        val loginCustomerData = objectMapper.writeValueAsString(LoginDTO("valentino@gmail.com", "password"))
 
         mockMvc.perform(
             MockMvcRequestBuilders
-                .post("/login/professional")
+                .patch("/recovery/confirm")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(loginCustomerData)
-        )
-            .andExpect(status().isOk)
-            .andExpect(content().string(startsWith("eyJ")))
-    }
-
-    @Test
-    fun `Try login with valen as professional (wrong password)`() {
-
-        val loginCustomerData = objectMapper.writeValueAsString(LoginDTO("valentino@gmail.com", "wrongPassword"))
-
-        mockMvc.perform(
-            MockMvcRequestBuilders
-                .post("/login/professional")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(loginCustomerData)
+                .content(newCredential)
         )
             .andExpect(status().isUnauthorized)
-            .andExpect(jsonPath("$.message").value("Credenciales inválidas"))
-    }
-
-    @Test
-    fun `Try login with nonexistent mail as professional`() {
-
-        val loginCustomerData = objectMapper.writeValueAsString(LoginDTO("nonexistentMail@gmail.com", "password"))
-
-        mockMvc.perform(
-            MockMvcRequestBuilders
-                .post("/login/professional")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(loginCustomerData)
-        )
-            .andExpect(status().isNotFound)
-            .andExpect(jsonPath("$.message").value("Usuario no encontrado nonexistentMail@gmail.com"))
+            .andExpect(jsonPath("$.message").value("Token inválido"))
     }
 }

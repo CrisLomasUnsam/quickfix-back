@@ -25,10 +25,8 @@ class SecurityConfig {
     @Autowired
     lateinit var jwtAuthFilter: JwtAuthFilter
 
-    @Bean
-    @Throws(Exception::class)
-    fun authenticationManager(authConfig: AuthenticationConfiguration): AuthenticationManager =
-        authConfig.authenticationManager
+    @Bean @Throws(Exception::class)
+    fun authenticationManager(authConfig: AuthenticationConfiguration): AuthenticationManager = authConfig.authenticationManager
 
     @Bean
     fun corsConfig(): WebMvcConfigurer {
@@ -37,7 +35,7 @@ class SecurityConfig {
                 registry.addMapping("/**")
                     .allowedOrigins(FRONTEND_URL)
                     .allowedHeaders("*")
-                    .allowedMethods("POST", "GET", "PATCH", "DELETE", "PUT")
+                    .allowedMethods("POST", "GET","PATCH", "DELETE", "PUT")
                     .allowCredentials(true)
             }
         }
@@ -46,7 +44,7 @@ class SecurityConfig {
     @Bean
     fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
         return httpSecurity
-            .cors { }
+            .cors {  }
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it.requestMatchers(
@@ -58,8 +56,9 @@ class SecurityConfig {
                     "/login/**",
                     "/recovery",
                     "/recovery/confirm",
+                    "/expiredSession",
                     "/error"
-                ).permitAll()
+                    ).permitAll()
 
                 it.requestMatchers(HttpMethod.OPTIONS).permitAll()
 
@@ -77,6 +76,7 @@ class SecurityConfig {
                 it.requestMatchers(HttpMethod.GET, "/job/myJobRequests").hasAuthority(Role.CUSTOMER.name)
                 it.requestMatchers(HttpMethod.POST, "/job/requestJob").hasAuthority(Role.CUSTOMER.name)
                 it.requestMatchers(HttpMethod.DELETE, "/job/jobRequest").hasAuthority(Role.CUSTOMER.name)
+
 
                 it.requestMatchers(HttpMethod.GET, "/job/professional").hasAuthority(Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.GET, "/job/professional/**").hasAuthority(Role.PROFESSIONAL.name)
@@ -99,10 +99,8 @@ class SecurityConfig {
                 it.requestMatchers(HttpMethod.PATCH, "/job/start/**").hasAuthority(Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.PATCH, "/job/finish/**").hasAuthority(Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.PATCH, "/job/cancelAsCustomer/**").hasAuthority(Role.CUSTOMER.name)
-                it.requestMatchers(HttpMethod.PATCH, "/job/cancelAsProfessional/**")
-                    .hasAuthority(Role.PROFESSIONAL.name)
-                it.requestMatchers(HttpMethod.GET, "/job/jobDetails/**")
-                    .hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.PATCH, "/job/cancelAsProfessional/**").hasAuthority(Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.GET, "/job/jobDetails/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
 
                 it.requestMatchers(HttpMethod.GET, "/rating/customer/**").hasAuthority(Role.CUSTOMER.name)
                 it.requestMatchers(HttpMethod.GET, "/rating/seeProfessionalRatings/**").hasAuthority(Role.CUSTOMER.name)
@@ -110,35 +108,33 @@ class SecurityConfig {
                 it.requestMatchers(HttpMethod.GET, "/rating/professional/**").hasAuthority(Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.GET, "/rating/seeCustomerRatings/**").hasAuthority(Role.PROFESSIONAL.name)
 
-                it.requestMatchers(HttpMethod.GET, "/rating/**")
-                    .hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
-                it.requestMatchers(HttpMethod.POST, "/rating/**")
-                    .hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
-                it.requestMatchers(HttpMethod.PATCH, "/rating/**")
-                    .hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.GET, "/rating/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.POST, "/rating/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.PATCH, "/rating/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
 
 
                 it.requestMatchers(HttpMethod.GET, "/user/seeCustomerProfile/**").hasAuthority(Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.GET, "/user/seeBasicCustomerInfo/**").hasAuthority(Role.PROFESSIONAL.name)
                 it.requestMatchers(HttpMethod.GET, "/user/seeProfessionalProfile/**").hasAuthority(Role.CUSTOMER.name)
                 it.requestMatchers(HttpMethod.GET, "/user/seeBasicProfessionalInfo/**").hasAuthority(Role.CUSTOMER.name)
-                it.requestMatchers(HttpMethod.GET, "/user/**")
-                    .hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
-                it.requestMatchers(HttpMethod.PATCH, "/user/**")
-                    .hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
+
+                it.requestMatchers(HttpMethod.GET, "/user/allAddresses").hasAuthority(Role.CUSTOMER.name)
+                it.requestMatchers(HttpMethod.GET, "/user/secondaryAddress").hasAuthority(Role.CUSTOMER.name)
+                it.requestMatchers(HttpMethod.POST, "/user/secondaryAddress").hasAuthority(Role.CUSTOMER.name)
+                it.requestMatchers(HttpMethod.DELETE, "/user/secondaryAddress").hasAuthority(Role.CUSTOMER.name)
+
+                it.requestMatchers(HttpMethod.GET, "/user/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
+                it.requestMatchers(HttpMethod.PATCH, "/user/**").hasAnyAuthority(Role.CUSTOMER.name, Role.PROFESSIONAL.name)
 
                 it.anyRequest().authenticated()
             }
             .httpBasic(
-                Customizer.withDefaults()
-            )
-            .sessionManagement { configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+                Customizer.withDefaults())
+            .sessionManagement {
+                configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .addFilterBefore(
-                jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java
-            )
-            .exceptionHandling(
-                Customizer.withDefaults()
-            )
+                jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .exceptionHandling(Customizer.withDefaults())
             .build()
     }
 }

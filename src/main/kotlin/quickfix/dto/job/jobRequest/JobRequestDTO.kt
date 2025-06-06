@@ -15,6 +15,8 @@ data class JobRequestDTO (
     var customer: SeeBasicUserInfoDTO,
     var professionId: Long,
     var detail: String,
+    var streetAddress: String,
+    var streetReference: String,
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     var neededDatetime: LocalDateTime,
     var instantRequest: Boolean
@@ -24,7 +26,12 @@ fun JobRequestDTO.validate() {
     validCustomer(customer.id)
     validProfession(professionId)
     validDetail(detail)
+    validAddress(streetAddress)
     validDatetime(neededDatetime)
+}
+
+private fun validAddress(streetAddress: String) {
+    if(streetAddress.isBlank()) throw CustomerException("La dirección no puede estar vacía.")
 }
 
 private fun validCustomer(customerId: Long) {

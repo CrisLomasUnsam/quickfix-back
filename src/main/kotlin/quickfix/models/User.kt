@@ -3,7 +3,6 @@ package quickfix.models
 import jakarta.persistence.*
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
-import quickfix.dto.address.AddressDTO
 import quickfix.dto.user.UserModifiedInfoDTO
 import quickfix.utils.exceptions.IllegalDataException
 import quickfix.utils.exceptions.InvalidCredentialsException
@@ -25,9 +24,6 @@ class User : Identifier {
 
     @Enumerated(EnumType.STRING)
     lateinit var gender : Gender
-
-    @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true)
-    lateinit var address : Address
 
     @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true)
     var professionalInfo: ProfessionalInfo = ProfessionalInfo()
@@ -83,24 +79,6 @@ class User : Identifier {
             ?.takeIf { it.isNotBlank() }
             ?.let { Gender.fromName(it) }
             ?.let { this.gender = it }
-
-        modifiedInfoDTO
-            .takeIf {
-                it.streetAddress1?.isNotBlank() == true ||
-                it.streetAddress2?.isNotBlank() == true ||
-                it.zipCode?.isNotBlank() == true ||
-                it.city?.isNotBlank() == true ||
-                it.state?.isNotBlank() == true
-            }
-            ?.let { val addressDTO = AddressDTO(
-                        street = it.streetAddress1,
-                        optional = it.streetAddress2,
-                        zipCode = it.zipCode,
-                        city = it.city,
-                        state = it.state
-            )
-                this.address.updateAddressInfo(addressDTO)
-            }
     }
 
     private fun getDefaultEncoder(): PasswordEncoder =
@@ -153,7 +131,7 @@ class User : Identifier {
         mail.trim().isNotBlank() && mail.trim().contains("@") && !mail.trim().contains(" ") && !mail.trim().contains(",")
 
     private fun validName(name : String) : Boolean =
-        name.trim().isNotBlank() && !name.trim().contains(" ") && !name.any { it.isDigit() }
+        name.trim().isNotBlank() && !name.any { it.isDigit() }
 
     private fun isAdult(): Boolean =
         dateBirth.plusYears(EDAD_REQUERIDA.toLong()).isBefore(LocalDate.now())
