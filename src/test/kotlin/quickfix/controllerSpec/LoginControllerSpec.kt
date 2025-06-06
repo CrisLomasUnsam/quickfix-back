@@ -1,7 +1,6 @@
 package quickfix.controllerSpec
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.kotest.core.annotation.DisplayName
 import org.hamcrest.Matchers.startsWith
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -25,7 +24,6 @@ import quickfix.dto.login.LoginDTO
 )
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("Login controller test (use DataInitializer info)")
 class LoginControllerSpec {
 
     @Autowired
