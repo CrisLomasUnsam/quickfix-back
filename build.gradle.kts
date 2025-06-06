@@ -64,6 +64,10 @@ dependencies {
 
     // MailSender
     implementation("org.springframework.boot:spring-boot-starter-mail")
+
+    // MercadoPago
+    implementation("com.mercadopago:sdk-java:2.4.0")
+
 }
 
 kotlin {

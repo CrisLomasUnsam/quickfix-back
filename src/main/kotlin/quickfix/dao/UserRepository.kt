@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Component
 import quickfix.dto.user.ISeeUserProfile
 import quickfix.models.User
+import quickfix.utils.enums.SubscriptionStatus
 import java.time.LocalDate
 import java.util.*
 
@@ -70,4 +71,10 @@ interface UserRepository: CrudRepository<User, Long>{
         WHERE u.id = :customerId
     """, nativeQuery = true)
     fun getSeeCustomerProfileInfo(@Param("customerId") customerId: Long) : ISeeUserProfile
+
+    @Query("SELECT p.subscriptionId FROM ProfessionalInfo p WHERE p.id = :professionalId")
+    fun findSubscriptionIdById(professionalId: Long): String?
+
+    @Query("SELECT p.subscriptionStatus FROM ProfessionalInfo p WHERE p.id = :professionalId")
+    fun findSubscriptionStatusById(professionalId: Long): SubscriptionStatus?
 }

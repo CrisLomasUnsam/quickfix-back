@@ -9,6 +9,10 @@ import quickfix.dao.*
 import quickfix.services.JobService
 import quickfix.services.RatingService
 import quickfix.services.RedisService
+import quickfix.utils.enums.SubscriptionStatus
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 @Service
 @Profile("!test")
@@ -38,14 +42,21 @@ class DataInitializer : InitializingBean {
     fun initUsers() {
         val professions = professionRepository.findAll().toList()
 
-        val prof1 = ProfessionalBuilder.buildMock("Mariano", "Cristobo", professions)
-        val prof2 = ProfessionalBuilder.buildMock("Pablo", "Nuñez Monzon", professions)
+        val prof1 =
+            ProfessionalBuilder.buildMock("Mariano", "Cristobo", professions, "test_user_1716603402@testuser.com")
+        val prof2 =
+            ProfessionalBuilder.buildMock("Pablo", "Nuñez Monzon", professions, "test_user_314631960@testuser.com")
 
         val custom1 = CustomerBuilder.buildMock("Valentino", "Bortolussi")
         val custom2 = CustomerBuilder.buildMock("Tomas", "Neiro")
 
         val tester = CustomerBuilder.buildMock("tester").apply { this.mail = "alt.gm-0okdbotm@yopmail.com" }
 
+       // Mariano ya tiene una subscripción activa
+        prof1.professionalInfo.subscriptionStatus = SubscriptionStatus.fromString("paused")!!
+        prof1.professionalInfo.nextPaymentDate = OffsetDateTime.parse("2020-06-04T18:19:00.000-04:00").toLocalDateTime()
+
+        userRepository.saveAll(listOf(custom1, custom2, tester, prof1, prof2))
         val allUsers = userRepository.saveAll(listOf(custom1, custom2, tester, prof1, prof2))
         val addresses = allUsers.map { AddressBuilder.buildPrimaryMocks(it, it.name) }
         addressRepository.saveAll(addresses)
