@@ -62,7 +62,7 @@ class RedisService(
             val requestsValues = redisJobRequestStorage.opsForValue().multiGet(requestsKeys) ?: emptySet()
             jobRequests.addAll(requestsValues)
         }
-        return jobRequests.sortedWith( compareByDescending<JobRequestDTO> {it.neededDatetime}.thenBy { it.professionId }.thenBy { it.customer.averageRating })
+        return jobRequests.sortedWith( compareByDescending<JobRequestDTO> {it.instantRequest}.thenBy { it.neededDatetime }.thenBy { it.professionId }.thenBy { it.customer.averageRating }.thenBy { it.customer.name })
     }
 
     fun getJobRequest(jobRequestId: String) : JobRequestDTO? {
@@ -123,7 +123,7 @@ class RedisService(
     private fun getSortedJobOffers(keyPattern: String) : List<JobOfferDTO> {
         val jobOfferKeys = redisJobOfferStorage.keys(keyPattern)
         val offers = redisJobOfferStorage.opsForValue().multiGet(jobOfferKeys)?.toList() ?: emptySet()
-        return offers.sortedWith( compareByDescending<JobOfferDTO> {it.request.neededDatetime}.thenBy{ it.request.professionId }.thenBy {it.distance})
+        return offers.sortedWith( compareByDescending<JobOfferDTO> {it.request.instantRequest}.thenBy{it.request.neededDatetime}.thenBy{ it.request.professionId }.thenBy {it.distance})
     }
 
     fun offerJob(jobOffer : JobOfferDTO) {
