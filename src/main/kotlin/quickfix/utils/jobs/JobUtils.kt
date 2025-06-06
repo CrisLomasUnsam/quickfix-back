@@ -62,5 +62,5 @@ private val jobStatusMapping = mapOf(
     "finalizados" to JobStatus.DONE,
     "pendientes" to JobStatus.PENDING,
     "en curso" to JobStatus.IN_PROGRESS,
-    "cancelados" to JobStatus.CANCELED
+    "cancelados" to JobStatus.CANCELLED
 )

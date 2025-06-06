@@ -92,7 +92,7 @@ class JobService(
             val customer : User = userService.getById(customerId)
             customer.cancellationsInLastHour += 1
         }
-        job.status = JobStatus.CANCELED
+        job.status = JobStatus.CANCELLED
         redisService.deleteChatMessages(jobId)
         eventPublisher.publishEvent(OnJobNotificationEvent(job,MailType.JOB_CANCELED))
     }
@@ -107,13 +107,13 @@ class JobService(
             val professional : ProfessionalInfo = userService.getProfessionalInfo(professionalId)
             professional.cancellationsInLastHour += 1
         }
-        job.status = JobStatus.CANCELED
+        job.status = JobStatus.CANCELLED
         redisService.deleteChatMessages(jobId)
         eventPublisher.publishEvent(OnJobNotificationEvent(job,MailType.JOB_CANCELED))
     }
 
     private fun jobStatusCanNotBeCancelled(status: JobStatus) =
-        JobStatus.DONE == status || JobStatus.CANCELED == status
+        JobStatus.DONE == status || JobStatus.CANCELLED == status
 
     private fun hasToAddCancellationInLastHour(job: Job) : Boolean{
         val isInProgress = job.status == JobStatus.IN_PROGRESS

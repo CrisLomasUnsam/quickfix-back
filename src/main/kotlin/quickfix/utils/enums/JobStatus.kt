@@ -6,7 +6,7 @@ enum class JobStatus(val label: String) {
     PENDING("Pendiente"),
     IN_PROGRESS("En curso"),
     DONE("Terminado"),
-    CANCELED("Cancelado");
+    CANCELLED("Cancelado");
 
     @JsonValue
     fun toValue(): String = label
