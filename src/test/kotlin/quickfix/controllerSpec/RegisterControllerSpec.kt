@@ -1,10 +1,9 @@
 package quickfix.controllerSpec
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.kotest.core.annotation.DisplayName
 import io.mockk.InternalPlatformDsl.toStr
 import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import quickfix.QuickFixApp
 import quickfix.bootstrap.builders.CustomerBuilder
+import quickfix.dao.AddressRepository
 import quickfix.dao.TokenRepository
 import quickfix.dao.UserRepository
 import quickfix.dto.register.RegisterRequestDTO
@@ -30,7 +30,6 @@ import java.time.LocalDate
 )
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("Login controller test (use DataInitializer info)")
 class RegisterControllerSpec {
 
     @Autowired
@@ -45,14 +44,51 @@ class RegisterControllerSpec {
     @Autowired
     private lateinit var tokenRepository: TokenRepository
 
-    @BeforeAll
+    @Autowired
+    private lateinit var addressRepository: AddressRepository
+
+    @BeforeEach
     fun init() {
+        this.final()
         userRepository.save(CustomerBuilder.buildMock("mailExist"))
     }
 
     @AfterAll
     fun final() {
+        addressRepository.deleteAll()
+        tokenRepository.deleteAll()
         userRepository.deleteAll()
+    }
+
+    @Test
+    fun `Create a user`() {
+
+        val registerData =
+            objectMapper.writeValueAsString(
+                RegisterRequestDTO(
+                    "valentino@gmail.com",
+                    "Name",
+                    "Lastname",
+                    "password",
+                    12345678,
+                    "01/01/2000",
+                    Gender.OTHER,
+                    "StreetAddress1",
+                    null,
+                    "1234",
+                    "City",
+                    "State"
+                )
+            )
+
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("/registration")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(registerData)
+        )
+            .andExpect(status().isOk)
+            .andExpect(content().string(""))
     }
 
     @Test
@@ -393,7 +429,7 @@ class RegisterControllerSpec {
                 .get("/registration/confirm")
                 .param("token", "   ")
         )
-            .andExpect(status().`is`(498))
+            .andExpect(status().isUnauthorized)
             .andExpect(jsonPath("$.message").value("Token inválido"))
     }
 }

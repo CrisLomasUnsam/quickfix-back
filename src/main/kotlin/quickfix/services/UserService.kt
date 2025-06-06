@@ -94,7 +94,6 @@ class UserService(
         val token = tokenRepository.save(Token.createTokenEntity(user))
         val recoveryURL = createRecoveryURL(token.value)
         eventPublisher.publishEvent(OnChangePasswordRequestEvent(user, recoveryURL))
-
     }
 
     @Transactional(rollbackFor = [Exception::class])
