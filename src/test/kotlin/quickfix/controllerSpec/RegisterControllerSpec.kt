@@ -3,7 +3,7 @@ package quickfix.controllerSpec
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.InternalPlatformDsl.toStr
 import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
@@ -47,16 +47,48 @@ class RegisterControllerSpec {
     @Autowired
     private lateinit var addressRepository: AddressRepository
 
-    @BeforeAll
+    @BeforeEach
     fun init() {
+        this.final()
         userRepository.save(CustomerBuilder.buildMock("mailExist"))
     }
 
     @AfterAll
     fun final() {
         addressRepository.deleteAll()
-        userRepository.deleteAll()
         tokenRepository.deleteAll()
+        userRepository.deleteAll()
+    }
+
+    @Test
+    fun `Create a user`() {
+
+        val registerData =
+            objectMapper.writeValueAsString(
+                RegisterRequestDTO(
+                    "valentino@gmail.com",
+                    "Name",
+                    "Lastname",
+                    "password",
+                    12345678,
+                    "01/01/2000",
+                    Gender.OTHER,
+                    "StreetAddress1",
+                    null,
+                    "1234",
+                    "City",
+                    "State"
+                )
+            )
+
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("/registration")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(registerData)
+        )
+            .andExpect(status().isOk)
+            .andExpect(content().string(""))
     }
 
     @Test
