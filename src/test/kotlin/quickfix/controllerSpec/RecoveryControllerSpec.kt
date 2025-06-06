@@ -14,9 +14,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import quickfix.QuickFixApp
 import quickfix.bootstrap.builders.CustomerBuilder
+import quickfix.dao.AddressRepository
 import quickfix.dao.TokenRepository
 import quickfix.dao.UserRepository
 import quickfix.dto.register.NewCredentialRequestDTO
+import quickfix.models.Token
+import java.time.LocalDateTime
 
 @SpringBootTest(
     classes = [QuickFixApp::class],
@@ -38,15 +41,20 @@ class RecoveryControllerSpec {
     @Autowired
     private lateinit var tokenRepository: TokenRepository
 
+    @Autowired
+    private lateinit var addressRepository: AddressRepository
+
     @BeforeAll
     fun init() {
+        this.final()
         userRepository.save(CustomerBuilder.buildMock("Valentino"))
     }
 
     @AfterAll
     fun final() {
-        userRepository.deleteAll()
+        addressRepository.deleteAll()
         tokenRepository.deleteAll()
+        userRepository.deleteAll()
     }
 
     @Test
@@ -115,5 +123,29 @@ class RecoveryControllerSpec {
         )
             .andExpect(status().isUnauthorized)
             .andExpect(jsonPath("$.message").value("Credenciales inválidas"))
+    }
+
+    @Test
+    fun `Try change password (token expiry)`() {
+
+        val token = Token.createTokenEntity(userRepository.findByMail("valentino@gmail.com").get())
+        token.expiryDate = LocalDateTime.now().minusDays(1)
+        tokenRepository.save(token)
+
+        val newCredential = objectMapper.writeValueAsString(
+            NewCredentialRequestDTO(
+                "123456",
+                token.value
+            )
+        )
+
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .patch("/recovery/confirm")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(newCredential)
+        )
+            .andExpect(status().isUnauthorized)
+            .andExpect(jsonPath("$.message").value("Token inválido"))
     }
 }
