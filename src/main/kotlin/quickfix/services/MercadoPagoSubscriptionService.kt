@@ -15,6 +15,7 @@ import quickfix.dto.mercadopago.MPSubscriptionRequestPayload
 import quickfix.dto.mercadopago.MPSubscriptionResponse
 import quickfix.dto.mercadopago.MPSubscriptionStatusResponse
 import quickfix.dto.mercadopago.RenewRequestDto
+import quickfix.utils.enums.SubscriptionStatus
 import java.util.UUID
 
 @Service
@@ -143,7 +144,7 @@ class MercadoPagoSubscriptionService(
         val professionalInfo = userService.getProfessionalInfo(currentProfessionalId)
 
         if (professionalInfo.subscriptionId == null) {
-            logger.warn("El usuario con ID {} no tiene una suscripción activa.", currentProfessionalId)
+            professionalInfo.subscriptionStatus = SubscriptionStatus.fromString("none")!!
             return "none"
         }
 
