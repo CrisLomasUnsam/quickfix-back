@@ -52,10 +52,9 @@ class DataInitializer : InitializingBean {
 
         val tester = CustomerBuilder.buildMock("tester").apply { this.mail = "alt.gm-0okdbotm@yopmail.com" }
 
-        // Mariano ya tiene una subscripción activa
-        prof1.professionalInfo.subscriptionId = "5258096123af415bb5434fb66eb33888"
-        prof1.professionalInfo.subscriptionStatus = SubscriptionStatus.fromString("authorized")!!
-        prof1.professionalInfo.nextPaymentDate = OffsetDateTime.parse("2026-06-04T18:19:00.000-04:00").toLocalDateTime()
+       // Mariano ya tiene una subscripción activa
+        prof1.professionalInfo.subscriptionStatus = SubscriptionStatus.fromString("paused")!!
+        prof1.professionalInfo.nextPaymentDate = OffsetDateTime.parse("2020-06-04T18:19:00.000-04:00").toLocalDateTime()
 
         userRepository.saveAll(listOf(custom1, custom2, tester, prof1, prof2))
         val allUsers = userRepository.saveAll(listOf(custom1, custom2, tester, prof1, prof2))
