@@ -131,7 +131,7 @@ class User : Identifier {
         mail.trim().isNotBlank() && mail.trim().contains("@") && !mail.trim().contains(" ") && !mail.trim().contains(",")
 
     private fun validName(name : String) : Boolean =
-        name.trim().isNotBlank() && !name.trim().contains(" ") && !name.any { it.isDigit() }
+        name.trim().isNotBlank() && !name.any { it.isDigit() }
 
     private fun isAdult(): Boolean =
         dateBirth.plusYears(EDAD_REQUERIDA.toLong()).isBefore(LocalDate.now())
