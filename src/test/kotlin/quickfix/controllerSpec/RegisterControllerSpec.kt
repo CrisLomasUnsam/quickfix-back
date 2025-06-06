@@ -3,7 +3,7 @@ package quickfix.controllerSpec
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.InternalPlatformDsl.toStr
 import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
@@ -47,14 +47,14 @@ class RegisterControllerSpec {
     @Autowired
     private lateinit var addressRepository: AddressRepository
 
-    @BeforeEach
+    @BeforeAll
     fun init() {
-        this.final()
+        this.clean()
         userRepository.save(CustomerBuilder.buildMock("mailExist"))
     }
 
     @AfterAll
-    fun final() {
+    fun clean() {
         addressRepository.deleteAll()
         tokenRepository.deleteAll()
         userRepository.deleteAll()
@@ -66,11 +66,11 @@ class RegisterControllerSpec {
         val registerData =
             objectMapper.writeValueAsString(
                 RegisterRequestDTO(
-                    "valentino@gmail.com",
+                    "userNullStreet@gmail.com",
                     "Name",
                     "Lastname",
                     "password",
-                    12345678,
+                    11111111,
                     "01/01/2000",
                     Gender.OTHER,
                     "StreetAddress1",
