@@ -1,7 +1,6 @@
 package quickfix.controllerSpec
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.kotest.core.annotation.DisplayName
 import io.mockk.InternalPlatformDsl.toStr
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -16,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import quickfix.QuickFixApp
 import quickfix.bootstrap.builders.CustomerBuilder
+import quickfix.dao.AddressRepository
 import quickfix.dao.TokenRepository
 import quickfix.dao.UserRepository
 import quickfix.dto.register.RegisterRequestDTO
@@ -30,7 +30,6 @@ import java.time.LocalDate
 )
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("Login controller test (use DataInitializer info)")
 class RegisterControllerSpec {
 
     @Autowired
@@ -45,6 +44,9 @@ class RegisterControllerSpec {
     @Autowired
     private lateinit var tokenRepository: TokenRepository
 
+    @Autowired
+    private lateinit var addressRepository: AddressRepository
+
     @BeforeAll
     fun init() {
         userRepository.save(CustomerBuilder.buildMock("mailExist"))
@@ -52,7 +54,9 @@ class RegisterControllerSpec {
 
     @AfterAll
     fun final() {
+        addressRepository.deleteAll()
         userRepository.deleteAll()
+        tokenRepository.deleteAll()
     }
 
     @Test
@@ -393,7 +397,7 @@ class RegisterControllerSpec {
                 .get("/registration/confirm")
                 .param("token", "   ")
         )
-            .andExpect(status().`is`(498))
+            .andExpect(status().isUnauthorized)
             .andExpect(jsonPath("$.message").value("Token inválido"))
     }
 }
