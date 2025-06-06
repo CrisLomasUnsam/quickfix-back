@@ -11,6 +11,7 @@ import quickfix.utils.exceptions.InvalidCredentialsException
 @Component
 class LoginService (
     private val userService: UserService,
+    private val mercadoPagoSubscriptionService: MercadoPagoSubscriptionService,
     private val jwtTokenUtils: JwtTokenUtils
 ) {
 
@@ -23,6 +24,7 @@ class LoginService (
     @Transactional(readOnly = true)
     fun loginAsProfessional(loginDTO: LoginDTO): String {
         val user = getUser(loginDTO)
+        mercadoPagoSubscriptionService.getCurrentSubscriptionStatus(user.id)
         return jwtTokenUtils.createToken(user.id, Role.PROFESSIONAL.roleName)!!
     }
 

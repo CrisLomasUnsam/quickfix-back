@@ -62,8 +62,8 @@ class SubscriptionService(
         val professionalInfo = userService.getProfessionalInfo(currentProfessionalId)
         val currentDate = LocalDateTime.now().plusDays(30) // 30 días de prueba
 
-        if (professionalInfo.subscriptionId == null || professionalInfo.nextPaymentDate != null) {
-            throw IllegalStateException("El profesional ya tuvo un periodo de prueba activo o una suscripción.")
+        if (professionalInfo.subscriptionId === "AUTHORIZED" || professionalInfo.nextPaymentDate != null) {
+            throw IllegalStateException("El profesional ya tuvo o tiene un periodo de prueba activo o una suscripción.")
         }
 
         professionalInfo.subscriptionStatus = SubscriptionStatus.AUTHORIZED
