@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import quickfix.QuickFixApp
 import quickfix.bootstrap.builders.CustomerBuilder
+import quickfix.dao.AddressRepository
 import quickfix.dao.UserRepository
 import quickfix.dto.login.LoginDTO
 
@@ -35,13 +36,18 @@ class LoginControllerSpec {
     @Autowired
     private lateinit var userRepository: UserRepository
 
+    @Autowired
+    private lateinit var addressRepository: AddressRepository
+
     @BeforeAll
     fun init() {
+        this.final()
         userRepository.save(CustomerBuilder.buildMock("Valentino"))
     }
 
     @AfterAll
     fun final() {
+        addressRepository.deleteAll()
         userRepository.deleteAll()
     }
 
